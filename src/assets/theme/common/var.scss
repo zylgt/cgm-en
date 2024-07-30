@@ -1,0 +1,88 @@
+/* 定义初始颜色
+------------------------------- */
+$--color-primary: #32bac0 !default;
+$--color-warning: #f5a623 !default;
+$--color-error: #f43f31 !default;
+$--color-blue: #0d84ff !default;
+$--color-whites: #ffffff !default;
+$--color-blacks: #222 !default;
+$--color-bg: #f7f7f7 !default;
+$--bg-menuBar: rgb(47, 47, 47);
+$--bg-menuBarColor: #000;
+$--bg-topBar: #ffffff;
+$--bg-topBarColor: rgb(0, 21, 41);
+$--bg-columnsMenuBar: rgb(0, 21, 41);
+$--bg-columnsMenuBarColor: #e6e6e6;
+$--color-black-5:#f2f2f2;
+$--color-black-6:#f0f0f0;
+$--color-black-10:#e5e5e5;
+$--color-black-15:#d9d9d9;
+$--color-black-20:#cccccc;
+$--color-black-30:#b3b3b3;
+$--color-black-40:#999999;
+$--color-black-50:#7f7f7f;
+$--color-black-60:#666666;
+$--color-black-70:#4c4c4c;
+$--color-black-80:#333333;
+$--color-black-90:#1a1a1a;
+$--color-black-100:#000000;
+$--color-white-5:#0d0d0d;
+$--color-white-6:#0f0f0f;
+$--color-white-10:#191919;
+$--color-white-15:#262626;
+$--color-white-20:#333333;
+$--color-white-30:#4c4c4c;
+$--color-white-40:#666666;
+$--color-white-50:#7f7f7f;
+$--color-white-60:#999999;
+$--color-white-70:#b3b3b3;
+$--color-white-80:#cccccc;
+$--color-white-90:#e6e6e6;
+$--color-white-100:#ffffff;
+
+
+/* 赋值给:root
+------------------------------- */
+:root {
+	--color-primary: #{$--color-primary};
+	--color-warning: #{$--color-warning};
+	--color-error: #{$--color-error};
+	--color-blue: #{$--color-blue};
+	--color-whites: #{$--color-whites};
+	--color-blacks: #{$--color-blacks};
+	--color-bg: #{$--color-bg};
+	--bg-menuBar: #{$--bg-menuBar};
+	--bg-menuBarColor: #{$--bg-menuBarColor};
+	--bg-topBar: #{$--bg-topBar};
+	--bg-topBarColor: #{$--bg-topBarColor};
+	--bg-columnsMenuBar: #{$--bg-columnsMenuBar};
+	--bg-columnsMenuBarColor: #{$--bg-columnsMenuBarColor};
+	--form-theme-color: #{$--color-primary};
+	--color-black-5: #{$--color-black-5};
+	--color-black-6: #{$--color-black-6};
+	--color-black-10: #{$--color-black-10};
+	--color-black-15: #{$--color-black-15};
+	--color-black-20: #{$--color-black-20};
+	--color-black-30: #{$--color-black-30};
+	--color-black-40: #{$--color-black-40};
+	--color-black-50: #{$--color-black-50};
+	--color-black-60: #{$--color-black-60};
+	--color-black-70: #{$--color-black-70};
+	--color-black-80: #{$--color-black-80};
+	--color-black-90: #{$--color-black-90};
+	--color-black-100: #{$--color-black-100};
+	--color-white-5: #{$--color-white-5};
+	--color-white-6: #{$--color-white-6};
+	--color-white-10: #{$--color-white-10};
+	--color-white-15: #{$--color-white-15};
+	--color-white-20: #{$--color-white-20};
+	--color-white-30: #{$--color-white-30};
+	--color-white-40: #{$--color-white-40};
+	--color-white-50: #{$--color-white-50};
+	--color-white-60: #{$--color-white-60};
+	--color-white-70: #{$--color-white-70};
+	--color-white-80: #{$--color-white-80};
+	--color-white-90: #{$--color-white-90};
+	--color-white-100: #{$--color-white-100};
+
+}

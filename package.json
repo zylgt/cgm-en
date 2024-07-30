@@ -1,0 +1,65 @@
+{
+  "name": "CGM3",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint"
+  },
+  "dependencies": {
+    "@vueuse/rxjs": "^10.9.0",
+    "axios": "^1.6.8",
+    "core-js": "^3.8.3",
+    "crypto-js": "^4.2.0",
+    "dexie": "^4.0.4",
+    "echarts": "^5.5.0",
+    "element-ui": "^2.15.14",
+    "fontmin": "^1.1.0",
+    "html2canvas": "^1.4.1",
+    "js-cookie": "^3.0.5",
+    "js-md5": "^0.8.3",
+    "jspdf": "^2.5.1",
+    "linq": "^4.0.2",
+    "lodash": "^4.17.21",
+    "resize-detector": "^0.3.0",
+    "rxjs": "^7.8.1",
+    "sass": "^1.75.0",
+    "sass-loader": "^14.2.0",
+    "sortablejs": "^1.15.2",
+    "vue": "^2.6.14",
+    "vue-i18n": "^8.26.7",
+    "vue-router": "^3.6.5",
+    "vuex": "^3.6.2",
+    "worker-loader": "^3.0.8"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.16",
+    "@babel/eslint-parser": "^7.12.16",
+    "@vue/cli-plugin-babel": "~5.0.0",
+    "@vue/cli-plugin-eslint": "~5.0.0",
+    "@vue/cli-service": "~5.0.0",
+    "eslint": "^7.32.0",
+    "eslint-plugin-vue": "^8.0.3",
+    "vue-template-compiler": "^2.6.14"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "eslint:recommended"
+    ],
+    "parserOptions": {
+      "parser": "@babel/eslint-parser"
+    },
+    "rules": {}
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}
