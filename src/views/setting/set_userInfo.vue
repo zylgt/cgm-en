@@ -71,8 +71,8 @@
                         </el-upload>
             </div>
             <div>
-                <el-form ref="formData"  label-width="120px" label-position="left" :model="formData" :inline="true">
-                     <el-form-item label="姓名:" >
+                <el-form ref="formData"  label-width="120px" label-position="left" :rules="rules"  :model="formData" :inline="true">
+                     <el-form-item label="姓名:" prop='nickname'>
                             <el-input v-model="formData.nickname" class='user-inp'>
                             </el-input>
                         </el-form-item>
@@ -176,6 +176,12 @@ export default {
                 diagnosis_date:null,
                 nickname:null,
                 avatar:null
+            },
+            rules:{
+                nickname: [
+                    { required: true, message: '姓名栏不能为空', trigger: 'blur' },
+                    { pattern:/^[^*+?.[\]{}()|]/,  message: '姓名不能包含特殊字符', trigger: 'blur' }
+                ],
             },
             defaultBirthday:new Date().setFullYear(new Date().getFullYear()-40),
             pickerOptions:{
@@ -367,29 +373,34 @@ export default {
         },
         // 保存用户配置
         saveSubmit(){
-            this.loading = true
             this.formData.height = this.formData.height?Number(this.formData.height):null
             this.formData.weight = this.formData.weight?Number(this.formData.weight):null
             this.formData.gender = this.formData.gender?Number(this.formData.gender):null
-            saveInfo(this.formData).then(response => {
-                    this.loading = false
-                    if(response.code == 1000){
-                         this.$message({
-                            type: 'success',
-                            message: '保存成功'
-                        });
-                        this.getInfo()
-                        this.edit = false
-                        this.$emit('editUser',false)
-                    }else{
-                        this.$message({
-                            type: 'error',
-                            message: response.msg
-                        });
-                    }
-            }).catch((res) => {
-                   console.log(res)
-            })
+              this.$refs.formData.validate((valid)=>{
+                    if(valid){
+                        this.loading = true
+                        saveInfo(this.formData).then(response => {
+                            this.loading = false
+                            if(response.code == 1000){
+                                this.$message({
+                                    type: 'success',
+                                    message: '保存成功'
+                                });
+                                this.getInfo()
+                                this.edit = false
+                                this.$emit('editUser',false)
+                            }else{
+                                this.$message({
+                                    type: 'error',
+                                    message: response.msg
+                                });
+                            }
+                        }).catch((res) => {
+                            console.log(res)
+                        })
+                }
+              })
+            
         },
     }
 }
@@ -426,9 +437,9 @@ export default {
     .userInfo-box{
         display: flex;
         align-items: flex-start;
-        padding: 50px 0;
         width:90%;
         margin:0 auto;
+        padding:50px 0;
     }
     .userInfo-img{
         display: flex;
@@ -456,6 +467,10 @@ export default {
     .userInfo-nickname{
         font-size:var(--fontSize-max);
         color:var(--color-black-100);
+        width:100px;
+        text-align: center;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     .userInfo-info{
         display: grid;
