@@ -4,7 +4,7 @@
             <div class='day-item-box' v-if='dayList.length>0'>
                 <div class='day-item'  v-for='(item,index) in dayList' :key='index' :style="{width:gridW+'px'}" >
                     <div class='day-week' v-if='index<7'>{{item.week}}</div>
-                    <div class='day-grid-border'></div>
+                    <div class='day-grid-border' ref='gridBox'></div>
                 </div>
             </div>
             <t-chart
@@ -63,16 +63,16 @@ export default {
     },
     computed:{
         ...mapGetters([
-           'unit','targetScope']),
+           'unit','targetScope','timeFormat']),
     },
     mounted(){
         this.getOption(this.dataList)
+      
     },
     methods:{
         // 渲染数据
         getOption(data){
             let dayList = _.cloneDeep(data)
-            console.log(dayList)
             this.dayList = data
             this.height = Math.ceil(data.length/7)*170
             let gridW = Math.floor((this.$refs.day.clientWidth-240)/7)
@@ -81,6 +81,7 @@ export default {
             let max = data[0].max
             max = GlucoseUtils.mgdlToMmol(max)<13.9?13.9: GlucoseUtils.mgdlToMmol(max)
             let unit = this.unit
+            let timeFormat = this.timeFormat
             this.option = {
                 tooltip :{
                     show:true,
@@ -94,7 +95,10 @@ export default {
                     formatter(params){
                         let h =  Math.floor(Number(params[0].axisValue)/60)<10 ? '0'+ Math.floor(Number(params[0].axisValue)/60) : Math.floor(Number(params[0].axisValue)/60) 
                         let m =  Number(params[0].axisValue)%60 < 10 ? '0' + Number(params[0].axisValue)%60 : Number(params[0].axisValue)%60
-                        let moment = h+':'+m
+                        if(timeFormat == 12){
+                            h = h>=13?h-12:h
+                        }
+                         let moment = h+':'+m
                         let html =  "<div class='tooltip-box' >"+
                            " <div class='tooltips-val'>"+
                                " <span class='tooltips-val-num'>"+params[0].value+"</span>"+unit+
@@ -114,204 +118,217 @@ export default {
                 visualMap:[],
                 series: [],
             }
-            dayList.forEach((item,index)=>{
-                if(unit != 'mg/dL'){
-                    item.value = item.value.map(val => GlucoseUtils.mgdlToMmol(val));
-                }
-                // if(index>14){
-                //     return ;
-                // }
-                let tirClass = item.tir>70?'tir':'tirs'
-                this.option.title.push({
-                    text:item.tir?['{date|'+item.day+'}{tirLable|TIR:}{'+tirClass+'|'+item.tir+'%}']:['{date|'+item.day+'}{tir|TIR:--}'],
-                    left:index==0?90:index<7&&index>0?index*(gridW+15)+90:(index%7)*(gridW+15)+90,
-                    top:index>=7?172*Math.floor(index/7):2,
-                    right:10,
-                    textStyle:{
-                        rich:{
-                            date:{
-                                fontSize:16,
-                                color:'#333',
-                                width:(gridW-10)/2-10,
-                                align:'left'
-                            },
-                            tirLable:{
-                                fontSize:20,
-                                width:30,
-                                color:'#333',
-                                align:'right'
-                            },
-                            tir:{
-                                fontSize:20,
-                                width:70,
-                                color:'#333',
-                                align:'left'
-                            },
-                            tirs:{
-                                fontSize:20,
-                                width:70,
-                                color:'#F43F31',
-                                align:'left'
-                            }
-                        }
-                    },
-                })
-                this.option.grid.push({   
-                        show:false,
+            this.$nextTick(()=>{
+                dayList.forEach((item,index)=>{
+                    if(unit != 'mg/dL'){
+                        item.value = item.value.map(val => GlucoseUtils.mgdlToMmol(val));
+                    }
+                    let tirClass = item.tir>70?'tir':'tirs'
+                    this.option.title.push({
+                        text:item.tir?['{date|'+item.day+'}{tirLable|TIR:}{'+tirClass+'|'+item.tir+'%}']:['{date|'+item.day+'}{tir|TIR:--}'],
                         left:index==0?90:index<7&&index>0?index*(gridW+15)+90:(index%7)*(gridW+15)+90,
-                        right:0,
-                        top:index>=7?170*Math.floor(index/7)+30:30,
-                        width:gridW,
-                        height:90,
-                        borderColor:'#666',
-                        borderWidth:1
-                })
-                this.option.xAxis.push({   
-                        type: 'category',
-                        gridIndex:index,
-                        show:true,
-                        axisLine:{
-                            show:false
-                        },
-                        data:xData,
-                        axisLabel:{
-                            formatter: function (value, indexs) {
-                                if(indexs==0){
-                                    return '00:00'
-                                }else if(index==dayList.length-1&&indexs==item.value.length-1||index%7==6&&indexs==item.value.length-1){
-                                    return '00:00'
-                                }else if(indexs==(item.value.length/2)-1){
-                                    return '12:00'
+                        top:this.$refs.gridBox[index].offsetTop-30,
+                        right:10,
+                        textStyle:{
+                            rich:{
+                                date:{
+                                    fontSize:16,
+                                    color:'#333',
+                                    width:(gridW-10)/2-10,
+                                    align:'left'
+                                },
+                                tirLable:{
+                                    fontSize:20,
+                                    width:30,
+                                    color:'#333',
+                                    align:'right'
+                                },
+                                tir:{
+                                    fontSize:20,
+                                    width:70,
+                                    color:'#333',
+                                    align:'left'
+                                },
+                                tirs:{
+                                    fontSize:20,
+                                    width:70,
+                                    color:'#F43F31',
+                                    align:'left'
                                 }
-                            },
-                            interval:0,
-                            color: 'var(--color-black-60)',
-                            fontSize: 16, 
-                            margin:15
+                            }
                         },
-                        axisTick:{
-                            show:false
-                        }
-                })
-                this.option.yAxis.push({   
-                        type: 'value',
-                        show:false,
-                        gridIndex:index,
-                        min:0,
-                        max: unit == 'mg/dL'?GlucoseUtils.mmolToMgdl(Math.ceil(max / 3) * 3):Math.ceil(max / 3) * 3
-                })
-                this.option.visualMap.push({
-                      type: "piecewise",
-                        show: false,
-                        pieces: [
+                    })
+                    this.option.grid.push({   
+                            show:false,
+                            left:index==0?90:index<7&&index>0?index*(gridW+15)+90:(index%7)*(gridW+15)+90,
+                            right:0,
+                            top:this.$refs.gridBox[index].offsetTop,
+                            width:gridW,
+                            height:90,
+                            borderColor:'#666',
+                            borderWidth:1
+                    })
+                    this.option.xAxis.push({   
+                            type: 'category',
+                            gridIndex:index,
+                            show:true,
+                            axisLine:{
+                                show:false
+                            },
+                            data:xData,
+                            axisLabel:{
+                                formatter: function (value, indexs) {
+                                    if(timeFormat==12){
+                                        if(indexs==0){
+                                            return '12am'
+                                        }else if(index==dayList.length-1&&indexs==item.value.length-1||index%7==6&&indexs==item.value.length-1){
+                                            return '12am'
+                                        }else if(indexs==(item.value.length/2)-1){
+                                            return '12pm'
+                                        }
+                                        
+                                    }else{
+                                        if(indexs==0){
+                                            return '00:00'
+                                        }else if(index==dayList.length-1&&indexs==item.value.length-1||index%7==6&&indexs==item.value.length-1){
+                                            return '00:00'
+                                        }else if(indexs==(item.value.length/2)-1){
+                                            return '12:00'
+                                        }
+                                    }
+                                },
+                                interval:0,
+                                color: 'var(--color-black-60)',
+                                fontSize: 16, 
+                                margin:15
+                            },
+                            axisTick:{
+                                show:false
+                            }
+                    })
+                    this.option.yAxis.push({   
+                            type: 'value',
+                            show:false,
+                            gridIndex:index,
+                            min:0,
+                            max: unit == 'mg/dL'?GlucoseUtils.mmolToMgdl(Math.ceil(max / 3) * 3):Math.ceil(max / 3) * 3
+                    })
+                    this.option.visualMap.push({
+                        type: "piecewise",
+                            show: false,
+                            pieces: [
+                                {
+                                    gt: 0,
+                                    lt: this.unit=='mg/dL'?70:3.9,
+                                    color: "var(--color-error)",//大于0小于12为红色
+                                },
+                                {
+                                    gt: this.unit=='mg/dL'?180:10,
+                                    color: "var(--color-warning",//大于12区间为红色
+                                },{
+                                    gt: this.unit=='mg/dL'?70:3.9,
+                                    lt: this.unit=='mg/dL'?180:10,
+                                    color: "var(--color-primary",//大于12区间为红色
+                                },
+                            ],
+                    })
+                    this.option.series.push(  
                             {
-                                gt: 0,
-                                lt: this.unit=='mg/dL'?70:3.9,
-                                color: "var(--color-error)",//大于0小于12为红色
-                            },
-                            {
-                                gt: this.unit=='mg/dL'?180:10,
-                                color: "var(--color-warning",//大于12区间为红色
-                            },{
-                                gt: this.unit=='mg/dL'?70:3.9,
-                                lt: this.unit=='mg/dL'?180:10,
-                                color: "var(--color-primary",//大于12区间为红色
-                            },
-                        ],
-                })
-                this.option.series.push(  
-                        {
-                        type: 'line',
-                        data:item.value,
-                        xAxisIndex:index,
-                        yAxisIndex:index,
-                        showSymbol:_.compact(item.value).length>1?false:true,
-                        symbolSize:1,
-                        symbol:'circle',
-                        emphasis:{
-                            disabled:true
-                        },
-                        lineStyle: {
-                            width: 1,
-                        },
-                        markPoint:{
-                            symbol: 'circle',
-                            symbolSize:_.compact(item.value).length==1?5:0,
-                            itemStyle:{
-                                color:'var(--color-primary)'
-                            },
+                            type: 'line',
+                            data:item.value,
+                            xAxisIndex:index,
+                            yAxisIndex:index,
+                            showSymbol:_.compact(item.value).length>1?false:true,
+                            symbolSize:1,
+                            symbol:'circle',
                             emphasis:{
                                 disabled:true
                             },
-                            data:[{
-                                coord:[_.indexOf(item.value,_.compact(item.value)[0]),_.compact(item.value)[0]]
-                            }]
-                        },
-                        markLine:{
-                                symbol: 'none',
-                                // animation:false,
-                                data:[
-                                    // {
-                                    //     xAxis:xData.length/2-1,
-                                    //     lineStyle: {
-                                    //         color: 'var(--color-black-10)',
-                                    //         width: 1,
-                                    //         type:'dashed'
-                                    //     },
-                                    //     label:{
-                                    //         show:false
-                                    //     }
-                                    // } ,
-                                    {
-                                        yAxis:this.targetScope[0],
-                                        lineStyle: {
-                                            width: 0,
-                                        },
-                                        label:{
-                                            show:index%7==0?true:false,
-                                            position:'start',
-                                            distance:14,
-                                            fontSize:16,
-                                            color:'#666',
-
-                                        }
-                                    } ,
-                                    {
-                                        yAxis:this.targetScope[1],
-                                        lineStyle: {
-                                            width: 0,
-                                        },
-                                        label:{
-                                            show:index%7==0?true:false,
-                                            position:'start',
-                                            fontSize:16,
-                                            distance:14,
-                                            color:'#666'
-                                        }
-                                    } ,
-                                ]
-                        },
-                        markArea:{
-                            data:[
-                                [{
-                                    yAxis: this.unit=='mg/dL'?70:3.9
+                            lineStyle: {
+                                width: 1,
+                            },
+                            markPoint:{
+                                symbol: 'circle',
+                                symbolSize:_.compact(item.value).length==1?5:0,
+                                itemStyle:{
+                                    color:'var(--color-primary)'
                                 },
-                                {   
-                                    yAxis: this.unit=='mg/dL'?180:10
+                                emphasis:{
+                                    disabled:true
+                                },
+                                data:[{
+                                    coord:[_.indexOf(item.value,_.compact(item.value)[0]),_.compact(item.value)[0]]
                                 }]
-                            ],
-                            itemStyle:{
-                                color:'rgba(50, 186, 192, 0.08)'
-                            }
-                        },
+                            },
+                            markLine:{
+                                    symbol: 'none',
+                                    // animation:false,
+                                    data:[
+                                        // {
+                                        //     xAxis:xData.length/2-1,
+                                        //     lineStyle: {
+                                        //         color: 'var(--color-black-10)',
+                                        //         width: 1,
+                                        //         type:'dashed'
+                                        //     },
+                                        //     label:{
+                                        //         show:false
+                                        //     }
+                                        // } ,
+                                        {
+                                            yAxis:this.targetScope[0],
+                                            lineStyle: {
+                                                width: 0,
+                                            },
+                                            label:{
+                                                show:index%7==0?true:false,
+                                                position:'start',
+                                                distance:14,
+                                                fontSize:16,
+                                                color:'#666',
 
-                    }
-                )
-            })
-            this.$nextTick(()=>{
-                console.log(formatTime(new Date()),'每日血糖渲染完成')
+                                            }
+                                        } ,
+                                        {
+                                            yAxis:this.targetScope[1],
+                                            lineStyle: {
+                                                width: 0,
+                                            },
+                                            label:{
+                                                show:index%7==0?true:false,
+                                                position:'start',
+                                                fontSize:16,
+                                                distance:14,
+                                                color:'#666'
+                                            }
+                                        } ,
+                                    ]
+                            },
+                            markArea:{
+                                data:[
+                                    [{
+                                        yAxis: this.unit=='mg/dL'?70:3.9
+                                    },
+                                    {   
+                                        yAxis: this.unit=='mg/dL'?180:10
+                                    }]
+                                ],
+                                itemStyle:{
+                                    color:'rgba(50, 186, 192, 0.08)'
+                                }
+                            },
+
+                        }
+                    )
+                })
+                this.$nextTick(()=>{
+                    this.$emit('readerIng',false)
+                    console.log(formatTime(new Date()),'每日血糖渲染完成')
+                })
             })
         },
+    },
+    beforeDestroy(){
     },
     watch:{
         dataList:function(n,o){
@@ -338,7 +355,7 @@ export default {
         top:-11px;
     }
     #day-box .day-item{
-        position: relative;
+        /* position: relative; */
         margin-right:15px;
         margin-bottom:49px;
         float: left;
@@ -347,7 +364,9 @@ export default {
         text-align: center;
         font-size:var(--fontSize-big);
         color:var(--color-black-80);
-        margin-bottom:10px;
+        /* height:24px;
+        margin-bottom:10px; */
+        height:30px;
     }
     #day-box .day-grid-border{
         height:120px;

@@ -34,45 +34,47 @@
                     :picker-options="pickerOptions">
                 </el-date-picker>
         </div>
-        <Progress :percentage='downProgress' v-if='progressShow' />
-        <div v-else>
-            <!-- 血糖总结 -->
-            <div class='bg-summary agp-cont-main'>
-                <div class='cgm-cont-title'>  <span class='title-border' ></span>每日血糖总结</div>
-                <div class='cgm-agp-info-box cgm-agp-info-boxs'>
-                    <div class='cgm-agp-info'></div>
-                    <img src="~@/assets/image/reason-icon.png" alt="" class='reason-icon'  v-popover:tirPopover @click='openPopover("tir")' >
-                </div>
-                <div class='summary-chart' v-if='empty'>
-                    <Empty/>
-                </div>
-                <div class='summary-chart'  v-else>
-                    <t-chart
-                        style="width: 100%;height:250px;"
-                        :option="option"
-                        :init-options="initOptions"
-                        theme="tduck-echarts-theme"
-                    />
-                </div>
-
-            
-            
-            </div>
-            <!-- 每日血糖图表 -->
-            <div class='bg-summary agp-cont-main'>
-                <div class='cgm-cont-title'>  <span class='title-border' ></span>每日血糖图表 </div>
-                <div class='cgm-agp-info-box cgm-agp-info-boxs'>
-                    <div class='cgm-agp-info'></div>
-                    <img src="~@/assets/image/reason-icon.png" alt="" class='reason-icon'  v-popover:tirPopover @click='openPopover("tir")' >
-                </div>
-                <Empty v-if='empty'/>
-                <div v-else >
-                    <div v-for='(item,index) in list' :key='index'>
-                        <DayAnalysis :dataList='item' :eventList='eventList[item.date]'/>
+        <div class='main-box'>
+            <Progress :percentage='downProgress' v-if='progressShow' />
+            <div class='agp-main-box' :style='{"opacity":progressShow?0:1}' >
+                <!-- 血糖总结 -->
+                <div class='bg-summary agp-cont-main'>
+                    <div class='cgm-cont-title'>  <span class='title-border' ></span>每日血糖总结</div>
+                    <div class='cgm-agp-info-box cgm-agp-info-boxs'>
+                        <div class='cgm-agp-info'></div>
+                        <img src="~@/assets/image/reason-icon.png" alt="" class='reason-icon'  v-popover:tirPopover @click='openPopover("tir")' >
                     </div>
-                </div>
-            
+                    <div class='summary-chart' v-if='empty'>
+                        <Empty/>
+                    </div>
+                    <div class='summary-chart'  v-else>
+                        <t-chart
+                            style="width: 100%;height:250px;"
+                            :option="option"
+                            :init-options="initOptions"
+                            theme="tduck-echarts-theme"
+                        />
+                    </div>
+
                 
+                
+                </div>
+                <!-- 每日血糖图表 -->
+                <div class='bg-summary agp-cont-main'>
+                    <div class='cgm-cont-title'>  <span class='title-border' ></span>每日血糖图表 </div>
+                    <div class='cgm-agp-info-box cgm-agp-info-boxs'>
+                        <div class='cgm-agp-info'></div>
+                        <img src="~@/assets/image/reason-icon.png" alt="" class='reason-icon'  v-popover:tirPopover @click='openPopover("tir")' >
+                    </div>
+                    <Empty v-if='empty'/>
+                    <div v-else >
+                        <div v-for='(item,index) in list' :key='index'>
+                            <DayAnalysis :dataList='item' :eventList='eventList[item.date]'/>
+                        </div>
+                    </div>
+                
+                    
+                </div>
             </div>
         </div>
          <!-- 下载打印弹窗 -->
@@ -378,7 +380,6 @@ export default {
             let singleDay  = _.chunk(datArray,60*24) ;
             let max = _.maxBy(datArray,'Value').Value>400?400:_.maxBy(datArray,'Value').Value
             let dayList = new Array()
-           
             singleDay.forEach(item=>{
                 let value = _.map(item, 'Value');
                 let handelValue = _.compact(value)
@@ -443,6 +444,7 @@ export default {
             this.option.series[1].data = tir
             this.option.series[0].label.show = avgList.length>30?false:true
             this.option.series[1].label.show = avgList.length>30?false:true
+            this.progressShow = false
         },
        
     }

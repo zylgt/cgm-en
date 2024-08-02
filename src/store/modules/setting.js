@@ -2,7 +2,7 @@ const setting = {
     state:{
         unit:'mmol/L', //单位切换,默认mmol/L
         targetScope:[3.9,13.9],//目标范围,默认标准范围
-        timeFormat:24, //时间格式,默认24小时制
+        timeFormat:localStorage.getItem('timeFormat')==null||localStorage.getItem('timeFormat')=='undefined'?24:localStorage.getItem('timeFormat'), //时间格式,默认24小时制
         height:1080 ,//网页的高度，尺寸变化跟着变化
     },
     mutations:{
@@ -14,6 +14,7 @@ const setting = {
         },
         SET_TIME_FORMAT(state,timeFormat){
             state.timeFormat = timeFormat
+            localStorage.setItem('timeFormat',timeFormat)
         },
         SET_HEIGHT(state,height){
             state.height = height
@@ -30,7 +31,6 @@ const setting = {
             commit('SET_TIME_FORMAT',data)
         },
         setHeight({commit},data){
-            console.log('高度',data)
             commit('SET_HEIGHT',data)
         }
     }

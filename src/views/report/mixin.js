@@ -2,7 +2,6 @@ import {formatDate,formatTime} from '@/utils/formatTime'
 import {mapGetters} from "vuex"
 import Progress from '@/views/report/components/Progress'
 import {getAgpInfo,getEvent} from '@/api/dataApi'
-var progressTimer = null //请求进度条定时器
 export default{
     data(){
         return{
@@ -12,7 +11,7 @@ export default{
                     onClick(picker) {
                     const end = new Date();
                     const start = new Date();
-                    start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+                    start.setTime(start.getTime() - 3600 * 1000 * 24 * 6);
                     picker.$emit('pick', [start, end]);
                     }
                 },{
@@ -20,7 +19,7 @@ export default{
                     onClick(picker) {
                     const end = new Date();
                     const start = new Date();
-                    start.setTime(start.getTime() - 3600 * 1000 * 24 * 14);
+                    start.setTime(start.getTime() - 3600 * 1000 * 24 * 13);
                     picker.$emit('pick', [start, end]);
                     }
                 }, {
@@ -28,7 +27,7 @@ export default{
                     onClick(picker) {
                     const end = new Date();
                     const start = new Date();
-                    start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+                    start.setTime(start.getTime() - 3600 * 1000 * 24 * 29);
                     picker.$emit('pick', [start, end]);
                     }
                 }, {
@@ -36,7 +35,7 @@ export default{
                     onClick(picker) {
                     const end = new Date();
                     const start = new Date();
-                    start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+                    start.setTime(start.getTime() - 3600 * 1000 * 24 * 89);
                     picker.$emit('pick', [start, end]);
                     }
                 }]
@@ -51,7 +50,7 @@ export default{
             dialogType:"", // print 打印 download 下载
             empty:true,
             downProgress:0,
-            progressShow:false
+            progressShow:false,
         }
     },
     components: {
@@ -76,6 +75,7 @@ export default{
         },
         // 选择天数
         chooseDay(date1,date2){
+            this.progressShow = true
             let s_date = date1.setHours(0,0,0)/1000
             let e_date = date2.setHours(23,59,59)/1000
             let oneDay = 24 * 60 * 60 ; // 每天的毫秒数
@@ -102,25 +102,11 @@ export default{
         },
         // 从云拉取数据
         getData(){
-            let that = this
-            this.progressShow = true
-            this.downProgress = 0
-            progressTimer = setInterval(function(){
-               let downProgress = that.downProgress
-               downProgress += 1
-               if(downProgress>=90){
-                    downProgress = 90
-               }
-               that.downProgress = downProgress
-            },100)
             let s = new Date(this.agpDate[0])
             let e = new Date(this.agpDate[1])
             let start_ts = s.setHours(0,0,0)/1000
             let end_ts = e.setHours(23,59,59)/1000
             getAgpInfo({start_ts:start_ts,end_ts:end_ts}).then(response => {
-                    clearInterval(progressTimer)
-                    this.downProgress = 100
-                    setTimeout(function(){that.progressShow = false},30)
                     if(response.code == 1000){
                         if(response.data.devices.length>0){
                             response.data.devices.forEach(item=>{
@@ -150,17 +136,16 @@ export default{
                             this.$store.dispatch('setChooseDateList',this.agpDate.join('/'))
                         }else{
                             this.empty = true
+                            this.progressShow = false
                         }
-
                     }else{
+                        this.progressShow = false
                         this.$message({
                             type: 'error',
                             message: response.msg
                         });
                     }
             }).catch((res) => {
-                clearInterval(progressTimer)
-                that.downProgress = 100
                 this.progressShow = false
                 console.log(res)
             })
@@ -242,7 +227,7 @@ export default{
             let measuringInterval = 60
             objects = this.processArray(objects, measuringInterval);
             objects = this.filterArray(objects);
-
+            let that = this
             let startTs = objects[0].DataTs;
             while (startTs - measuringInterval >= s_ts) {
                 objects.unshift({

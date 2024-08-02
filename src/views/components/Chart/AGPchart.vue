@@ -267,7 +267,7 @@
         },
         computed:{
             ...mapGetters([
-            'unit','targetScope']),
+            'unit','targetScope','timeFormat']),
         },
         created(){
         },
@@ -290,20 +290,45 @@
                 let max =  Math.ceil(GlucoseUtils.mgdlToMmol(_.maxBy(value.agp95)) / 3) * 3<15?15:Math.ceil(GlucoseUtils.mgdlToMmol(_.maxBy(value.agp95)) / 3) * 3
                 this.option.series[4].markLine.data[0].yAxis = this.targetScope[0]
                 this.option.series[4].markLine.data[1].yAxis = this.targetScope[1]
+                if(this.timeFormat == 12){
+                    this.option.xAxis[0].axisLabel.formatter = function (value, index) {
+                        if (index  % 360 === 0) {
+                            let h = Math.floor(value/60) 
+                            let moment = h
+                            if(h>12){
+                                moment = h-12+'pm'
+                            }else if(h==12){
+                                 moment = h+'pm'
+                            }else{
+                                if(h==0){h=12}
+                                moment = h+'am'
+                            }
+                            return moment;
+                        }
+                        if(index+1===24*60){
+                            return '12pm'
+                        }
+                    }
+                }
                 if(unit != 'mg/dL'){
                     max = max
                     this.option.yAxis[0].max = max
-                    this.option.series[0].data = value.agp05.map(val => GlucoseUtils.mgdlToMmol(val));
+                    this.option.series[0].data = value.agp05.map((val) => {
+                        return val?GlucoseUtils.mgdlToMmol(val):val
+                    });
                     this.option.series[1].data = value.agp25.map((item, index) => {
-                            return GlucoseUtils.mgdlToMmol(item - value.agp05[index]);
-                            })
+                        return item?GlucoseUtils.mgdlToMmol(item - value.agp05[index]):item;
+                    })
                     this.option.series[2].data = value.agp75.map((item, index) => {
-                            return GlucoseUtils.mgdlToMmol(item - value.agp25[index]);
-                            })
+                        return item?GlucoseUtils.mgdlToMmol(item - value.agp25[index]):item;
+                    })
                     this.option.series[3].data = value.agp95.map((item, index) => {
-                            return GlucoseUtils.mgdlToMmol(item - value.agp75[index]);
-                            })
-                    this.option.series[4].data = value.agp50.map(val => GlucoseUtils.mgdlToMmol(val))
+                        return item?GlucoseUtils.mgdlToMmol(item - value.agp75[index]):item;
+                    })
+                    this.option.series[4].data = value.agp50.map((val) => {
+                        return val?GlucoseUtils.mgdlToMmol(val):val
+                        
+                    })
                    
                 }else{
                     this.option.yAxis[0].max = GlucoseUtils.mmolToMgdl(max)
@@ -328,7 +353,6 @@
         },
         watch:{
             dataList:function(n,o){
-                console.log(n)
                 let data = n
                 if(_.compact(data.agp05).length>1&&_.compact(data.agp25).length>1&&_.compact(data.agp50).length>1
                 &&_.compact(data.agp75).length>1&&_.compact(data.agp95).length>1){

@@ -97,7 +97,7 @@ export default {
                 avatar:null
             },
             defaultBirthday:new Date().setFullYear(new Date().getFullYear()-40),
-             pickerOptions:{
+            pickerOptions:{
                 disabledDate (time) {
                         return time.getTime() > new Date().setFullYear(new Date().getFullYear()-4)||time.getTime()<new Date('1900-01-01')
                 }
@@ -110,7 +110,7 @@ export default {
             }
         }
     },
-      computed:{
+    computed:{
         diagnosisShow(){
             return this.formData.diabetes_type&&this.formData.diabetes_type!=0
         }

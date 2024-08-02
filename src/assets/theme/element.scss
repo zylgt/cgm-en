@@ -453,42 +453,76 @@ table{
 }
 /* 个人信息页面按钮设置
 ------------------------------- */
-#old_userinfo .config-btn .el-button{
+.userinfobox .config-btn .el-button{
 	width: 147px;
 	height:45px;
 	border-radius:50px;
 }
-#old_userinfo .configs-btn .el-button{
+.userinfobox .configs-btn .el-button{
 	width: 306px;
 	height:45px;
 	border-radius:50px;
 }
-#old_userinfo .config-btn .el-button--info{
+.userinfobox .config-btn .el-button--info{
 	border: none;
 	background-color: #f0f0f0;
 	color:#333;
 }
-#old_userinfo .el-date-editor.el-input, .el-date-editor.el-input__inner{
+.userinfobox .el-date-editor.el-input, .el-date-editor.el-input__inner{
 	width:100%;
 }
-#old_userinfo .el-select{
+.userinfobox .el-select{
 	width:100%;
 }
-#old_userinfo .el-form-item__label{
+.set-bg .el-select{
+	width:100px;
+}
+.set-bg .el-input__inner{
 	color:#000;
 	font-size:16px;
 }
-#old_userinfo .el-input__inner{
+.userinfobox .edit-userinfo-box .el-select{
+	width:300px;
+}
+.userinfobox .edit-userinfo-box .el-input{
+	width:300px;
+}
+.userinfobox .edit-userinfo-box  .el-date-editor.el-input, .edit-userinfo-box  .el-date-editor.el-input__inner{
+	width:300px;
+}
+.userinfobox .edit-userinfo-box .multiple .el-select{
+	width:800px;
+}
+.userinfobox .edit-userinfo-box .multiple .el-input{
+	width:800px;
+}
+.userinfobox .el-form-item__label{
+	color:#000;
+	font-size:16px;
+}
+.userinfobox .edit-userinfo-box .el-form-item__label{
+	color:var(--color-black-60);
+	font-size:16px;
+}
+.userinfobox .edit-userinfo-box .el-form--inline .el-form-item{
+	margin-right:80px;
+	margin-bottom:30px;
+}
+.userinfobox .el-input__inner{
 	color:#000;
 }
-  #old_userinfo .picker-date-icon{
+  .userinfobox .picker-date-icon{
 	position: absolute;
 	right:8px;
 	top:13px;
 	color:#c0c4cc;
   }
-  #old_userinfo .el-input--prefix .el-input__inner{
+  .userinfobox .el-input--prefix .el-input__inner{
 	padding-left:15px;
+  }
+  .edit-select .el-select-dropdown__item.is-disabled{
+	border-bottom:1px solid #e5e5e5;
+	color:#000;
   }
 .el-date-table td.default span{
 	color:var(--color-primary);

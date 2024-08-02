@@ -15,7 +15,7 @@
                         <div class='tir-value'>
                             <div class='tir-key-key ' > <span :class='[item.index==2?"active":"","tir-print-key"]' >{{item.value}}%</span>({{item.duration[0]}}时{{item.duration[1]}}分)</div>
                             <div class='tir-key-range' v-if='item.index==2'>目标值＞{{item.target}}%</div>
-                            <div class='tir-key-range' v-else>目标值＞{{item.target}}%</div>
+                            <div class='tir-key-range' v-else>目标值＜{{item.target}}%</div>
                         </div>
                     </div>
                 </div>
@@ -106,11 +106,18 @@ export default {
         // 渲染
         renderData(data){
             let result = _.clone(data)
-            this.levels[0].value = _.round(Number(result.veryHighRate*100),1)
-            this.levels[1].value = _.round(Number(result.highRate*100),1)
-            this.levels[2].value = _.round(Number(result.normalRate*100),1)
-            this.levels[3].value = _.round(Number(result.lowRate*100),1)
-            this.levels[4].value = _.round(Number(result.veryLowRate*100),1)
+            // this.levels[0].value = _.round(Number(result.veryHighRate*100),1)
+            // this.levels[1].value = _.round(Number(result.highRate*100),1)
+            // this.levels[2].value = _.round(Number(result.normalRate*100),1)
+            // this.levels[3].value = _.round(Number(result.lowRate*100),1)
+            // this.levels[4].value = _.round(Number(result.veryLowRate*100),1)
+
+
+            this.levels[0].value = this.handelTir(result).veryHighRate
+            this.levels[1].value = this.handelTir(result).highRate
+            this.levels[2].value = this.handelTir(result).normalRate
+            this.levels[3].value = this.handelTir(result).lowRate
+            this.levels[4].value = this.handelTir(result).veryLowRate
 
             this.levels[0].duration =[Math.floor(result.veryHighDuration/60), result.veryHighDuration%60 ]
             this.levels[1].duration =[Math.floor(result.highDuration/60), result.highDuration%60]
@@ -124,20 +131,90 @@ export default {
             this.levels[1].descmg = this.targetScope[1]+1+'-250mg/dL'
             this.levels[3].desc = '3.0-'+_.round(this.targetScope[0]-0.1,1)+'mmol/L'
             this.levels[3].descmg = '54-'+(this.targetScope[0]-1)+'mg/dL'
-
-            this.highTarget = this.levels[0].value && this.levels[1].value ?_.round(this.levels[0].value+this.levels[1].value,1):0
-            this.lowTarget =  this.levels[3].value && this.levels[4].value ?_.round(this.levels[4].value+this.levels[4].value,1):0
+            this.highTarget = Number(this.levels[0].value) && Number(this.levels[1].value) ?_.round(Number(this.levels[0].value)+Number(this.levels[1].value),1):0
+            this.lowTarget =  Number(this.levels[3].value) && Number(this.levels[4].value) ?_.round(Number(this.levels[3].value)+Number(this.levels[4].value),1):0
             this.tirList = _.filter(this.levels,function(e){return e.value>0})
-            console.log(this.tirList)
-             console.log(formatTime(new Date()),'TIR计算完成')
+            console.log(formatTime(new Date()),'TIR计算完成')
             this.$nextTick(()=>{
                 this.drawTir()
                 this.handelHeight()
             }) 
         },
+        // 计算总值为100
+        handelTir(result){
+            let veryHighRate = (result.veryHighRate * 100).toFixed(1);
+            let highRate = (result.highRate * 100).toFixed(1);
+            let normalRate = (result.normalRate * 100).toFixed(1);
+            let lowRate = (result.lowRate * 100).toFixed(1);
+            let veryLowRate = (result.veryLowRate * 100).toFixed(1);
+
+            var rateObjs = [
+                {origV: result.veryHighRate * 100, resultV: veryHighRate},
+                {origV: result.highRate * 100, resultV: highRate},
+                {origV: result.normalRate * 100, resultV: normalRate},
+                {origV: result.lowRate * 100, resultV: lowRate},
+                {origV: result.veryLowRate * 100, resultV: veryLowRate},
+            ];
+
+            // 求和
+            let rateSumMax = 100;
+            let rateSum = rateObjs.reduce(function (total, rateObj) {
+                return total + parseFloat(rateObj.resultV);
+            }, 0);
+            if (rateSum !== rateSumMax) {
+                const changeValue = 0.1;
+                let changeCount = 0;
+                if (rateSum > rateSumMax) {
+                // >100，5入的需减
+                const changeRateCount =
+                    parseFloat((rateSum - rateSumMax).toFixed(1)) / changeValue;
+                rateObjs.forEach((rateObj, i) => {
+                    if (
+                    rateObj.resultV > changeValue &&
+                    rateObj.resultV > rateObj.origV &&
+                    changeCount < changeRateCount
+                    ) {
+                    rateObjs[i] = {
+                        origV: rateObj.origV,
+                        resultV: (parseFloat(rateObj.resultV) - changeValue).toFixed(1),
+                    };
+                    changeCount++;
+                    }
+                });
+                } else {
+                // <100，4舍的需加
+                const changeRateCount =
+                    parseFloat((rateSumMax - rateSum).toFixed(1)) / changeValue;
+                rateObjs.forEach((rateObj, i) => {
+                    if (
+                    rateObj.resultV < rateObj.origV &&
+                    changeCount < changeRateCount
+                    ) {
+                    rateObjs[i] = {
+                        origV: rateObj.origV,
+                        resultV: (parseFloat(rateObj.resultV) + changeValue).toFixed(1),
+                    };
+                    changeCount++;
+                    }
+                });
+                }
+                veryHighRate = rateObjs[0].resultV;
+                highRate = rateObjs[1].resultV;
+                normalRate = rateObjs[2].resultV;
+                lowRate = rateObjs[3].resultV;
+                veryLowRate = rateObjs[4].resultV;
+            }
+            return {
+                veryHighRate,
+                highRate,
+                normalRate,
+                lowRate,
+                veryLowRate
+            }
+        },
         // 计算高血糖，低血糖总比例的高度
         handelHeight(){
-              let legend = _.sortBy(this.$refs.legend,['dataset.index']) //图例的位置
+            let legend = _.sortBy(this.$refs.legend,['dataset.index']) //图例的位置
             if(this.highTarget!=0){
                 // 计算高度
                 this.highTargetHeight = legend[1].offsetTop - legend[0].offsetTop
@@ -217,7 +294,6 @@ export default {
     },
     watch:{
         dataList:function(n,o){
-            console.log(n)
             let data = n
             this.renderData(data)
         }

@@ -3,7 +3,7 @@
         <el-header class='header' height='84px' >
             <div class='header-title' >
                 <img src="~@/assets/image/logo.png" alt="" class='logo' >
-                iHealth CGM
+                iHealth CGM <span style='color:#666;font-size:14px' >（0.0.2）</span>
             </div>
             <Horizontal/>
             <div class='header-other '>
@@ -140,7 +140,7 @@ export default {
     .header-title{
         font-size:24px;
         color:var(--color-primary);
-        width:230px;
+        width:270px;
         font-weight: 440;
         display: flex;
         align-items: center;

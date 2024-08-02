@@ -240,7 +240,7 @@
         },
         computed:{
             ...mapGetters([
-                'unit','targetScope']),
+                'unit','targetScope','timeFormat']),
         },
         created(){
         },

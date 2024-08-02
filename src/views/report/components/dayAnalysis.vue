@@ -311,7 +311,7 @@ export default {
     },
     computed:{
         ...mapGetters([
-           'unit','targetScope']),
+           'unit','targetScope','timeFormat']),
     },
     mounted(){
         this.handelOption(this.dataList)
@@ -324,6 +324,7 @@ export default {
             let dayInfo = _.cloneDeep(data)
             if(dayInfo.handelValue.length>0){
                 let unit = this.unit
+                let timeFormat = this.timeFormat
                 let handelValue = _.compact(dayInfo.value)
                 let fluctate = _.max(dayInfo.value) -  _.min(dayInfo.value) //最大波动
                 let avg = GlucoseUtils.calculateMeanCvGmi(handelValue).mean //平均值
@@ -356,6 +357,9 @@ export default {
                         formatter(params){
                             let h =  Math.floor(Number(params[0].axisValue)/60)<10 ? '0'+ Math.floor(Number(params[0].axisValue)/60) : Math.floor(Number(params[0].axisValue)/60) 
                             let m =  Number(params[0].axisValue)%60 < 10 ? '0' + Number(params[0].axisValue)%60 : Number(params[0].axisValue)%60
+                            if(timeFormat == 12){
+                                h = h>=13?h-12:h
+                            }
                             let moment = h+':'+m
                             let html =  "<div class='tooltip-box' >"+
                             " <div class='tooltips-val'>"+
@@ -368,6 +372,26 @@ export default {
                             return params[0].value?html:''
                         },
                         extraCssText: 'box-shadow: 0 2px 10px rgba(195,245,247,1);'
+                }
+                if(this.timeFormat == 12){
+                    this.option.xAxis[0].axisLabel.formatter = function (value, index) {
+                        if (index  % 360 === 0) {
+                            let h = Math.floor(value/60) 
+                            let moment = h
+                            if(h>12){
+                                moment = h-12+'pm'
+                            }else if(h==12){
+                                 moment = h+'pm'
+                            }else{
+                                if(h==0){h=12}
+                                moment = h+'am'
+                            }
+                            return moment;
+                        }
+                        if(index+1===24*60){
+                            return '12pm'
+                        }
+                    }
                 }
                 this.option.series[0].markPoint.data = []
                 this.option.series[0].markLine.data = this.option.series[0].markLine.data.splice(0,2)

@@ -35,16 +35,18 @@
                 </el-date-picker>
         </div>
         <!-- 图表 -->
-        <Progress :percentage='downProgress' v-if='progressShow' />
-        <div v-else>
-            <Empty v-show='empty' style='height:600px;' />
-            <div class='week-bg-main'  v-show="!empty" v-for='(item,index) in list' :key='index'>
-                <div  class='week-bg-title' >
-                    <div class='week-bg-date' >{{item.day[0]}} - {{item.day[item.day.length-1]}}</div>
-                    <img src="~@/assets/image/reason-icon.png" alt="" class='reason-icon'>
+        <div class='main-box'>
+            <Progress :percentage='downProgress' v-if='progressShow' />
+            <div class='agp-main-box' :style='{"opacity":progressShow?0:1}'  >
+                <Empty v-show='empty' style='height:600px;' />
+                <div class='week-bg-main'  v-show="!empty" v-for='(item,index) in list' :key='index'>
+                    <div  class='week-bg-title' >
+                        <div class='week-bg-date' >{{item.day[0]}} - {{item.day[item.day.length-1]}}</div>
+                        <img src="~@/assets/image/reason-icon.png" alt="" class='reason-icon'>
+                    </div>
+                    <Empty v-show='!item.info' style="height:500px;"/>
+                    <WeekAnalysis :dataList='item' v-show='item.info' />
                 </div>
-                <Empty v-show='!item.info' style="height:500px;"/>
-                <WeekAnalysis :dataList='item' v-show='item.info' />
             </div>
         </div>
          <!-- 下载打印弹窗 -->
@@ -137,8 +139,8 @@ export default {
                     info:GlucoseUtils.calculateMeanCvGmi(handelValue)
                 })
             })
-            console.log(weekList)
             this.list  = weekList
+            this.progressShow = false
         },
         // 合并7天血糖
         addWeek(data){
@@ -161,7 +163,6 @@ export default {
                     info:GlucoseUtils.calculateMeanCvGmi(handelValue)
                 })
             })
-            console.log(newArr,'newarr')
             // this.list = newArr
         }
     }

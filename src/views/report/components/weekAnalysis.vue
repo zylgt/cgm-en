@@ -227,7 +227,7 @@ export default {
     },
     computed:{
         ...mapGetters([
-           'unit','targetScope']),
+           'unit','targetScope','timeFormat']),
     },
     mounted(){
         this.handelOption(this.dataList)
@@ -270,6 +270,26 @@ export default {
                     item = item.map(val => GlucoseUtils.mgdlToMmol(val));
                 }
                 if(index==0){
+                     if(this.timeFormat == 12){
+                        this.option.xAxis[0].axisLabel.formatter = function (value, index) {
+                            if (index  % 360 === 0) {
+                                let h = Math.floor(value/60) 
+                                let moment = h
+                                if(h>12){
+                                    moment = h-12+'pm'
+                                }else if(h==12){
+                                    moment = h+'pm'
+                                }else{
+                                    if(h==0){h=12}
+                                    moment = h+'am'
+                                }
+                                return moment;
+                            }
+                            if(index+1===24*60){
+                                return '12pm'
+                            }
+                        }
+                    }
                     this.option.xAxis[0].data = xData
                     this.option.yAxis[0].max = unit == 'mg/dL'?GlucoseUtils.mmolToMgdl(Math.ceil(max / 3) * 3):Math.ceil(max / 3) * 3
                     this.option.series[0].data = item
@@ -339,6 +359,9 @@ export default {
                 let xIndex = pointInGrid[0];
                 let h =  Math.floor(Number(xIndex)/60)<10 ? '0'+ Math.floor(Number(xIndex)/60) : Math.floor(Number(xIndex)/60) 
                 let m =  Number(xIndex)%60 < 10 ? '0' + Number(xIndex)%60 : Number(xIndex)%60
+                if(this.timeFormat == 12){
+                    h = h>=13?h-12:h
+                }
                 let moment = h+':'+m
                 this.tooltipShow = true
                 this.tooltipMoment = moment

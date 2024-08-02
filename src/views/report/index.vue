@@ -1,7 +1,7 @@
 <template>
-    <div>
+    
         <router-view></router-view>
-    </div>
+    
 </template>
 <style >
     /* title和日期选择 */
@@ -58,6 +58,9 @@
         color:var(--color-black-100);
         display:inline-block;
         margin:0 10px;
+    }
+    .main-box{
+        position: relative;
     }
     .select-icon{
         width:20px;

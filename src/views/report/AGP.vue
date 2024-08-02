@@ -1,5 +1,5 @@
 <template>
-    <div class='agp'>
+    <div class='agp' ref='agp'>
         <div class='agp-main' >
             <div class='agp-top' >
                 <div class='agp-top-fl' >
@@ -21,6 +21,7 @@
                     <div class='agp-date' >{{agpDate[0]}} — {{agpDate[1]}}（{{dayDate}}天）</div>
                      <img src="~@/assets/image/select-icon.png" alt="" class='select-icon' >
                     <el-date-picker
+                        ref='datePicker'
                         class='agp-picker'
                         v-model="agpDate"
                         type="daterange"
@@ -35,147 +36,148 @@
                         :picker-options="pickerOptions">
                     </el-date-picker>
             </div>
-            <Progress :percentage='downProgress' v-if='progressShow' />
-            <div v-else>
+            <div class='main-box'>
+                <Progress v-if='progressShow' />
                 <!-- 基本信息 -->
-                <div class='agp-cont-main'>
-                    <div class='cgm-cont-title'><span class='title-border' ></span>基本信息</div>
-                    <div class='report-base-user' >
-                        <div class='report-base-user-item' >
-                            <div class='report-base-user-label'>姓名：</div>
-                            <div class='report-base-user-value'>{{info.nickname?info.nickname:'--'}}</div>
-                        </div>  
-                        <div class='report-base-user-item' >
-                            <div class='report-base-user-label'>年龄：</div>
-                            <div class='report-base-user-value'>{{info.age?info.age:'--'}}</div>
-                        </div>  
-                        <div class='report-base-user-item' >
-                            <div class='report-base-user-label'>糖尿病类型：</div>
-                            <div class='report-base-user-value'>{{info.diabetes_type?info.diabetes_type:'--'}}</div>
-                        </div>  
-                        <div class='report-base-user-item' >
-                            <div class='report-base-user-label'>病程：</div>
-                            <div class='report-base-user-value'>{{info.diabetes_year?info.diabetes_year:'--'}}</div>
-                        </div>  
-                        <div class='report-base-user-item' >
-                            <div class='report-base-user-label'>葡萄糖目标范围：</div>
-                            <div class='report-base-user-value'>{{info.glucose_range_lower_limit}}-{{info.glucose_range_lupper_limit}}{{unit}}</div>
-                        </div>  
-                    </div>
-                    <div class='report-data-source'>
-                        <div class='report-base-user-item' >
-                            <div class='report-base-user-label'>传感器序列号</div>
-                        </div>  
-                        <div class='report-base-user-item1' >
-                            <div class='report-base-user-label'>数据来源</div>
-                        </div>  
-                        <div class='report-base-user-item2' >
-                            <div class='report-base-user-label'>同步时间</div>
-                        </div>  
-                    </div>
-                    <div class='report-data-sources' v-if='info.device.length<=0'>
-                        <div class='report-base-user-item' >
-                            <div class='report-base-user-value'>--</div>
-                        </div>  
-                        <div class='report-base-user-item1' >
-                            <div class='report-base-user-value'>--</div>
-                        </div>  
-                        <div class='report-base-user-item2' >
-                            <div class='report-base-user-value'>--</div>
-                        </div>  
-                    </div>
-                    <div v-else >
-                        <div class='report-data-sources' v-for='(item,index) in info.device' :key='index'>
+                <div class='agp-main-box' :style='{"opacity":progressShow?0:1}' >
+                    <div class='agp-cont-main'>
+                        <div class='cgm-cont-title'><span class='title-border' ></span>基本信息</div>
+                        <div class='report-base-user' >
                             <div class='report-base-user-item' >
-                                <div class='report-base-user-value'>{{item.nickname?item.nickname:'--'}}</div>
+                                <div class='report-base-user-label'>姓名：</div>
+                                <div class='report-base-user-value'>{{info.nickname?info.nickname:'--'}}</div>
+                            </div>  
+                            <div class='report-base-user-item' >
+                                <div class='report-base-user-label'>年龄：</div>
+                                <div class='report-base-user-value'>{{info.age?info.age:'--'}}</div>
+                            </div>  
+                            <div class='report-base-user-item' >
+                                <div class='report-base-user-label'>糖尿病类型：</div>
+                                <div class='report-base-user-value'>{{info.diabetes_type?info.diabetes_type:'--'}}</div>
+                            </div>  
+                            <div class='report-base-user-item' >
+                                <div class='report-base-user-label'>病程：</div>
+                                <div class='report-base-user-value'>{{info.diabetes_year?info.diabetes_year:'--'}}</div>
+                            </div>  
+                            <div class='report-base-user-item' >
+                                <div class='report-base-user-label'>葡萄糖目标范围：</div>
+                                <div class='report-base-user-value'>{{info.glucose_range_lower_limit}}-{{info.glucose_range_lupper_limit}}{{unit}}</div>
+                            </div>  
+                        </div>
+                        <div class='report-data-source'>
+                            <div class='report-base-user-item' >
+                                <div class='report-base-user-label'>传感器序列号</div>
                             </div>  
                             <div class='report-base-user-item1' >
-                                <div class='report-base-user-value'>{{item.data_source?item.data_source:'--'}}</div>
+                                <div class='report-base-user-label'>数据来源</div>
                             </div>  
                             <div class='report-base-user-item2' >
-                                <div class='report-base-user-value'>{{item.upDate?item.upDate:'--'}}</div>
+                                <div class='report-base-user-label'>同步时间</div>
                             </div>  
                         </div>
+                        <div class='report-data-sources' v-if='info.device.length<=0'>
+                            <div class='report-base-user-item' >
+                                <div class='report-base-user-value'>--</div>
+                            </div>  
+                            <div class='report-base-user-item1' >
+                                <div class='report-base-user-value'>--</div>
+                            </div>  
+                            <div class='report-base-user-item2' >
+                                <div class='report-base-user-value'>--</div>
+                            </div>  
+                        </div>
+                        <div v-else >
+                            <div class='report-data-sources' v-for='(item,index) in info.device' :key='index'>
+                                <div class='report-base-user-item' >
+                                    <div class='report-base-user-value'>{{item.nickname?item.nickname:'--'}}</div>
+                                </div>  
+                                <div class='report-base-user-item1' >
+                                    <div class='report-base-user-value'>{{item.data_source?item.data_source:'--'}}</div>
+                                </div>  
+                                <div class='report-base-user-item2' >
+                                    <div class='report-base-user-value'>{{item.upDate?item.upDate:'--'}}</div>
+                                </div>  
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <Empty v-if='empty'/>
-                <div class='agp-cont' id='overviewpage' v-else>
-                    <el-row type="flex" justify="space-between">
-                        <el-col :span="12" class='agp-cont-main agp-cont-main1' >
-                            <div class='cgm-cont-title'>  <span class='title-border' ></span>血糖数据</div>
-                            <!-- <div class='cgm-agp-info-box cgm-agp-info-box1'>
-                                <div class='cgm-agp-info'></div>
-                                <img src="~@/assets/image/reason-icon.png" alt="" class='reason-icon' >
-                            </div> -->
-                            <div class='bg-data-item' >
-                                <div class='bg-data-label' >
-                                    <div>CGM佩戴天数</div>
-                                    <div class='bg-data-tip' ></div>
+                    <Empty v-if='empty'/>
+                    <div class='agp-cont' id='overviewpage' v-else>
+                        <el-row type="flex" justify="space-between">
+                            <el-col :span="12" class='agp-cont-main agp-cont-main1' >
+                                <div class='cgm-cont-title'>  <span class='title-border' ></span>血糖数据</div>
+                                <!-- <div class='cgm-agp-info-box cgm-agp-info-box1'>
+                                    <div class='cgm-agp-info'></div>
+                                    <img src="~@/assets/image/reason-icon.png" alt="" class='reason-icon' >
+                                </div> -->
+                                <div class='bg-data-item' >
+                                    <div class='bg-data-label' >
+                                        <div>CGM佩戴天数</div>
+                                        <div class='bg-data-tip' ></div>
+                                    </div>
+                                    <div class='bg-data-val' >{{bgInfo.wearsDay}}</div>
                                 </div>
-                                <div class='bg-data-val' >{{bgInfo.wearsDay}}</div>
-                            </div>
-                            <div class='bg-data-item' >
-                                <div class='bg-data-label' >
-                                    <div>CGM有效记录的时间占比：</div>
-                                    <div class='bg-data-tip' >目标值>70%才可得到有效数据分析</div>
+                                <div class='bg-data-item' >
+                                    <div class='bg-data-label' >
+                                        <div>CGM有效记录的时间占比：</div>
+                                        <div class='bg-data-tip' >目标值>70%才可得到有效数据分析</div>
+                                    </div>
+                                    <div :class='[bgInfo.effective>70?"":"active","bg-data-val"]' >{{bgInfo.effective}}%</div>
                                 </div>
-                                <div :class='[bgInfo.effective>70?"":"active","bg-data-val"]' >{{bgInfo.effective}}%</div>
-                            </div>
-                            <div class='bg-data-item' v-if='unit=="mg/dL"'>
-                                <div class='bg-data-label' >
-                                    <div>MG平均葡萄糖值：</div>
-                                    <div class='bg-data-tip' >目标值＜118 mg/dL</div>
+                                <div class='bg-data-item' v-if='unit=="mg/dL"'>
+                                    <div class='bg-data-label' >
+                                        <div>MG平均葡萄糖值：</div>
+                                        <div class='bg-data-tip' >目标值＜118 mg/dL</div>
+                                    </div>
+                                    <div class='bg-data-val' >{{bgInfo.mean}}mg/dL</div>
                                 </div>
-                                <div class='bg-data-val' >{{bgInfo.mean}}mg/dL</div>
-                            </div>
-                            <div class='bg-data-item' v-else>
-                                <div class='bg-data-label' >
-                                    <div>MG平均葡萄糖值：</div>
-                                    <div class='bg-data-tip' >目标值＜6.6mmol/L</div>
+                                <div class='bg-data-item' v-else>
+                                    <div class='bg-data-label' >
+                                        <div>MG平均葡萄糖值：</div>
+                                        <div class='bg-data-tip' >目标值＜6.6mmol/L</div>
+                                    </div>
+                                    <div class='bg-data-val' >{{bgInfo.mean}}mmol/L</div>
                                 </div>
-                                <div class='bg-data-val' >{{bgInfo.mean}}mmol/L</div>
-                            </div>
-                            <div class='bg-data-item' >
-                                <div class='bg-data-label' >
-                                    <div>GMI葡萄糖管理指标：</div>
-                                    <div class='bg-data-tip' >目标值＜7%</div>
+                                <div class='bg-data-item' >
+                                    <div class='bg-data-label' >
+                                        <div>GMI葡萄糖管理指标：</div>
+                                        <div class='bg-data-tip' >目标值＜7%</div>
+                                    </div>
+                                    <div class='bg-data-val'  >{{resultDay>=10?bgInfo.GMI+'%':'无足够数据'}}</div>
                                 </div>
-                                <div class='bg-data-val'  >{{bgInfo.allData.length>=14400?bgInfo.GMI+'%':'无足够数据'}}</div>
-                            </div>
-                            <div class='bg-data-item' >
-                                <div class='bg-data-label' >
-                                    <div>CV变异系数：</div>
-                                    <div class='bg-data-tip' >目标值＜33%</div>
+                                <div class='bg-data-item' >
+                                    <div class='bg-data-label' >
+                                        <div>CV变异系数：</div>
+                                        <div class='bg-data-tip' >目标值＜33%</div>
+                                    </div>
+                                    <div class='bg-data-val' >{{bgInfo.CV}}%</div>
                                 </div>
-                                <div class='bg-data-val' >{{bgInfo.CV}}%</div>
-                            </div>
-                        </el-col>
-                        <el-col :span="12" class='agp-cont-main agp-cont-main1'>
-                            <div class='cgm-cont-title'>  <span class='title-border' ></span>葡萄糖目标范围内时间</div>
+                            </el-col>
+                            <el-col :span="12" class='agp-cont-main agp-cont-main1'>
+                                <div class='cgm-cont-title'>  <span class='title-border' ></span>葡萄糖目标范围内时间</div>
+                                <div class='cgm-agp-info-box'>
+                                    <div class='cgm-agp-info'>葡萄糖目标范围内占比越高，代表血糖控制的越好。</div>
+                                    <img src="~@/assets/image/reason-icon.png" alt="" class='reason-icon'  v-popover:tirPopover @click='openPopover("tir")' >
+                                </div>
+                                <TIR :dataList='tir'/>
+                            </el-col>
+                        </el-row>
+                        <div class='agp-cont-main' >
+                            <div class='cgm-cont-title'><span class='title-border' ></span>AGP图谱</div>
                             <div class='cgm-agp-info-box'>
-                                <div class='cgm-agp-info'>葡萄糖目标范围内占比越高，代表血糖控制的越好。</div>
-                                <img src="~@/assets/image/reason-icon.png" alt="" class='reason-icon'  v-popover:tirPopover @click='openPopover("tir")' >
+                                <div class='cgm-agp-info'>中位数葡萄糖曲位于目标范围内，且越平坦，表示血糖稳定性越好。25%-75%区间（图中深蓝色区域）与5%-95%区间（图中浅蓝色区域）均显示日间血糖波动情况，区间越宽提示相应时间段血糖波动越大。其中影响 25%-75%区间的因素主要是是生理状态(如胰岛素抵抗等)和药物治疗等。影响5%-95%区间的因素主要是饮食，运动等。</div>
+                                <img src="~@/assets/image/reason-icon.png" alt="" class='reason-icon'  v-popover:agpPopover @click='openPopover("agp")'>
                             </div>
-                            <TIR :dataList='tir'/>
-                            <!-- <TIPCOPY/> -->
-                        </el-col>
-                    </el-row>
-                    <div class='agp-cont-main' >
-                        <div class='cgm-cont-title'><span class='title-border' ></span>AGP图谱</div>
-                        <div class='cgm-agp-info-box'>
-                            <div class='cgm-agp-info'>中位数葡萄糖曲位于目标范围内，且越平坦，表示血糖稳定性越好。25%-75%区间（图中深蓝色区域）与5%-95%区间（图中浅蓝色区域）均显示日间血糖波动情况，区间越宽提示相应时间段血糖波动越大。其中影响 25%-75%区间的因素主要是是生理状态(如胰岛素抵抗等)和药物治疗等。影响5%-95%区间的因素主要是饮食，运动等。</div>
-                            <img src="~@/assets/image/reason-icon.png" alt="" class='reason-icon'  v-popover:agpPopover @click='openPopover("agp")'>
+                            <AGP  :dataList='agpList' :height='370'/>
                         </div>
-                        <AGP  :dataList='agpList' :height='370'/>
+                        <div class='agp-cont-main' >
+                                <div class='cgm-cont-title'><span class='title-border' ></span>每日血糖曲线</div>
+                                <div class='cgm-agp-info-box'>
+                                    <div class='cgm-agp-info'>每日血糖展示了14天中每天的血糖变化情况。</div>
+                                    <img src="~@/assets/image/reason-icon.png" alt="" class='reason-icon' v-popover:dayPopover @click='openPopover("day")'>
+                                </div>
+                                <DayChart :dataList='agpdayList' @readerIng='dayReader'/>
+                        </div>
                     </div>
-                <div class='agp-cont-main' >
-                        <div class='cgm-cont-title'><span class='title-border' ></span>每日血糖曲线</div>
-                        <div class='cgm-agp-info-box'>
-                            <div class='cgm-agp-info'>每日血糖展示了14天中每天的血糖变化情况。</div>
-                            <img src="~@/assets/image/reason-icon.png" alt="" class='reason-icon' v-popover:dayPopover @click='openPopover("day")'>
-                        </div>
-                        <DayChart :dataList='agpdayList'/>
-                </div>
                 </div>
             </div>
 
@@ -310,6 +312,7 @@ export default {
             tir:{},//tir
             agpList:{},//agp
             bgInfo:{},//血糖数据
+            resultDay:'',//实际血糖数据天数
         }
     },
     mixins: [mixin],
@@ -320,7 +323,7 @@ export default {
 
     },
     mounted(){
-
+       
     },
     methods:{
         // 打开解释弹窗
@@ -421,12 +424,13 @@ export default {
                     day: formatDate(item[0].DataTs*1000,'mm.dd'),
                     week: formatDate(item[0].DataTs*1000,'WW'),
                     value:value,
+                    resultValue:handelValue,
                     max:max,
                     tir:TIRUtils.getTIRResult(_.compact(value),tirTarget[1],tirTarget[0])?(Number(TIRUtils.getTIRResult(_.compact(value),tirTarget[1],tirTarget[0]).normalRate)*100).toFixed(1):''
                 })
             })
-
             this.agpdayList =  dayList
+            this.resultDay = _.filter(dayList,function(o){return o.resultValue.length>0}).length
         },
         // 血糖数据
         handelBg(data){
@@ -441,11 +445,14 @@ export default {
             let filteredArray = BdatArray.filter(item => item.Value >= 40 && item.Value <= 400);
             bgInfo.effective = _.round((filteredArray.length/originList.length)*100,1)
             bgInfo.wearsDay = Math.ceil(Number(_.compact(BdatArray).length)/1440)
-            console.log(filteredArray.length,_.compact(BdatArray).length)
             bgInfo.allData = filteredArray
             this.bgInfo = bgInfo
+        },
+        // 每日血糖渲染完成
+        dayReader(val){
+            this.progressShow = val
         }
-    }
+    },
 }
 </script>
 <style scoped>
@@ -465,6 +472,7 @@ export default {
     .agp-cont-main1:nth-child(1){
          margin-right:20px;
     }
+    
     /* 基本信息 */
     .report-main-base-info{
         width:100%;

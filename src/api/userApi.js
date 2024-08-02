@@ -88,3 +88,17 @@ export function getInfo(data) {
         data: data
     })
 }
+// 上传头像
+export function upAvatar(data) {
+    return request({
+        url: '/user/uploadlogo',
+        method: 'POST',
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        },
+        data: data,
+        transformRequest:[function(){
+            return data;
+        }]
+    })
+}

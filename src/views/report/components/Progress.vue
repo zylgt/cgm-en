@@ -15,15 +15,43 @@
 </template>
 <script>
 export default {
-    props:{
-        percentage:{
-            type:Number
+    data(){
+        return{
+            percentage:0,
+            progressTimer:null
         }
     },
-
+    mounted(){
+        this.interProgress()
+    },
+    methods:{
+        interProgress(){
+            let that = this
+            this.progressTimer = setInterval(function(){
+               let percentage = that.percentage
+               percentage += 1
+               if(percentage>=90){
+                    percentage = 90
+               }
+               that.percentage = percentage
+            },100)
+        }
+    },
+    beforeDestroy(){
+        this.percentage=100
+    },
+    destroyed(){
+        clearInterval(this.progressTimer)
+    }
 }
 </script>
 <style  scoped>
+    .progress{
+        position: absolute;
+        left:0;
+        top:0;
+        width: 100%;
+    }
     .opacity-mask{
         width:100%;
         height:100%;

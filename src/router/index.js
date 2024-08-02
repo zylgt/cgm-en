@@ -75,7 +75,7 @@ const routes = [
     },{
       path:'/setting',
       name:'setting',
-      component:(resolve) => require(["@/views/setting/old_userInfo"], resolve),
+      component:(resolve) => require(["@/views/setting/setting"], resolve),
       meta:{title:'setting',icon:iconSetting,icons:iconSettingCheck,isShow:true}
     },{
       path:'/help',
@@ -98,8 +98,8 @@ const routes = [
 ]
 
 const router = new VueRouter({
-  mode: "", // 去掉url中的#
-  base:'',
+  mode: "hash", // 去掉url中的#
+  base:'/',
   routes
 })
 router.beforeEach((to, from, next) =>{
