@@ -21,6 +21,7 @@ export default {
         AGP:'AGP报告',
         dayReport:'每日分析',
         weekReport:'多日血糖分析',
-        overview:'报告概览'
+        overview:'报告概览',
+        account:'账号安全'
     }
 }

@@ -389,7 +389,7 @@ export default {
                             return moment;
                         }
                         if(index+1===24*60){
-                            return '12pm'
+                            return '12am'
                         }
                     }
                 }

@@ -12,7 +12,7 @@ module.exports = {
   devServer: {
     proxy: {
       [process.env.VUE_APP_API_ROOT]: {
-        target: 'https://cgm-api-test.ihealthlabs.com',
+        target: 'https://cgm-api.jiuan.com',
         changeOrigin: true
       }
     }

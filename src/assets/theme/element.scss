@@ -527,6 +527,9 @@ table{
 .el-date-table td.default span{
 	color:var(--color-primary);
 }
+.el-input__inner{
+	height: 40px !important;
+  }
 /* 导航样式设置
 ------------------------------- */
 
@@ -573,6 +576,7 @@ table{
 	position: absolute;
 	right:20px;
 	top:20px;
+	cursor: pointer;
 }
 /*日期选择快速选项*/
 .el-picker-panel *[slot=sidebar] + .el-picker-panel__body, .el-picker-panel__sidebar + .el-picker-panel__body{

@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app"  :style="{'height':resultHeight+'px'}">
     <router-view />
   </div>
 </template>
@@ -9,7 +9,8 @@ export default {
   name: 'App',
   data(){
     return{
-      height:1080
+      height:1080,
+      resultHeight:1080
     }
   },
   created(){
@@ -21,12 +22,16 @@ export default {
     let zoom = borwerWidth/baseWidth
     document.body.style.transform="scale("+zoom+")"
     this.$store.dispatch('setHeight',borwerHeight/zoom - 90)
+    this.resultHeight  = borwerHeight/zoom
+    document.body.style.height = borwerHeight/zoom+'px'
     window.onresize = ()=>{
       borwerWidth = window.innerWidth
       zoom = borwerWidth/baseWidth
       borwerHeight = window.innerHeight
       document.body.style.transform = "scale("+zoom+")"
       this.$store.dispatch('setHeight',borwerHeight/zoom - 90)
+      document.body.style.height = borwerHeight/zoom+'px'
+      this.resultHeight  = borwerHeight/zoom
     }
   },
   methods: {
@@ -48,9 +53,15 @@ export default {
 </script>
 
 <style>
+html{
+  overflow-x: hidden;
+}
+body{
+  display: flex;
+}
 html,body{
   width:1920px !important;
-  /* height:100%; */
+  height:100%;
   padding:0;
   margin:0;
   transform-origin: 0 0;
@@ -58,7 +69,8 @@ html,body{
 #app {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  width:100%;
+  /* width:100%; */
   /* height:100%; */
+  width: 1920px;
 }
 </style>

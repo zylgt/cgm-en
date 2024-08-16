@@ -1,7 +1,7 @@
 <template>
     <div class='setting' >
         <div class='setting-main' >
-             <div class='agp-top' >
+            <div class='agp-top' >
                 <div class='agp-top-fl' >
                     <div class='report-title'> {{$t('message.route.'+$route.meta.title)}}</div>
                     <div class='report-sub-title' >最近更新时间：2024年3月14日</div>

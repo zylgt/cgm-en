@@ -16,11 +16,14 @@
             </div>
         </div>
         <div class='report-agp-date' >
-                <img src="~@/assets/image/date-calendar.png" alt="" class='agp-icon' >
-                <div class='agp-date' >{{agpDate[0]}} — {{agpDate[1]}}（{{dayDate}}天）</div>
+                <div class='report-agp-date-box'  @click='pickerFocus'>
+                    <img src="~@/assets/image/date-calendar.png" alt="" class='agp-icon' >
+                    <div class='agp-date' >{{agpDate[0]}} — {{agpDate[1]}}（{{dayDate}}天）</div>
                     <img src="~@/assets/image/select-icon.png" alt="" class='select-icon' >
+                </div>
                 <el-date-picker
                     class='agp-picker'
+                    ref='datePicker'
                     v-model="agpDate"
                     type="daterange"
                     align="right"
@@ -31,6 +34,7 @@
                     value-format="yyyy-MM-dd"
                     format="yyyy-MM-dd"
                     @change="changeDate"
+                    :append-to-body='false'
                     :picker-options="pickerOptions">
                 </el-date-picker>
         </div>
@@ -378,16 +382,17 @@ export default {
             let tirTarget =  this.unit=='mmol/L'?[_.round(GlucoseUtils.mmolToMgdl(this.targetScope[0]),1),_.round(GlucoseUtils.mmolToMgdl(this.targetScope[1]),1)]:this.targetScope
             let datArray = _.cloneDeep(data)
             let singleDay  = _.chunk(datArray,60*24) ;
-            let max = _.maxBy(datArray,'Value').Value>400?400:_.maxBy(datArray,'Value').Value
+            let max = _.maxBy(datArray,'Value').Value>540?540:_.maxBy(datArray,'Value').Value
             let dayList = new Array()
             singleDay.forEach(item=>{
                 let value = _.map(item, 'Value');
+                let originValue = _.map(item, 'value');
                 let handelValue = _.compact(value)
                 dayList.push({
                     date: formatDate(item[0].DataTs*1000,'YYYY-mm-dd'),
                     day: formatDate(item[0].DataTs*1000,'mm.dd'),
                     week: formatDate(item[0].DataTs*1000,'WW'),
-                    value:value,
+                    value:originValue,
                     handelValue:handelValue,
                     max:max,
                     tir:TIRUtils.getTIRResult(handelValue,tirTarget[1],tirTarget[0])?(Number(TIRUtils.getTIRResult(handelValue,tirTarget[1],tirTarget[0]).normalRate)*100).toFixed(1):''

@@ -16,11 +16,14 @@
             </div>
         </div>
         <div class='report-agp-date' >
-                <img src="~@/assets/image/date-calendar.png" alt="" class='agp-icon' >
-                <div class='agp-date' >{{agpDate[0]}} — {{agpDate[1]}}（{{dayDate}}天）</div>
+                 <div class='report-agp-date-box'  @click='pickerFocus'>
+                    <img src="~@/assets/image/date-calendar.png" alt="" class='agp-icon' >
+                    <div class='agp-date' >{{agpDate[0]}} — {{agpDate[1]}}（{{dayDate}}天）</div>
                     <img src="~@/assets/image/select-icon.png" alt="" class='select-icon' >
+                </div>
                 <el-date-picker
                     class='agp-picker'
+                    ref='datePicker'
                     v-model="agpDate"
                     type="daterange"
                     align="right"
@@ -31,6 +34,7 @@
                     value-format="yyyy-MM-dd"
                     format="yyyy-MM-dd"
                     @change="changeDate"
+                    :append-to-body='false'
                     :picker-options="pickerOptions">
                 </el-date-picker>
         </div>
@@ -116,7 +120,7 @@ export default {
             let datArray = _.reverse(_.cloneDeep(data))
             let splitNum = this.dayDate<7?this.dayDate*24*60:7*24*60
             let weekData =  _.chunk(datArray,splitNum) ;
-            let max = _.maxBy(datArray,'Value').Value>400?400:_.maxBy(datArray,'Value').Value
+            let max = _.maxBy(datArray,'Value').Value>540?540:_.maxBy(datArray,'Value').Value
             let tirTarget =  this.unit=='mmol/L'?[_.round(GlucoseUtils.mmolToMgdl(this.targetScope[0]),1),_.round(GlucoseUtils.mmolToMgdl(this.targetScope[1]),1)]:this.targetScope
             let weekList = new Array()
             function handelDay(n){
@@ -125,15 +129,14 @@ export default {
             
             weekData.forEach(item=>{
                 let value = _.map(item, 'Value');
+                let originValue = _.map(item, 'value');
                 let values = _.flatten(value)
                 let handelValue = _.compact(values)
                 let DataTs= _.map(item, handelDay);
-                // console.log(handelValue)
-                // console.log(GlucoseUtils.calculateMeanCvGmi(handelValue))
                 weekList.push({
                     day: _.uniq(DataTs),
                     week: formatDate(item[0].DataTs*1000,'WW'),
-                    value: _.chunk(value,60*24),
+                    value: _.chunk(originValue,60*24),
                     max:max,
                     tir:TIRUtils.getTIRResult(handelValue,tirTarget[1],tirTarget[0])?(Number(TIRUtils.getTIRResult(handelValue,tirTarget[1],tirTarget[0]).normalRate)*100).toFixed(1):'',
                     info:GlucoseUtils.calculateMeanCvGmi(handelValue)
@@ -154,7 +157,7 @@ export default {
                 let value = _.map(item,'value')
                 let values = _.flatten(value)
                 let handelValue = _.compact(values)
-                let max = _.max(handelValue)>400?400:_.max(handelValue)
+                let max = _.max(handelValue)>540?540:_.max(handelValue)
                 newArr.push({
                     day:_.map(item,handelDay),
                     value:value,

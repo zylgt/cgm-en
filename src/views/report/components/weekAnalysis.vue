@@ -144,7 +144,7 @@ export default {
                             scale:false
                         },
                         lineStyle: {
-                        width: 3,
+                        width: 2,
                         opacity:1
                         },
                         animation:false,
@@ -286,7 +286,7 @@ export default {
                                 return moment;
                             }
                             if(index+1===24*60){
-                                return '12pm'
+                                return '12am'
                             }
                         }
                     }
@@ -318,7 +318,7 @@ export default {
                         symbolSize:1,
                         symbol:'circle',
                         lineStyle: {
-                            width: 3,
+                            width: 2,
                             opacity:1
                         },
                         animation:false,

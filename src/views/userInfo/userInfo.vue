@@ -47,32 +47,33 @@
                                 :picker-options="pickerOptions"
                                 :default-value='defaultBirthday'
                                 prefix-icon =' '
+                                :append-to-body='false'
                                 value-format="yyyy-MM-dd"	>
                                 </el-date-picker>
                                  <i class="el-icon-arrow-down picker-date-icon "></i>
                             </el-form-item>
                             <el-form-item label="性别"  >
-                                <el-select v-model="formData.gender" placeholder="未填写">
+                                <el-select v-model="formData.gender" placeholder="未填写" :popper-append-to-body='false'>
                                     <el-option label="男" :value="0" ><div :class='[formData.gender?"":"active","select-item"]'>男</div></el-option>
                                     <el-option label="女" :value='1'><div>女</div></el-option>
                                 </el-select>
                             </el-form-item>
                             <el-form-item label="身高" >
-                                 <el-select v-model="formData.height" placeholder="未填写">
+                                 <el-select v-model="formData.height" placeholder="未填写" :popper-append-to-body='false'>
                                     <el-option  v-for='item in heightArray' :key='item' :label="item+'cm'" :value="item" >
                                         <div :class='[item==175&&!formData.height?"active":"","select-item"]'>{{item}}cm</div>
                                     </el-option>
                                 </el-select>
                             </el-form-item>
                             <el-form-item label="体重" >
-                                 <el-select v-model="formData.weight" placeholder="未填写">
+                                 <el-select v-model="formData.weight" placeholder="未填写" :popper-append-to-body='false'>
                                     <el-option  v-for='item in weightArray' :key='item' :label="item+'kg'" :value="item" >
                                          <div :class='[item==60&&!formData.weight?"active":"","select-item"]'>{{item}}cm</div>
                                     </el-option>
                                 </el-select>
                             </el-form-item>
                             <el-form-item label="确诊日期" v-if='diagnosisShow'>
-                                <el-date-picker v-model="formData.diagnosis_date" type="date" value-format="yyyy-MM-dd"
+                                <el-date-picker v-model="formData.diagnosis_date" type="date" :append-to-body='false' value-format="yyyy-MM-dd"
                                  prefix-icon =' ' placeholder="未填写" :picker-options="diagnosisPickerOptions"></el-date-picker>
                                   <i class="el-icon-arrow-down picker-date-icon "></i>
                             </el-form-item>

@@ -1,9 +1,9 @@
 import Socket from '@/utils/socket/webSocket'
 import store from '@/store'
-import {lastIndex} from '@/api/dataApi'
+import {lastIndex,upData} from '@/api/dataApi'
 
 // 处理数据
-export function handelMessage (res) {
+export async function handelMessage (res) {
     switch(res.path){
         case 'getAppInfo':
             //  判断是否有更新，没有更新进行下一步
@@ -32,10 +32,10 @@ export function handelMessage (res) {
         case 'getBindDevices': //获取reader绑定的发射器列表
             store.dispatch('setCgmList',res.data.devices)
             getLimit(res.data.devices)
-            // if(res.data.devices.length>0){
-            //     getBgData(res.data.devices[0].mac,50,getLastIndex(res.data.devices[0].mac)==-1?res.data.devices[0].firstIndex:getLastIndex(res.data.devices[0].mac)+1,res.data.devices[0].lastIndex)
-            //     store.dispatch('setUpStep',4)
-            // }
+            if(res.data.devices.length>0){
+                getBgData(res.data.devices[0].mac,50,await getLastIndex(res.data.devices[0].mac)==-1?res.data.devices[0].firstIndex:await getLastIndex(res.data.devices[0].mac)+1,res.data.devices[0].lastIndex)
+                store.dispatch('setUpStep',4)
+            }
             break;
         case 'getGlucoseData': //获取的血糖数据
             upLoad(res.data)
@@ -49,9 +49,9 @@ export function handelMessage (res) {
  */
 
  async function getLastIndex(mac){
-    let data = await lastIndex({'device_mac':mac}).then(response => {
+    let  data = await lastIndex({'device_mac':mac}).then(response => {
         if(response.code == 1000){
-           return response.data
+            return response.data
         }else{
             this.$message({
                 type: 'error',
@@ -61,7 +61,6 @@ export function handelMessage (res) {
     }).catch((res) => {
         console.log(res)
     })
-    console.log(data)
     return data
 }
 
@@ -71,12 +70,13 @@ export function handelMessage (res) {
  * @param {*} devices  reader绑定的发射器列表
  */
 
- function getLimit(device){
+async function getLimit(device){
     let limit = 0
-    device.forEach(item=>{
-        let last_index = getLastIndex(item.mac)
+    for(const item of device){
+        let last_index = await getLastIndex(item.mac)
+        console.log(last_index==-1,last_index,'lase_index')
         limit +=item.lastIndex -( last_index==-1?item.firstIndex:last_index)
-    })
+    }
     store.dispatch('seUpLimit',limit)
 }
 
@@ -89,6 +89,7 @@ export function handelMessage (res) {
  let upProgess = 0
 
 function getBgData(mac,size,start_index,last_index){
+    console.log(mac,size,start_index,last_index)
     if(start_index<=last_index){
         Socket.queryGlucoseData({"mac":mac,"size":size,"startIndex":start_index})
     }else{
@@ -109,7 +110,7 @@ function upLoad(data){
            "timezone":8,
            "value":item.value,
            "current":item.current,
-           "temperature":item.temperature,
+           "temperature":Number(item.temperature),
         })
     })
     let params = {
@@ -119,23 +120,37 @@ function upLoad(data){
         start_ts:data.values[0].timestamp,
         end_ts:data.values[data.values.length-1].timestamp,
         data_source:1,
-        datas:datas
+        datas:datas,
+        online:0
     }
     let device = store.getters.cgmList
-    // 模拟服务器上传成功时间
-    setTimeout(function(){
-        // 判断当前mac是否上传完成
-        let last_index = device[cgm_index].lastIndex
-        let start_index
-        if(device.length>1&&last_index==params.end_index&&cgm_index!=device.length-1){
-            cgm_index++
-            start_index = getLastIndex(device[cgm_index].mac)+1
+    upData(params).then(response => {
+        if(response.code == 1000){
+            // return response.data
+            // 判断当前mac是否上传完成
+            let last_index = device[cgm_index].lastIndex
+            let start_index
+            if(device.length>1&&last_index==params.end_index&&cgm_index!=device.length-1){
+                cgm_index++
+                start_index = getLastIndex(device[cgm_index].mac)+1
+            }else{
+                start_index = data.values[data.values.length-1].index + 1
+            }
+            upProgess += data.values.length //页面进度不需要判断当前mac是否完成
+            store.dispatch('setUpProgess',upProgess)
+            getBgData(device[cgm_index].mac,50,start_index,last_index)
         }else{
-            start_index = data.values[data.values.length-1].index + 1
+            this.$message({
+                type: 'error',
+                message: response.msg
+            });
         }
-        upProgess += data.values.length //页面进度不需要判断当前mac是否完成
-        store.dispatch('setUpProgess',upProgess)
-        getBgData(device[cgm_index].mac,50,start_index,last_index)
-    },100)
+    }).catch((res) => {
+        console.log(res)
+    })
+    // // 模拟服务器上传成功时间
+    // setTimeout(function(){
+        
+    // },100)
 }
 

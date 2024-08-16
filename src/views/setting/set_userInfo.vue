@@ -12,43 +12,43 @@
             <div class='userInfo-info' >
                 <div class='info-item' >
                     <div class='info-item-label' >姓名：</div>
-                    <div class='info-item-vale' >{{info.nickname}}</div>
+                    <div class='info-item-value' >{{info.nickname}}</div>
                 </div>
                 <div class='info-item' >
                     <div class='info-item-label' >出生日期：</div>
-                    <div class='info-item-vale' >{{info.birthdate?info.birthdate:'--'}}</div>
+                    <div class='info-item-value' >{{info.birthdate?info.birthdate:'--'}}</div>
                 </div>
                 <div class='info-item' >
                     <div class='info-item-label' >性别：</div>
-                    <div class='info-item-vale' >{{info.gender==0?'男':info.gender==1?'女':'--'}}</div>
+                    <div class='info-item-value' >{{info.gender==0?'男':info.gender==1?'女':'--'}}</div>
                 </div>
                 <div class='info-item' >
                     <div class='info-item-label' >身高：</div>
-                    <div class='info-item-vale' >{{info.height?info.height:'--'}}</div>
+                    <div class='info-item-value' >{{info.height?info.height:'--'}}</div>
                 </div>
                 <div class='info-item' >
                     <div class='info-item-label' >体重：</div>
-                    <div class='info-item-vale' >{{info.weight?info.weight:'--'}}</div>
+                    <div class='info-item-value' >{{info.weight?info.weight:'--'}}</div>
                 </div>
                 <div class='info-item' >
                     <div class='info-item-label' >糖尿病类型：</div>
-                    <div class='info-item-vale' >{{info.show_diabetes_type?info.show_diabetes_type:'--'}}</div>
+                    <div class='info-item-value' >{{info.show_diabetes_type?info.show_diabetes_type:'--'}}</div>
                 </div>
                 <div class='info-item' >
                     <div class='info-item-label' >确诊日期：</div>
-                    <div class='info-item-vale' >{{info.diagnosis_date?info.diagnosis_date:'--'}}</div>
+                    <div class='info-item-value' >{{info.diagnosis_date?info.diagnosis_date:'--'}}</div>
                 </div>
                 <div class='info-item' >
                     <div class='info-item-label' >治疗方案：</div>
-                    <div class='info-item-vale' >{{info.treatment_regimen?info.show_treatment_regimen:'--'}}</div>
+                    <div class='info-item-value' >{{info.show_treatment_regimen?info.show_treatment_regimen:'--'}}</div>
                 </div>
                 <div class='info-item' >
                     <div class='info-item-label' >合并症：</div>
-                    <div class='info-item-vale' >{{info.comorbidities?info.show_comorbidities:'--'}}</div>
+                    <div class='info-item-value' >{{info.show_comorbidities?info.show_comorbidities:'--'}}</div>
                 </div>
                 <div class='info-item' >
                     <div class='info-item-label' >并发症：</div>
-                    <div class='info-item-vale' >{{info.complications?info.show_complications:'--'}}</div>
+                    <div class='info-item-value' >{{info.show_complications?info.show_complications:'--'}}</div>
                 </div>
             </div>
         </div>
@@ -61,6 +61,7 @@
                         ref='upload'
                         list-type="picture-card"
                         accept='image/*'
+                        :show-file-list="false"
                         :on-change="handleChange"
                         :on-remove="handleRemove"
                         :auto-upload='false'
@@ -73,13 +74,13 @@
             <div>
                 <el-form ref="formData"  label-width="120px" label-position="left" :rules="rules"  :model="formData" :inline="true">
                      <el-form-item label="姓名:" prop='nickname'>
-                            <el-input v-model="formData.nickname" class='user-inp'>
-                            </el-input>
+                            <input type="text" v-model="formData.nickname" maxlength='15' class='user-inp el-input el-input__inner' @input="limitLength" >
                         </el-form-item>
                         <el-form-item label="出生日期:" >
-                            <el-date-picker v-model="formData.birthdate" type="date"  placeholder="未填写"
+                            <el-date-picker v-model="formData.birthdate" type="date"   placeholder="未填写"
                             :picker-options="pickerOptions"
                             :default-value='defaultBirthday'
+                            :append-to-body='false'
                             prefix-icon =' '
                             value-format="yyyy-MM-dd"	>
                             </el-date-picker>
@@ -87,27 +88,27 @@
                             <span class='age-span' v-if='age'>（{{age}}岁）</span>
                         </el-form-item>
                         <el-form-item label="性别:"  >
-                            <el-select v-model="formData.gender" placeholder="未填写">
+                            <el-select v-model="formData.gender" placeholder="未填写" :popper-append-to-body='false'>
                                 <el-option label="男" :value="0" ><div :class='[formData.gender?"":"active","select-item"]'>男</div></el-option>
                                 <el-option label="女" :value='1'><div>女</div></el-option>
                             </el-select>
                         </el-form-item>
                         <el-form-item label="身高:" >
-                                <el-select v-model="formData.height" placeholder="未填写">
+                                <el-select v-model="formData.height" placeholder="未填写" :popper-append-to-body='false'>
                                 <el-option  v-for='item in heightArray' :key='item' :label="item+'cm'" :value="item" >
                                     <div :class='[item==175&&!formData.height?"active":"","select-item"]'>{{item}}cm</div>
                                 </el-option>
                             </el-select>
                         </el-form-item>
                         <el-form-item label="体重:" >
-                                <el-select v-model="formData.weight" placeholder="未填写">
+                                <el-select v-model="formData.weight" placeholder="未填写" :popper-append-to-body='false'>
                                 <el-option  v-for='item in weightArray' :key='item' :label="item+'kg'" :value="item" >
                                         <div :class='[item==60&&!formData.weight?"active":"","select-item"]'>{{item}}kg</div>
                                 </el-option>
                             </el-select>
                         </el-form-item>
                         <el-form-item label="糖尿病类型:" >
-                                <el-select v-model="formData.diabetes_type" popper-class='edit-select' placeholder="未填写">
+                                <el-select v-model="formData.diabetes_type" popper-class='edit-select' placeholder="未填写" :popper-append-to-body='false'>
                                     <el-option  :disabled="true">
                                         <div class='select-title'>糖尿病类型</div>
                                         </el-option>
@@ -117,12 +118,12 @@
                         </el-form-item>
                         <el-form-item label="确诊日期:" v-if='diagnosisShow'>
                             <el-date-picker v-model="formData.diagnosis_date" type="date" value-format="yyyy-MM-dd"
-                                prefix-icon =' ' placeholder="未填写" :picker-options="diagnosisPickerOptions"></el-date-picker>
+                                prefix-icon =' ' placeholder="未填写" :append-to-body='false' :picker-options="diagnosisPickerOptions"></el-date-picker>
                                 <i class="el-icon-arrow-down picker-date-icon "></i>
                                 <span class='age-span' v-if='diabetes_year' >（{{diabetes_year}}年）</span>
                         </el-form-item>
                          <el-form-item label="治疗方案:"  class='multiple'>
-                            <el-select v-model="formData.treatment_regimen" popper-class='edit-select' multiple placeholder="未填写" @change='chooseTreatmentRegimen'>
+                            <el-select v-model="formData.treatment_regimen" popper-class='edit-select' multiple placeholder="未填写" @change='chooseTreatmentRegimen' :popper-append-to-body='false'>
                                 <el-option  :disabled="true">
                                     <div class='select-title'>治疗方案</div>
                                 </el-option>
@@ -131,7 +132,7 @@
                             </el-select>
                         </el-form-item>
                          <el-form-item label="合并症:"  class='multiple'>
-                                <el-select v-model="formData.comorbidities" popper-class='edit-select' multiple placeholder="未填写" @change='chooseComorbidities' >
+                                <el-select v-model="formData.comorbidities" popper-class='edit-select' multiple placeholder="未填写" @change='chooseComorbidities' :popper-append-to-body='false'>
                                     <el-option  :disabled="true">
                                         <div class='select-title'>合并症</div>
                                     </el-option>
@@ -140,7 +141,7 @@
                             </el-select>
                         </el-form-item>
                          <el-form-item label="并发症:"  class='multiple'>
-                                <el-select v-model="formData.complications" popper-class='edit-select' multiple placeholder="未填写" @change='chooseComplications'>
+                                <el-select v-model="formData.complications" popper-class='edit-select' multiple placeholder="未填写" @change='chooseComplications' :popper-append-to-body='false'>
                                      <el-option  :disabled="true">
                                         <div class='select-title'>并发症</div>
                                     </el-option>
@@ -158,6 +159,8 @@
     </div>
 </template>
 <script>
+import Cookies from 'js-cookie'
+import maskPhoneNumber from '@/utils/phone'
 import {getInfo,configs,saveInfo,upAvatar} from '@/api/userApi'
 export default {
     data(){
@@ -205,7 +208,8 @@ export default {
             edit:false,
             queryParams:{
                 file:''
-            }
+            },
+            username:Cookies.get("username")? maskPhoneNumber(Cookies.get("username") ):'',
         }
     },
     computed:{
@@ -251,6 +255,23 @@ export default {
         }
     },
     methods:{
+        // 昵称长度限制
+        limitLength(event) {
+            const maxLength = 15;
+            console.log(event.target.value)
+            const currentInput = event.target.value;
+            const fullWidthRegex = /[^\u0000-\u007F]/g; // 匹配全角字符的正则
+            const halfWidthRegex = /[\u0000-\u007F]/g; // 匹配半角字符的正则
+        
+            // 计算输入的全角半角字符数量
+            const fullWidthCount = (currentInput.match(fullWidthRegex) || []).length;
+            const halfWidthCount = (currentInput.match(halfWidthRegex) || []).length;
+        
+            // 如果全角半角字符超出限制，截取输入
+            if (fullWidthCount + halfWidthCount > maxLength) {
+                this.formData.nickname = currentInput.substring(0, maxLength - (fullWidthCount - halfWidthCount));
+            }
+        },
         handleRemove(file, fileList){
             this.queryParams.file = ''
         },
@@ -270,7 +291,7 @@ export default {
             upAvatar(formData).then(response => {
                         if(response.code == 1000){
                             // this.formData.avatar = response.data.url+response.data.key
-                            console.log(this.formData)
+                            this.$refs.upload.clearFiles()
                             this.$set(this.formData,'avatar',response.data.url+response.data.key)
                         }else{
                             this.$message({
@@ -329,7 +350,7 @@ export default {
                                     break;
                             }
                        })
-                       
+                       console.log(this. complications_arr)
                     }else{
                         this.$message({
                             type: 'error',
@@ -356,7 +377,7 @@ export default {
                         let show_treatment_regimen = _.filter(this.treatment_regimen_arr,(item)=>{
                             return _.indexOf(obj.treatment_regimen,item.item_key)!=-1
                         })
-                        obj.show_diabetes_type = _.filter(this.diabetes_type_arr,['item_key',obj.diabetes_type])[0].item_name
+                        obj.show_diabetes_type = obj.diabetes_type?_.filter(this.diabetes_type_arr,['item_key',obj.diabetes_type])[0].item_name:obj.diabetes_type
                         obj.show_comorbidities = _.map(show_comorbidities,'item_name').join(',')
                         obj.show_complications = _.map(show_complications,'item_name').join(',')
                         obj.show_treatment_regimen =_.map(show_treatment_regimen,'item_name').join(',')
@@ -446,7 +467,7 @@ export default {
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        margin-right:100px;
+        margin-right:80px;
         position: relative;
     }
     .upload-demo{
@@ -467,7 +488,7 @@ export default {
     .userInfo-nickname{
         font-size:var(--fontSize-max);
         color:var(--color-black-100);
-        width:100px;
+        width:150px;
         text-align: center;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -481,7 +502,7 @@ export default {
     }
     .info-item{
         display: flex;
-        align-items: center;
+        align-items: baseline;
     }
     .info-item-label{
         width:130px;
@@ -489,7 +510,7 @@ export default {
         color:var(--color-black-60);
     }
     .info-item-value{
-        width:320px;
+        width:200px;
         font-size:var(--fontSize-big);
         color:var(--color-black-100);
     }

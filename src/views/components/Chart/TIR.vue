@@ -13,7 +13,11 @@
                             </div>
                         </div>
                         <div class='tir-value'>
-                            <div class='tir-key-key ' > <span :class='[item.index==2?"active":"","tir-print-key"]' >{{item.value}}%</span>({{item.duration[0]}}时{{item.duration[1]}}分)</div>
+                            <div class='tir-key-key ' > 
+                                <span v-if='item.index==2' :class='[Number(item.value)<item.target?"active":"","tir-print-keys"]' >{{item.value}}%</span>
+                                <span v-if='item.index!=2' :class='[Number(item.value)>item.target?"active":"","tir-print-key"]' >{{item.value}}%</span>
+                                ({{item.duration[0]}}时{{item.duration[1]}}分)
+                            </div>
                             <div class='tir-key-range' v-if='item.index==2'>目标值＞{{item.target}}%</div>
                             <div class='tir-key-range' v-else>目标值＜{{item.target}}%</div>
                         </div>
@@ -22,14 +26,14 @@
                 <div class='tir-all-1' v-if='highTarget!=0' :style='{height:highTargetHeight+"px"}' >
                     <div class='tir-all-line'></div>
                     <div class='tir-all-value' >
-                        <div class='tir-key-key' >{{highTarget}}%</div>
+                        <div :class='[Number(highTarget)>25?"active":"","tir-key-key"]' >{{highTarget}}%</div>
                         <div class='tir-key-range' >目标值＜25%</div>
                     </div>
                 </div>
                 <div class='tir-all-2'  v-if='lowTarget!=0' :style='{height:lowTargetHeight+"px"}'>
                     <div class='tir-all-line' ></div>
                     <div class='tir-all-value'  >
-                        <div class='tir-key-key' >{{lowTarget}}%</div>
+                        <div :class='[Number(lowTarget)>4?"active":"","tir-key-key"]' >{{lowTarget}}%</div>
                         <div class='tir-key-range' >目标值＜4%</div>
                     </div>
                 </div>
@@ -47,7 +51,7 @@ export default {
     data(){
         return{
             levels: [
-                {key: '血糖很高', 
+                {key: '很高：', 
                     value:1,  
                     duration:[],
                     color: '#E98C41',
@@ -57,7 +61,7 @@ export default {
                     index:0
                 },
                 {
-                    key: '血糖偏高',
+                    key: '高：',
                     value: 1,
                     duration:[],
                     color: '#F6C059',
@@ -67,17 +71,17 @@ export default {
                     index:1
                 },
                 {
-                    key: '目标范围内',
+                    key: '目标范围:',
                     value: 60,
                     duration:[],
-                    color: '#32BAC0',
+                    color: '#A6CF39',
                     desc: '3.9-10mmol/L',
                     descmg:'70-180mg/dL',
                     target:'70',
                     index:2
                 },
-                {key: '血糖偏低', value: 30,  duration:[],color: '#F43F31', desc: '3.0~3.8mmol/L', descmg:'54-69mg/dL',target:'4', index:3},
-                {key: '血糖很低', value:0,  duration:[],color: '#96251C', desc: '<3.0mmol/L', descmg:'<54/dL',target:'1', index:4},
+                {key: '低：', value: 30,  duration:[],color: '#F43F31', desc: '3.0~3.8mmol/L', descmg:'54-69mg/dL',target:'4', index:3},
+                {key: '很低：', value:0,  duration:[],color: '#96251C', desc: '<3.0mmol/L', descmg:'<54/dL',target:'1', index:4},
             ],
             tirList:[],
             canvas:null,
@@ -134,6 +138,7 @@ export default {
             this.highTarget = Number(this.levels[0].value) && Number(this.levels[1].value) ?_.round(Number(this.levels[0].value)+Number(this.levels[1].value),1):0
             this.lowTarget =  Number(this.levels[3].value) && Number(this.levels[4].value) ?_.round(Number(this.levels[3].value)+Number(this.levels[4].value),1):0
             this.tirList = _.filter(this.levels,function(e){return e.value>0})
+            console.log(_.filter(this.levels,function(e){return e.value>0}))
             console.log(formatTime(new Date()),'TIR计算完成')
             this.$nextTick(()=>{
                 this.drawTir()
@@ -340,13 +345,25 @@ export default {
         color:var(--color-black-100);
         line-height: 26px;
     }
+    .tir-key-key.active{
+         color:var(--color-error);
+    }
     .tir-print-key{
         font-size:24px;
         font-weight: 440;
         line-height: 26px;
     }
-    .tir-print-key.active{
-        color:var(--color-primary);
+    .tir-print-keys{
+        color:#A6CF39;
+        font-size:24px;
+        font-weight: 440;
+        line-height: 26px;
+    }
+    .tir-print-keys.active{
+        color:var(--color-error);
+    }
+     .tir-print-key.active{
+        color:var(--color-error);
     }
     .tir-key-range{
         font-size:var(--fontSize-big);

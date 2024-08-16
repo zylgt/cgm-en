@@ -2,6 +2,7 @@ import {formatDate,formatTime} from '@/utils/formatTime'
 import {mapGetters} from "vuex"
 import Progress from '@/views/report/components/Progress'
 import {getAgpInfo,getEvent} from '@/api/dataApi'
+import { GlucoseUtils } from "@/utils/algorithm/Glucose";
 export default{
     data(){
         return{
@@ -73,6 +74,9 @@ export default{
             this.chooseDay(new Date(e[0]), new Date(e[1]))
             this.chooseGetData()
         },
+        pickerFocus(){
+            this.$refs.datePicker.focus()
+        },
         // 选择天数
         chooseDay(date1,date2){
             this.progressShow = true
@@ -113,17 +117,24 @@ export default{
                                 item.upDate = formatDate(item.update_ts*1000,"YYYY年mm月dd日")
                             })
                         }
+
+                        let target = null
+                        if(response.data.glucose_unit==0){
+                            target = [GlucoseUtils.mgdlToMmol(response.data.glucose_range_lower_limit),GlucoseUtils.mgdlToMmol(response.data.glucose_range_lupper_limit)]
+                        }else{
+                            target = [response.data.glucose_range_lower_limit,response.data.glucose_range_lupper_limit]
+                        }
                         let params = {
                             nickname:response.data.nickname,
                             diabetes_type:response.data.diabetes_type,
                             age:response.data.age,
                             diabetes_year:response.data.diabetes_year,
-                            glucose_range_lower_limit:response.data.glucose_range_lower_limit,
-                            glucose_range_lupper_limit:response.data.glucose_range_lupper_limit,
+                            glucose_range_lower_limit:target[0],
+                            glucose_range_lupper_limit:target[1],
                             device:response.data.devices
                         }
                         this.$store.dispatch('setInfo',{key:this.agpDate.join('/'),value:params}) //处理完数据存vuex
-                        this.$store.dispatch('setTargetScope',[response.data.glucose_range_lower_limit,response.data.glucose_range_lupper_limit])
+                        this.$store.dispatch('setTargetScope',target)
                         this.$store.dispatch('setUnit',response.data.glucose_unit==0?'mmol/L':'mg/dL')
                         this.info = params
 
@@ -195,31 +206,34 @@ export default{
             const seenTimes = new Set();
             let levelLowInvalidMg = 20
             let levelHighInvalidMg = 800
-            let levelTooLowMg = 40
-            let levelTooHighMg = 400
+            let levelTooLowMg = 36
+            let levelTooHighMg = 540
             data.forEach(item => {
                 const timeStr = formatDate(item.DataTs*1000,'YYYY-mm-dd HH:MM')
 
                 if (!seenTimes.has(timeStr)) {
                 seenTimes.add(timeStr);
-                if (item.value > levelLowInvalidMg || item.value < levelHighInvalidMg) {
+                if (item.Value < levelLowInvalidMg || item.Value > levelHighInvalidMg) {
                     result.push({...item, value: undefined});
-                } else if (item.value < levelTooLowMg) {
+                } else if (item.Value < levelTooLowMg) {
                     result.push({
                     ...item,
                     value: levelTooLowMg,
                     });
-                } else if (item.value > levelTooHighMg) {
+                } else if (item.Value > levelTooHighMg) {
                     result.push({
                     ...item,
                     value: levelTooHighMg,
                     });
                 } else {
-                    result.push(item);
+                    result.push({
+                    ...item,
+                    value: item.Value,
+                    });
                 }
                 }
             });
-
+            // console.log(result)
             return result;
         },
 
@@ -233,6 +247,7 @@ export default{
                 objects.unshift({
                 DataTs: startTs - measuringInterval,
                 value: undefined,
+                Value:undefined
                 });
                 startTs = startTs - measuringInterval;
             }
@@ -242,6 +257,7 @@ export default{
                 objects.push({
                 DataTs: endTs + measuringInterval,
                 value: undefined,
+                Value:undefined
                 });
                 endTs = endTs + measuringInterval;
             }

@@ -36,7 +36,6 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        border:1px solid rgba(0,0,0,0.05);
         margin-bottom: 20px;
     }
     .report-agp-dates{
@@ -52,6 +51,23 @@
         border:1px solid rgba(0,0,0,0.05);
         margin-bottom: 60px;
         box-shadow: 0px 2px 20px 0px #0000000D;
+    }
+    .report-agp-date-box{
+        height:50px;
+        position: relative;
+        width:400px;
+        border-radius:10px;
+        background:#fff;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border:1px solid rgba(0,0,0,0.05);
+        margin-bottom: 20px;
+        position: absolute;
+        left:0;
+        top:0;
+        z-index:9;
     }
     .agp-date{
         font-size:var(--fontSize-big);
@@ -76,8 +92,12 @@
    
     .agp-picker{
         position: absolute;
-        left:0;
-        top:0;
+        left:3px;
+        top:3px;
+        width:390px !important;
+        height:36px !important;
+    }
+    .agp-picker i ,.agp-picker input{
         opacity: 0;
     }
     /* 解释说明、dialog弹窗 */

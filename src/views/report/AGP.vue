@@ -17,9 +17,11 @@
                 </div>
             </div>
             <div class='report-agp-date' >
-                    <img src="~@/assets/image/date-calendar.png" alt="" class='agp-icon' >
-                    <div class='agp-date' >{{agpDate[0]}} — {{agpDate[1]}}（{{dayDate}}天）</div>
-                     <img src="~@/assets/image/select-icon.png" alt="" class='select-icon' >
+                    <div class='report-agp-date-box' @click='pickerFocus'>
+                        <img src="~@/assets/image/date-calendar.png" alt="" class='agp-icon' >
+                        <div class='agp-date' >{{agpDate[0]}} — {{agpDate[1]}}（{{dayDate}}天）</div>
+                        <img src="~@/assets/image/select-icon.png" alt="" class='select-icon' >
+                    </div>
                     <el-date-picker
                         ref='datePicker'
                         class='agp-picker'
@@ -32,6 +34,7 @@
                         end-placeholder="结束日期"
                         value-format="yyyy-MM-dd"
                         format="yyyy-MM-dd"
+                        :append-to-body='false'
                         @change="changeDate"
                         :picker-options="pickerOptions">
                     </el-date-picker>
@@ -188,6 +191,7 @@
             placement="top"
             width="550"
             v-model='tirVisible'
+            :append-to-body="false"
             trigger="manual">
             <div class='slot-popover' >
                 <div class='slot-popover-title' >数据分析</div>
@@ -238,6 +242,7 @@
         :visible.sync="dialogVisible"
         :show-close="false"
         :title='dialogType=="print"?"打印报告":"下载报告"'
+        custom-class='printToask'
         width="1060"
         >
             <div class='slot-popover'  id='popover'>
@@ -285,7 +290,6 @@ import { AGPUtils } from "@/utils/algorithm/AGP";
 import { TIRUtils } from "@/utils/algorithm/TIR";
 import { GlucoseUtils } from "@/utils/algorithm/Glucose";
 import TIR from '@/views/components/Chart/TIR'
-import TIPCOPY from '@/views/components/Chart/TIR_COPY'
 import AGP from '@/views/components/Chart/AGPchart'
 import DayChart from '@/views/components/Chart/DayChart'
 import Empty from '@/views/components/Empty/empty'
@@ -408,6 +412,7 @@ export default {
             let new_data = _.uniqBy(datArrays,'DataTs')
             let v_data = _.map(new_data,'Value')
             let result = TIRUtils.getTIRResult(_.compact(v_data),tirTarget[1],tirTarget[0])
+            console.log(result)
             this.tir = result
         },
         // 每日血糖
@@ -415,10 +420,11 @@ export default {
             let tirTarget =  this.unit=='mmol/L'?[_.round(GlucoseUtils.mmolToMgdl(this.targetScope[0]),1),_.round(GlucoseUtils.mmolToMgdl(this.targetScope[1]),1)]:this.targetScope
             let DdatArray = _.cloneDeep(data)
             let singleDay  = _.chunk(DdatArray,60*24) ;
-            let max = _.maxBy(DdatArray,'Value').Value>400?400:_.maxBy(DdatArray,'Value').Value
+            let max = _.maxBy(DdatArray,'Value').Value>540?540:_.maxBy(DdatArray,'Value').Value
             let dayList = new Array()
             singleDay.forEach(item=>{
-                let value = _.map(item, 'Value');
+                let value = _.map(item, 'value');
+                let originValue = _.map(item, 'Value');
                 let handelValue = _.compact(value)
                 dayList.push({
                     day: formatDate(item[0].DataTs*1000,'mm.dd'),
@@ -426,7 +432,7 @@ export default {
                     value:value,
                     resultValue:handelValue,
                     max:max,
-                    tir:TIRUtils.getTIRResult(_.compact(value),tirTarget[1],tirTarget[0])?(Number(TIRUtils.getTIRResult(_.compact(value),tirTarget[1],tirTarget[0]).normalRate)*100).toFixed(1):''
+                    tir:TIRUtils.getTIRResult(_.compact(originValue),tirTarget[1],tirTarget[0])?(Number(TIRUtils.getTIRResult(_.compact(originValue),tirTarget[1],tirTarget[0]).normalRate)*100).toFixed(1):''
                 })
             })
             this.agpdayList =  dayList
@@ -442,7 +448,7 @@ export default {
             if(unit=='mmol/L'){
                 bgInfo.mean = GlucoseUtils.mgdlToMmol(bgInfo.mean)
             }
-            let filteredArray = BdatArray.filter(item => item.Value >= 40 && item.Value <= 400);
+            let filteredArray = BdatArray.filter(item => item.Value >= 36 && item.Value <= 540);
             bgInfo.effective = _.round((filteredArray.length/originList.length)*100,1)
             bgInfo.wearsDay = Math.ceil(Number(_.compact(BdatArray).length)/1440)
             bgInfo.allData = filteredArray
@@ -557,5 +563,8 @@ export default {
     }
     .bg-data-val.active{
         color:var(--color-error);
+    }
+    .printToask{
+        height:1080px;
     }
 </style>

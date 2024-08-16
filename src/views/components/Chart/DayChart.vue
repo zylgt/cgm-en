@@ -219,15 +219,15 @@ export default {
                             pieces: [
                                 {
                                     gt: 0,
-                                    lt: this.unit=='mg/dL'?70:3.9,
+                                    lt: this.targetScope[0],
                                     color: "var(--color-error)",//大于0小于12为红色
                                 },
                                 {
-                                    gt: this.unit=='mg/dL'?180:10,
+                                    gt: this.targetScope[1],
                                     color: "var(--color-warning",//大于12区间为红色
                                 },{
-                                    gt: this.unit=='mg/dL'?70:3.9,
-                                    lt: this.unit=='mg/dL'?180:10,
+                                    gt: this.targetScope[0],
+                                    lt: this.targetScope[1],
                                     color: "var(--color-primary",//大于12区间为红色
                                 },
                             ],
@@ -307,10 +307,10 @@ export default {
                             markArea:{
                                 data:[
                                     [{
-                                        yAxis: this.unit=='mg/dL'?70:3.9
+                                        yAxis: this.targetScope[0]
                                     },
                                     {   
-                                        yAxis: this.unit=='mg/dL'?180:10
+                                        yAxis: this.targetScope[1]
                                     }]
                                 ],
                                 itemStyle:{

@@ -3,20 +3,21 @@
         <el-header class='header' height='84px' >
             <div class='header-title' >
                 <img src="~@/assets/image/logo.png" alt="" class='logo' >
-                iHealth CGM <span style='color:#666;font-size:14px' >（0.0.2）</span>
+                iHealth CGM <span style='color:#666;font-size:14px' >（0.0.4）</span>
             </div>
             <Horizontal/>
             <div class='header-other '>
                 <div class='header-user' >
                     <!-- <el-avatar size='medium'>{{name}} </el-avatar> -->
                     <div :class="[dropDown?'active':'','username']" >{{username}}</div>
-                    <el-dropdown  @command="userCommand" @visible-change='dropChange'>
+                    <el-dropdown  @command="userCommand" @visible-change='dropChange' >
                         <div class='user-info' >
                             <i :class="[dropDown?'user-more':'','el-icon-arrow-down']"></i>
                         </div>
-                        <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-menu slot="dropdown" :append-to-body="false" class='drop-menu' >
                             <!-- <el-dropdown-item command="change">{{$t("message.changePassword")}}</el-dropdown-item> -->
-                            <el-dropdown-item command="signout">{{$t("message.logout")}}</el-dropdown-item>
+                            <el-dropdown-item command="account" style='text-align:center;' >账号安全</el-dropdown-item>
+                            <el-dropdown-item command="signout" style='text-align:center;' >{{$t("message.logout")}}</el-dropdown-item>
                         </el-dropdown-menu>
                     </el-dropdown>
                 </div>
@@ -74,7 +75,7 @@ export default {
                 this.$router.push('/login');
                 removeToken()
             }else{
-                this.changeDialog = true
+                 this.$router.push('/account');
             }
             
         },
@@ -166,6 +167,9 @@ export default {
         position: relative;
         display: flex;
         align-items: center;
+    }
+    .drop-menu{
+        width:100px;
     }
     .username{
         font-size:16px;

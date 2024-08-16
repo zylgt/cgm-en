@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import sysend from 'sysend'
 import {getToken} from '@/utils/auth'
 
 Vue.use(VueRouter)
@@ -76,12 +77,17 @@ const routes = [
       path:'/setting',
       name:'setting',
       component:(resolve) => require(["@/views/setting/setting"], resolve),
-      meta:{title:'setting',icon:iconSetting,icons:iconSettingCheck,isShow:true}
+      meta:{title:'setting',icon:iconSetting,icons:iconSettingCheck,isShow:true},
     },{
       path:'/help',
       name:'help',
       component:(resolve) => require(["@/views/help/help"], resolve),
       meta:{title:'help',icon:iconHelp,icons:iconHelpCheck,isShow:true}
+    },{
+      path:'/account',
+      name:'account',
+      component:(resolve) => require(["@/views/account/account"], resolve),
+      meta:{title:'account',icon:iconSetting,icons:iconSettingCheck,isShow:false}
     },
   ]
   },{
@@ -111,6 +117,16 @@ router.beforeEach((to, from, next) =>{
     }
   }else{
     next()
+    sysend.track('ready', () => {
+      sysend.list().then(tabs => {
+        console.log(tabs)
+        if (tabs.length > 0) {
+            window.close()
+            // window.location.href = '../index.html'
+            window.location.href = 'about:blank'
+        }
+      })
+    })
   }
   
 })

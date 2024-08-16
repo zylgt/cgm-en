@@ -59,7 +59,7 @@
                     <div class='set-item-label' >设定葡萄糖目标范围：</div>
                     <div class='set-item-value' >
                         建议您咨询医生设定合适的葡萄糖目标范围，修改后的范围回应用在所有报告中，您当前的葡萄糖目标范围是
-                        <el-select v-model="minTarget" placeholder="请选择" @change="minChange" >
+                        <el-select v-model="minTarget" placeholder="请选择" @change="minChange" :popper-append-to-body='false'>
                             <el-option
                             v-for="item in targetMin"
                             :key="item"
@@ -68,7 +68,7 @@
                             </el-option>
                         </el-select>
                         -
-                        <el-select v-model="maxTarget" placeholder="请选择" @change="maxChange">
+                        <el-select v-model="maxTarget" placeholder="请选择" @change="maxChange" :popper-append-to-body='false'>
                             <el-option
                             v-for="item in targetMax"
                             :key="item"
@@ -122,7 +122,7 @@ export default {
                     {
                         height:300,
                         left:80,
-                        right:20,
+                        right:30,
                         top:50
                     }
                 ],
@@ -247,7 +247,7 @@ export default {
                     {
                         height:300,
                         left:80,
-                        right:20,
+                        right:30,
                         top:50
                     }
                 ],
@@ -425,16 +425,22 @@ export default {
         getTarget(){
             getPreferences({}).then(response => {
                     if(response.code == 1000){
-                        this.option.series[0].markLine.data[0].yAxis = response.data.glucose_range_lower_limit
-                        this.option.series[0].markLine.data[1].yAxis = response.data.glucose_range_lupper_limit
-                        this.option.series[0].markArea.data[0][0].yAxis = response.data.glucose_range_lower_limit
-                        this.option.series[0].markArea.data[0][1].yAxis = response.data.glucose_range_lupper_limit
+                        let target = null
+                        if(response.data.glucose_unit==0){
+                            target = [GlucoseUtils.mgdlToMmol(response.data.glucose_range_lower_limit),GlucoseUtils.mgdlToMmol(response.data.glucose_range_lupper_limit)]
+                        }else{
+                            target = [response.data.glucose_range_lower_limit,response.data.glucose_range_lupper_limit]
+                        }
+                        this.option.series[0].markLine.data[0].yAxis = target[0]
+                        this.option.series[0].markLine.data[1].yAxis = target[1]
+                        this.option.series[0].markArea.data[0][0].yAxis = target[0]
+                        this.option.series[0].markArea.data[0][1].yAxis = target[1]
                         this.option.yAxis[0].max = response.data.glucose_unit == 1?270:15
                         this.option.yAxis[0].interval = response.data.glucose_unit == 1?3*18:3
-                        this.options.series[0].markLine.data[0].yAxis = response.data.glucose_range_lower_limit
-                        this.options.series[0].markLine.data[1].yAxis = response.data.glucose_range_lupper_limit
-                        this.options.series[0].markArea.data[0][0].yAxis = response.data.glucose_range_lower_limit
-                        this.options.series[0].markArea.data[0][1].yAxis = response.data.glucose_range_lupper_limit
+                        this.options.series[0].markLine.data[0].yAxis = target[0]
+                        this.options.series[0].markLine.data[1].yAxis = target[1]
+                        this.options.series[0].markArea.data[0][0].yAxis = target[0]
+                        this.options.series[0].markArea.data[0][1].yAxis = target[1]
                         this.options.yAxis[0].max = response.data.glucose_unit == 1?270:15
                         this.options.yAxis[0].interval = response.data.glucose_unit == 1?3*18:3
                         if(this.timeFormat == 12){
@@ -453,7 +459,7 @@ export default {
                                     return moment;
                                 }
                                 if(index+1===24*60){
-                                    return '12pm'
+                                    return '12am'
                                 }
                             }
                             this.option.xAxis[0].axisLabel.formatter = function (value, index) {
@@ -471,7 +477,7 @@ export default {
                                     return moment;
                                 }
                                 if(index+1===24*60){
-                                    return '12pm'
+                                    return '12am'
                                 }
                             }
                             this.timeShow[1].checked = true
@@ -480,8 +486,8 @@ export default {
                             this.timeShow[0].checked = true
                             this.timeShow[1].checked = false
                         }
-                        this.minTarget = response.data.glucose_range_lower_limit
-                        this.maxTarget = response.data.glucose_range_lupper_limit
+                        this.minTarget = target[0]
+                        this.maxTarget = target[1]
                         this.unit =  response.data.glucose_unit
                         this.bgUnit.forEach(item=>{
                             if(response.data.glucose_unit==item.value){
@@ -489,6 +495,8 @@ export default {
                             }
                         })
                         this.bgInfo =  response.data
+                        this.bgInfo.glucose_range_lower_limit = target[0]
+                        this.bgInfo.glucose_range_lupper_limit = target[1]
                     }else{
                         this.$message({
                             type: 'error',
@@ -501,8 +509,10 @@ export default {
         },
         // 保存设置
         saveTarget(){
-             this.loading = true
-            setPreferences({glucose_unit:this.unit,glucose_range_lower_limit:this.minTarget,glucose_range_lupper_limit:this.maxTarget}).then(response =>{
+            this.loading = true
+            let targetmin = this.unit==0? GlucoseUtils.mmolToMgdl(this.minTarget):this.minTarget
+            let targetmax = this.unit==0? GlucoseUtils.mmolToMgdl(this.maxTarget):this.maxTarget
+            setPreferences({glucose_unit:this.unit,glucose_range_lower_limit:targetmin,glucose_range_lupper_limit:targetmax}).then(response =>{
                 if(response.code == 1000){
                     this.edit = false
                     this.loading = false
@@ -538,7 +548,7 @@ export default {
                         return moment;
                     }
                     if(index+1===24*60){
-                        return '12pm'
+                        return '12am'
                     }
                 }
             }else{

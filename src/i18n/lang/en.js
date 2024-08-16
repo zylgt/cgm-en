@@ -19,5 +19,6 @@ export default {
       help:'Help',
       AGP:'AGP',
       overview:'OverViewGP',
+      account:'Account'
     }
   }

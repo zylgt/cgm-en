@@ -1,5 +1,12 @@
 import request from '@/api/index'
-
+// 注销账号
+export function deleteAccount(data) {
+    return request({
+        url: '/user/delete',
+        method: 'POST',
+        data: data
+    })
+}
 // 账号密码登录
 export function account(data) {
     return request({
@@ -89,9 +96,23 @@ export function getInfo(data) {
     })
 }
 // 上传头像
+// export function upAvatar(data) {
+//     return request({
+//         url: '/user/uploadlogo',
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'multipart/form-data'
+//         },
+//         data: data,
+//         transformRequest:[function(){
+//             return data;
+//         }]
+//     })
+// }
+// 上传头像
 export function upAvatar(data) {
     return request({
-        url: '/user/uploadlogo',
+        url: '/user/uploadlogo/web',
         method: 'POST',
         headers: {
             'Content-Type': 'multipart/form-data'

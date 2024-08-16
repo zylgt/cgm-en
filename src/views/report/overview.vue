@@ -29,66 +29,30 @@
                 <img src="~@/assets/image/more-icon.png" alt="" :class='[monthToggle?"active":"","more-icon"]' v-if='month.length>11' >
             </div>
         </div>
-        <div class='overview-main' >
-            <div class='overview-item' >
+        <Empty v-if='empty' style='height:600px;' />
+        <div class='overview-main' v-else>
+            <div class='overview-item'  v-for='(item) in list' :key='item.create_ts'>
                 <div class='overview-info' >
-                    <div class='overview-date' >2024年3月11日 - 2024年3月14日（14天）</div>
+                    <div class='overview-date' >{{item.report_date}}</div>
                     <div class='overview-tip' >
                         <div class='overview-mac' >传感器序列号：CGM123456</div>
                         <div class='overview-sync'>同步时间：2024年3月14日</div>
                     </div>
                     <div class='overview-bg-date' >
                         <div class='overview-bg-item' >
-                            <div class='overview-bg-value active' >90.0<span class='overview-limit' >%</span>  </div>
+                            <div class='overview-bg-value active' >{{item.tir?item.tir:'--'}}<span class='overview-limit' >%</span>  </div>
                             <div class='overview-bg-tips'>葡萄糖范围内时间TIR</div>
                         </div>
                         <div class='overview-bg-item' >
-                            <div class='overview-bg-value' >8.0<span class='overview-limit' >mmol/L</span></div>
+                            <div class='overview-bg-value' >{{item.avg_bg?item.avg_bg:'--'}}<span class='overview-limit' >mmol/L</span></div>
                             <div class='overview-bg-tips'>平均葡萄糖值</div>
                         </div>
                         <div class='overview-bg-item' >
-                            <div class='overview-bg-value' >7.5<span class='overview-limit' >%</span></div>
+                            <div class='overview-bg-value' >{{item.gmi?item.gmi:''}} <span v-if='!item.gmi' class='noData' >无足够数据</span> <span class='overview-limit' >%</span></div>
                             <div class='overview-bg-tips'>GMI</div>
                         </div>
                         <div class='overview-bg-item' >
-                            <div class='overview-bg-value' >90.0<span class='overview-limit' >%</span></div>
-                            <div class='overview-bg-tips'>变异系数</div>
-                        </div>
-                    </div>
-                </div>
-                <div class='overview-agp' >
-                    <div class='overview-agp-more' >
-                        查看完整AGP报告
-                        <img src="~@/assets/image/right-arrow.png" alt="" class='right-arrow' >
-                    </div>
-                   <!-- <div class='overview-agp-empty' >无足够数据</div> -->
-                    <div class='overview-agp-agp' > 
-                        <AGPview :agpDate='agpDates' :dataList='list'/>
-                    </div>
-                </div>
-            </div>
-            <div class='overview-item' >
-                <div class='overview-info' >
-                    <div class='overview-date' >2024年3月11日 - 2024年3月14日（14天）</div>
-                    <div class='overview-tip' >
-                        <div class='overview-mac' >传感器序列号：CGM123456</div>
-                        <div class='overview-sync'>同步时间：2024年3月14日</div>
-                    </div>
-                    <div class='overview-bg-date' >
-                        <div class='overview-bg-item' >
-                            <div class='overview-bg-value active' >90.0<span class='overview-limit' >%</span>  </div>
-                            <div class='overview-bg-tips'>葡萄糖范围内时间TIR</div>
-                        </div>
-                        <div class='overview-bg-item' >
-                            <div class='overview-bg-value' >8.0<span class='overview-limit' >mmol/L</span></div>
-                            <div class='overview-bg-tips'>平均葡萄糖值</div>
-                        </div>
-                        <div class='overview-bg-item' >
-                            <div class='overview-bg-value' >7.5<span class='overview-limit' >%</span></div>
-                            <div class='overview-bg-tips'>GMI</div>
-                        </div>
-                        <div class='overview-bg-item' >
-                            <div class='overview-bg-value' >90.0<span class='overview-limit' >%</span></div>
+                            <div class='overview-bg-value' >{{item.cv?item.gmi:'--'}}<span class='overview-limit' >%</span></div>
                             <div class='overview-bg-tips'>变异系数</div>
                         </div>
                     </div>
@@ -99,18 +63,23 @@
                         <img src="~@/assets/image/right-arrow.png" alt="" class='right-arrow' >
                     </div>
                    <div class='overview-agp-empty' >无足够数据</div>
-                    <div class='overview-agp-agp' > 
-                        <!-- <AGP/> -->
-                    </div>
+                    <!-- <div class='overview-agp-agp' > 
+                        <AGPview :agpDate='agpDates' :dataList='list'/>
+                    </div> -->
                 </div>
             </div>
         </div>
+         <!-- 分页 -->
+        <pagination v-show="total>0" :total="total" :page.sync="queryParams.page" :limit.sync="queryParams.page_size" @pagination="getList" />
     </div>
 </template>
 <script>
 import AGPview from '@/views/components/Chart/AGPview'
 import DeviceInfo from '@/views/report/deviceInfo'
 import {formatDate,formatTime} from '@/utils/formatTime'
+import {getMonth,getRepoetList} from '@/api/dataApi'
+import Pagination from '@/components/Pagination'
+import Empty from '@/views/components/Empty/empty'
 export default {
     data(){
         return{
@@ -119,49 +88,67 @@ export default {
             monthToggle:false,
             agpDates:'',  //agp日期
             list:[], //agp数据
+            total:0,
+            queryParams:{
+                page:1,
+                pagesize:2
+            },
+            empty:false
         }
     },
     created(){
-        let data = [{
-                date:'2024年3月'
-            },{
-                date:'2024年4月'
-            },{
-                date:'2024年5月'
-            },{
-                date:'2024年6月'
-            },{
-                date:'2024年1月'
-            },{
-                date:'2024年2月'
-            },{
-                date:'2024年7月'
-            },{
-                date:'2024年8月'
-            },{
-                date:'2024年1月'
-            },{
-                date:'2024年2月'
-            },{
-                date:'2024年7月'
-            },{
-                date:'2024年8月'
-            }]
-        data.forEach(item=>{
-            item.checked = false
-        })
-        this.month = data
+        this.getMonthList()
+        this.getList()
     },
     mounted(){
-        const end = new Date('2024-05-28 23:59:00');
-        const start = new Date('2024-05-21 00:00:00');
-        let agpDate = [formatDate(start,"YYYY-mm-dd"), formatDate(end,"YYYY-mm-dd")] 
-        this.agpDates = agpDate.join('/')
     },
     components: {
-        AGPview,DeviceInfo
+        AGPview,DeviceInfo,Pagination,Empty
     },
     methods:{
+        // 获取报告月份
+        getMonthList(){
+            let month = []
+            getMonth({}).then(response => {
+                if(response.code == 1000){
+                    response.data.forEach((item)=>{
+                        month.push({
+                            checked:false,
+                            date:item
+                        })
+                    })
+                    
+                    this.month = month
+                }else{
+                    this.$message({
+                        type: 'error',
+                        message: response.msg
+                    });
+                }
+            }).catch((res) => {
+            })
+        },
+        // 分页获取报告列表
+        getList(){
+
+            getRepoetList(this.queryParams).then(response => {
+                if(response.code == 1000){
+                    this.list = response.data
+                    if(response.data.length<=0){
+                        this.empty = true
+                    }else{
+                         this.empty = false
+                    }
+                    console.log(this.empty)
+                }else{
+                    this.$message({
+                        type: 'error',
+                        message: response.msg
+                    });
+                }
+            }).catch((res) => {
+            })
+        },
         closePopover(){
             this.visible = false
         },
@@ -347,5 +334,8 @@ export default {
         line-height: 180px;
         color:var(--color-black-40);
         font-size:var(--fontSize-smax);
+    }
+    .noData{
+        font-size:var(--fontSize-max);
     }
 </style>

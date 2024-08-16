@@ -27,7 +27,7 @@ export class AGPUtils {
     }
 
     // 过滤出数组中属于40到400之间的数值
-    let filteredArray = dataArray.filter(val => val >= 40 && val <= 400);
+    let filteredArray = dataArray.filter(val => val >= 36 && val <= 540);
     if (filteredArray.length < 5) {
       return null;
     }
