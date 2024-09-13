@@ -133,27 +133,30 @@ export default {
                             rich:{
                                 date:{
                                     fontSize:16,
-                                    color:'#333',
+                                    color:'#666',
                                     width:(gridW-10)/2-10,
                                     align:'left'
                                 },
                                 tirLable:{
                                     fontSize:20,
                                     width:30,
-                                    color:'#333',
-                                    align:'right'
+                                    color:'#000',
+                                    align:'right',
+                                    fontWeight:600
                                 },
                                 tir:{
                                     fontSize:20,
                                     width:70,
-                                    color:'#333',
-                                    align:'left'
+                                    color:'#000',
+                                    align:'left',
+                                    fontWeight:600
                                 },
                                 tirs:{
                                     fontSize:20,
                                     width:70,
                                     color:'#F43F31',
-                                    align:'left'
+                                    align:'left',
+                                    fontWeight:600
                                 }
                             }
                         },
@@ -180,11 +183,11 @@ export default {
                                 formatter: function (value, indexs) {
                                     if(timeFormat==12){
                                         if(indexs==0){
-                                            return '12am'
+                                            return '12AM'
                                         }else if(index==dayList.length-1&&indexs==item.value.length-1||index%7==6&&indexs==item.value.length-1){
-                                            return '12am'
+                                            return '12AM'
                                         }else if(indexs==(item.value.length/2)-1){
-                                            return '12pm'
+                                            return '12PM'
                                         }
                                         
                                     }else{
@@ -314,7 +317,7 @@ export default {
                                     }]
                                 ],
                                 itemStyle:{
-                                    color:'rgba(50, 186, 192, 0.08)'
+                                    color:'rgba(72, 160, 220, 0.2)'
                                 }
                             },
 

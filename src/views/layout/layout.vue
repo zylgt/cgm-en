@@ -3,28 +3,35 @@
         <el-header class='header' height='84px' >
             <div class='header-title' >
                 <img src="~@/assets/image/logo.png" alt="" class='logo' >
-                iHealth CGM <span style='color:#666;font-size:14px' >（0.0.4）</span>
+               <span style='color:#666;font-size:14px' >（0.0.4）</span>
             </div>
             <Horizontal/>
             <div class='header-other '>
+                <el-select v-model="language" class='language-select' >
+                    <el-option
+                    v-for="item in options"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                    </el-option>
+                </el-select>
                 <div class='header-user' >
-                    <!-- <el-avatar size='medium'>{{name}} </el-avatar> -->
-                    <div :class="[dropDown?'active':'','username']" >{{username}}</div>
+                    <img :src="info.avatar" alt="" class='header-avatar' >
+                    <div :class="[dropDown?'active':'','username']" >{{info.nickname}}</div>
                     <el-dropdown  @command="userCommand" @visible-change='dropChange' >
                         <div class='user-info' >
                             <i :class="[dropDown?'user-more':'','el-icon-arrow-down']"></i>
                         </div>
                         <el-dropdown-menu slot="dropdown" :append-to-body="false" class='drop-menu' >
                             <!-- <el-dropdown-item command="change">{{$t("message.changePassword")}}</el-dropdown-item> -->
-                            <el-dropdown-item command="account" style='text-align:center;' >账号安全</el-dropdown-item>
+                            <el-dropdown-item command="account" style='text-align:center;' >{{$t("message.account")}}</el-dropdown-item>
                             <el-dropdown-item command="signout" style='text-align:center;' >{{$t("message.logout")}}</el-dropdown-item>
                         </el-dropdown-menu>
                     </el-dropdown>
                 </div>
             </div>
         </el-header>
-        <el-container :style='{"height":PageHeight+"px"}'>
-            <Vertical :menuList='menuList' v-if='menuList.children.length>0' />
+        <el-container :style='{"height":PageHeight+"px",width:1580+"px"}' class='container'  >
             <el-main class='main'  >
                  <router-view></router-view>
             </el-main>
@@ -39,15 +46,25 @@ import maskPhoneNumber from '@/utils/phone'
 import Horizontal from "./horizontal"
 import Vertical from "./vertical"
 import {mapGetters} from "vuex"
+import {getInfo} from '@/api/userApi'
 export default {
     data(){
         return{
             height:1080,
-            language: Cookies.get('language')?Cookies.get('language'):navigator.language,
-            name: Cookies.get("username")?Cookies.get("username").charAt(0):'游',
+            language:'English',
             menuList:[],
-            username:Cookies.get("username")? maskPhoneNumber(Cookies.get("username")) :'游',
-            dropDown:false
+            dropDown:false,
+            info:'',
+            options:[{
+                value:'English',
+                label:'English'
+            },{
+                value:'Español',
+                label:'Español'
+            },{
+                value:'Français',
+                label:'Français'
+            }],
         }
     },
     computed:{
@@ -60,6 +77,7 @@ export default {
     },
     created(){
         this.setSendChildren()
+        this.getInfo()
     },
     mounted(){
     },
@@ -81,13 +99,8 @@ export default {
         },
         languageCommand(commoand){
              this.language=commoand
-            if(commoand=='en'){
-                this.$i18n.locale='en'
-                Cookies.set('language','en')
-            }else{
-                this.$i18n.locale='zh-cn'
-                Cookies.set('language','zh-cn')
-            }
+             this.$i18n.locale=commoand
+             Cookies.set('language',commoand)
         },
         dropChange(val){
             this.dropDown = val
@@ -113,6 +126,21 @@ export default {
             this.menuList = currentData
             return currentData
         },
+        // 获取用户信息
+        getInfo(){
+            getInfo().then(response => {
+                    if(response.code == 1000){
+                        this.info = response.data
+                    }else{
+                        this.$message({
+                            type: 'error',
+                            message: response.msg
+                        });
+                    }
+            }).catch((res) => {
+                   console.log(res)
+            })
+        },
     },
     watch: {
          // 监听路由的变化
@@ -131,6 +159,9 @@ export default {
     .layout{
         /* height:100%; */
     }
+    .container{
+        margin: 0 auto;
+    }
     .header{
         height:84px;
         display: flex;
@@ -147,6 +178,9 @@ export default {
         align-items: center;
     }
     .logo{
+        width:184px;
+        height:35px;
+        display: block;
         margin:0 14px;
     }
     .header-other{
@@ -154,6 +188,12 @@ export default {
         align-items: center;
         justify-content: flex-end;
         height:100%;
+    }
+    .header-avatar{
+        width:30px;
+        height:30px;
+        border-radius: 5px;
+        margin-right:5px;
     }
     .language{
         width:140px;
@@ -163,18 +203,26 @@ export default {
         font-size:var(--fontSize-big);
     }
     .header-user{
-        height: 30px;
+        width:140px;
+        height: 40px;
+        border-radius:10px;
+        background: rgba(72, 160, 220, 0.1);
         position: relative;
         display: flex;
         align-items: center;
+        padding:0 5px;
     }
     .drop-menu{
         width:100px;
     }
     .username{
-        font-size:16px;
+        font-size:var(--fontSize-default);
         color:var(--color-black-80);
         margin:0 10px;
+        width:70px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
     }
     .username.active{
         color: var(--color-primary);
@@ -201,11 +249,13 @@ export default {
         display: flex;
         flex-grow: 1;
     }
-    .main{
+    .layout .main{
         background:#f7f7f7;
         padding:30px;
-         overflow-y: auto;
-         height: 100%;
+        width:1580px;
+        margin:0 auto;
+        overflow-y: auto;
+        box-sizing: content-box;
     }
     .record-btn{
         display: flex;
@@ -216,5 +266,9 @@ export default {
     }
     .el-container{
         /* overflow-y: auto; */
+    }
+    .language-select{
+        margin-right:40px;
+        width:100px;
     }
 </style>

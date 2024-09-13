@@ -4,12 +4,12 @@
             <div class='agp-top' >
                 <div class='agp-top-fl' >
                     <div class='report-title'> {{$t('message.route.'+$route.meta.title)}}</div>
-                    <div class='report-sub-title' >最近更新时间：2024年3月14日</div>
+                    <div class='report-sub-title' > {{$t('message.setting.synctime')}}：2024年3月14日</div>
                 </div>
                 <div class='agp-fr' >
                     <el-button type="primary" @click="upload">
                         <img src="~@/assets/image/btn-upload.png" alt="" class='btn-upload' >
-                        上传数据
+                         {{$t('message.reports.upLoad')}}
                     </el-button>
                 </div>
             </div>
@@ -48,7 +48,6 @@ export default {
 </script>
 <style scoped>
     .setting-main{
-        width:76%;
         margin:0 auto;
     }
   .agp-top{
@@ -61,14 +60,13 @@ export default {
         margin-bottom:20px;
     }
     .report-title{
-        font-size:var(--fontSize-max);
+        font-size:30px;
         color:var(--color-black-100);
         font-weight: 700;
     }
     .report-sub-title{
-        font-size:var(--fontSize-big);
+        font-size:var(--fontSize-default);
         color:var(--color-black-60);
-        margin-top:20px;
     }
     .btn-upload{
         display: inline-block;

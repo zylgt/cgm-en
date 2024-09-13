@@ -3,8 +3,7 @@
         <div class='run-procedure'  v-if='errorCode==0'>
             <div class='step-box step1' v-if='upStep==1'>
                 <div class='title' >
-                    <p class='title-border' ></p>
-                    运行驱动程序
+                    {{$t('message.Driver.install.title')}}
                 </div>
                 <div class='procedure_img' >
                     <div class='procedure_img_item' >
@@ -12,39 +11,38 @@
                             <img src="~@/assets/image/procedure-img1.png" alt="" class='procedure_img_img' >
                             <div class='procedure_img_step' >1</div>
                         </div>
-                        <p class='procedure_img_text' >第一步：点击“下载驱动”俺就下载驱动程序，下载完成后，双击打开驱动程序。</p>
+                        <p class='procedure_img_text' > {{$t('message.Driver.install.step1')}}</p>
                     </div>
                     <div class='procedure_img_item' >
                          <div class='procedure_img_box' >
                             <img src="~@/assets/image/procedure-img2.png" alt="" class='procedure_img_img' >
                             <div class='procedure_img_step' >2</div>
                         </div>
-                        <p class='procedure_img_text' >第二步：根据指引安装驱动程序。</p>
+                        <p class='procedure_img_text' > {{$t('message.Driver.install.step2')}}</p>
                     </div>
                     <div class='procedure_img_item' >
                          <div class='procedure_img_box' >
                             <img src="~@/assets/image/procedure-img3.png" alt="" class='procedure_img_img' >
                             <div class='procedure_img_step' >3</div>
                         </div>
-                        <p class='procedure_img_text' >第三步：当您完成驱动程序的安装后，点击“启动驱动”按钮运行驱动程序，并允许驱动程序运行。</p>
-                        <p class='procedure_img_tips' >*若您已安装驱动，请直接点击启动驱动</p>
+                        <p class='procedure_img_text' > {{$t('message.Driver.install.step3')}}</p>
+                        <p class='procedure_img_tips' >{{$t('message.Driver.install.installedTip')}}</p>
                     </div>
                 </div>
                 <div class='btn-box' >
-                    <el-button type="primary"  @click='downLoad'> 下载驱动</el-button>
-                    <el-button type="primary"  @click='firing'>启动驱动</el-button>
+                    <el-button type="primary"  @click='downLoad'> {{$t('message.Driver.install.downDriver')}}</el-button>
+                    <el-button type="primary"  @click='firing'>{{$t('message.Driver.install.startDriver')}}</el-button>
                 </div>
             </div>
             <div class='step-box step2' v-if='upStep==2' >
                     <i class="el-icon-loading loading-icon "></i>
-                    <div class='unistall-text' >正在启动中...</div>
-                    <div class='unistall-text-tips' >正在启动驱动程序，请稍后...</div>
+                    <div class='unistall-text' >{{$t('message.Driver.install.startUp')}}.</div>
+                    <div class='unistall-text-tips' >{{$t('message.Driver.install.startUpTip')}}</div>
             </div>
             <div class='step-box' v-if='upStep==3'>
                 <div class='step-box step1' v-if='startConnect'>
                     <div class='title' >
-                        <p class='title-border' ></p>
-                        连接读取器
+                        {{$t('message.Driver.connect.oneTitle')}}
                     </div>
                     <div class='procedure_img step3_procedure_img' >
                         <div class='procedure_img_item' >
@@ -52,40 +50,39 @@
                                 <img src="~@/assets/image/procedure-img4.png" alt="" class='procedure_img_img' >
                                 <div class='procedure_img_step' >1</div>
                             </div>
-                            <p class='procedure_img_text' >第一步：用数据线连接您的读取器与电脑。</p>
+                            <p class='procedure_img_text' > {{$t('message.Driver.connect.step1')}}</p>
                         </div>
                         <div class='procedure_img_item' >
                             <div class='procedure_img_box' >
                                 <img src="~@/assets/image/procedure-img1.png" alt="" class='procedure_img_img' >
                                 <div class='procedure_img_step' >2</div>
                             </div>
-                            <p class='procedure_img_text' >第二步：确认已将您的读取器连接至电脑后，点击右下方开始传输按钮。</p>
+                            <p class='procedure_img_text' >{{$t('message.Driver.connect.step2')}}</p>
                         </div>
                     </div>
                     <div class='btn-box flex-end' >
-                        <el-button type="primary"  @click='startReader'> 开始连接</el-button>
+                        <el-button type="primary"  @click='startReader'> {{$t('message.Driver.connect.upBtn')}}</el-button>
                     </div>
                 </div>
                 <div class='step-box step1' v-if='deviceList.length>1&&!startConnect' >
                      <div class='title' >
-                        <p class='title-border' ></p>
-                        多台设备连接
-                        <div class='title-tips' >检测到当前有多台设备连接电脑，请选择您想要同步的设备。请依据读取器后的编码选择您想同步的机器。</div>
+                        {{$t('message.Driver.connect.moreTitle')}}
+                        <div class='title-tips' >{{$t('message.Driver.connect.moreTip')}}</div>
                     </div>
                     <div class='procedure_img step3_procedure_img' >
                         <img src="~@/assets/image/procedure-img5.png" alt="" class='more-procedure' >
                         <div class='procedure-list' >
-                            <div :class='[index==chooseIndex?"active":"", "procedure-list-item" ]' v-for='(item,index) in deviceList' :key='index' @click='chooseProcedure(index)' >设备{{index+1}}:{{item.readerMac}}</div>
+                            <div :class='[index==chooseIndex?"active":"", "procedure-list-item" ]' v-for='(item,index) in deviceList' :key='index' @click='chooseProcedure(index)' >Reader{{index+1}}:{{item.readerMac}}</div>
                         </div>
                     </div>
                     <div class='btn-box flex-end' >
-                        <el-button type="primary"  @click='connectReader'> 开始连接</el-button>
+                        <el-button type="primary"  @click='connectReader'> {{$t('message.Driver.connect.upBtn')}}</el-button>
                     </div>
                 </div>
                 <div class='step-box step2' v-if='readerConnect==1&&!startConnect' >
                     <i class="el-icon-loading loading-icon "></i>
-                    <div class='unistall-text step3-unistall-text' >正在连接设备，请稍等</div>
-                    <div class='unistall-text-tips step3-unistall-text-tips' > <img src="~@/assets/image/waring-icon.png" alt="" class='waring-icon' >   正在连接设备，请勿拔下数据线。</div>
+                    <div class='unistall-text step3-unistall-text' >{{$t('message.Driver.upCloude.title')}}</div>
+                    <div class='unistall-text-tips step3-unistall-text-tips' > <img src="~@/assets/image/waring-icon.png" alt="" class='waring-icon' > {{$t('message.Driver.upCloude.tip')}}</div>
                 </div>
             </div>
             <div class='step-box step2' v-if='upStep==4'>
@@ -98,10 +95,11 @@
                     </div>
                     <div class='progess-num'>{{pct}}%</div>
                 </div>
-                <div class='unistall-text step3-unistall-text' >正在同步数据，请稍等</div>
-                <div class='unistall-text-tips step3-unistall-text-tips' > <img src="~@/assets/image/waring-icon.png" alt="" class='waring-icon' >   正在进行数据传输，在传输完成前请勿拔下数据线，以免丢失数据。</div>
-                <div class='reader-data-tip' >*检测到读取器与电脑时间不一致，将自动为您校准读取器的时间。</div>
-                <div class='reader-data-tip' >*检测到读取器与电脑目标范围不一致，将自动为您同步到读取器。</div>
+                <div class='unistall-text step3-unistall-text' >{{$t('message.Driver.upCloude.title')}}</div>
+                <div class='unistall-text-tips step3-unistall-text-tips' > <img src="~@/assets/image/waring-icon.png" alt="" class='waring-icon' > {{$t('message.Driver.upCloude.tip')}}</div>
+                <div class='reader-up-mac'>{{$t('message.Driver.upCloude.mac')}}：12345</div>
+                <div class='reader-data-tip' >{{$t('message.Driver.upCloude.timeTip')}}</div>
+                <div class='reader-data-tip' >{{$t('message.Driver.upCloude.rangeTip')}}</div>
             </div>
             <div class='step-progess' >
                 <div :class='[upStep>=1?"active":"","progess-item"]' ></div>
@@ -248,14 +246,14 @@ export default {
         justify-content: space-between;
     }
     .title{
-        font-size:20px;
+        font-size:var(--fontSize-smax);
         color:#000;
         margin-bottom:20px;
         position: relative;
         padding-left:6px;
         height:30px;
         line-height: 30px;
-        font-family: MiLan-Medium;
+        font-weight: 700;
     }
     .title-border{
         width:2px;
@@ -304,11 +302,11 @@ export default {
         width:100%;
     } 
     .procedure_img_text{
-        font-size:var(--fontSize-big);
-        color:var(--color-black-60);
+        font-size:var(--fontSize-default);
+        color:var(--color-black-80);
     }
     .procedure_img_tips{
-        font-size:var(--fontSize-big);
+        font-size:var(--fontSize-default);
         color:var(--color-primary);
         margin-top:14px;
     }
@@ -340,7 +338,7 @@ export default {
         justify-content: center;
     }
     .title-tips{
-        font-size:var(--fontSize-big);
+        font-size:var(--fontSize-default);
         font-weight: 400;
         color:var(--color-black-60);
     }
@@ -354,15 +352,15 @@ export default {
         border:1px solid var(--color-black-10);
         padding-left:20px;
         line-height: 60px;
-        margin-bottom:var(--fontSize-big);
+        margin-bottom:20px;
         font-size:20px;
-        color:var(--color-black-60);
+        color:var(--color-black-100);
         font-weight: 380;
     }
     .procedure-list-item.active{
-        color:var(--color-primary);
+        color:#fff;
+        background:var(--color-primary);
         border:1px solid var(--color-primary);
-        background: rgba(50, 186, 192, 0.1);
     }
     .step3-unistall-text-tips{
         display: flex;
@@ -376,9 +374,15 @@ export default {
     .step3-unistall-text{
          color:var(--color-primary);
     }
+    .reader-up-mac{
+        font-size: var(--fontSize-smax);
+        color:#000;
+        font-weight: 600;
+        margin-bottom:30px;
+    }
 /* 步骤四 */
     .reader-data-tip{
-        font-size:var(--fontSize-big);
+        font-size:var(--fontSize-default);
         color:var(--color-warning);
         text-align: center;
     }
@@ -463,10 +467,10 @@ export default {
         margin-top:30px;
         font-size:20px;
         text-align: center;
-        font-weight: 440;
+        font-weight: 600;
     }
     .unistall-text-tips{
-        font-size:var(--fontSize-big);
+        font-size:var(--fontSize-default);
         color:var(--color-black-60);
         font-weight: 400;
         margin-top:20px;

@@ -18,7 +18,7 @@ const messages = {
         ...pagesZhcn
       }
     },
-    en: {
+    'English': {
       ...enLocale,
       message: {
         ...pagesEn
@@ -28,8 +28,9 @@ const messages = {
   
   // 导出语言国际化
   export const i18n = new VueI18n({
-    locale: Cookies.get('language')?Cookies.get('language'):navigator.language,
-    fallbackLocale: 'zh-cn',
+    // locale: Cookies.get('language')?Cookies.get('language'):navigator.language,
+    locale:'English',
+    fallbackLocale: 'English',
     messages,
     // 关闭未翻译的警告
     silentTranslationWarn: true

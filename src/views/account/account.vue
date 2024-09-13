@@ -8,89 +8,82 @@
                 <div class='agp-fr' >
                     <el-button type="primary" @click="upload">
                         <img src="~@/assets/image/btn-upload.png" alt="" class='btn-upload' >
-                        上传数据
+                        {{$t('message.reports.upLoad')}}
                     </el-button>
                 </div>
             </div>
             <div class="userinfo" >
                 <img :src="info.avatar" alt="" class='avatar' >
-                <div class='nickname' >{{username}}</div>
-                <div class='edit_password' @click='passwordDialog = true'>修改密码</div>
-                <div class='remove_account' @click='accountDialog = true'>注销账号</div>
+                <div class='nickname' >{{$t('message.account.email')}}:{{username}}</div>
+                <div class='edit_password' @click='passwordDialog = true'>{{$t('message.account.change')}}</div>
+                <div class='remove_account' @click='accountDialog = true'>{{$t('message.account.deactivated')}}</div>
             </div>
         </div>
         <!-- 注销账号 -->
         <el-dialog
         :visible.sync="accountDialog"
         :show-close="false"
-        title='注销账号'
         custom-class='printToask'
         width="1060"
         >   
+          <div class='dialog-title' >
+                <img src="~@/assets/image/warning.png" alt="" class='title-icon' >
+                <img src="~@/assets/image/dialog-close.png" alt="" class='dialog-closes' @click='accountDialog=false' >
+          </div>
             <div class='remove-box' >
                 <div class='remove-title' >
-                    申请注销{{username}}绑定的账号
+                    {{$t('message.account.deactivatedTitle')}}:{{username}}
                 </div>
                 <div class='remove-tips' >
-                    <img src="~@/assets/image/warning-icon.png" alt="" class='warning-icon' >
-                    请认真阅读以下重要提醒慎重操作
+                    {{$t('message.account.tips')}}
                 </div>
                 <div class='warning-item' >
-                    1.注销账号为不可恢复的操作，您的身份信息、账户信息等将被清空且无法恢复。<br/>
-                    2.注销成功后，我们将删除您账号下所有的数据，包括但不限于个人资料、佩戴记录、事件记录、数据报告、报告解读、控糖方案。<br/>
-                    3.注销后，手机号可以注册新的账号，新账号不会存在之前账号的任何信息。
+                    {{$t('message.account.explain1')}}<br/>
+                   {{$t('message.account.explain2')}}<br/>
+                   {{$t('message.account.explain3')}}
                 </div>
                 <div class='remove-rule' >
                     <el-checkbox v-model="agree" ></el-checkbox>
-                    <div class='login-text'>请阅读并同意  <a :href="delete_account_url" target="_blank" rel="noopener noreferrer">《账号注销须知》</a></div>
+                    <div class='login-text'>{{$t('message.account.agree')}}  <a :href="delete_account_url" target="_blank" rel="noopener noreferrer">{{$t('message.account.notic')}}</a></div>
                 </div>
             </div>
-            <img src="~@/assets/image/close-icon.png" alt="" class='dialog-close' @click='accountDialog=false' >
              <el-button :loading="loading" class="remove-submit"  :disabled="!agree"   type="info" @click.native.prevent="removeSubmit"  >
-                <span v-if="!loading">申请注销</span>
-                <span v-else>注销中</span>
+                <span v-if="!loading">{{$t('message.account.deactivated')}}</span>
+                <span v-else>{{$t('message.account.deactivated')}}</span>
             </el-button>
         </el-dialog>
         <!-- 修改密码 -->
         <el-dialog
         :visible.sync="passwordDialog"
         :show-close="false"
-        title='修改密码'
+        :title='$t("message.account.change")'
         custom-class='printToask'
         width="1060"
         >   
-            <el-form :model="form" ref='form' :rules='phoneRules' label-width="120px" class='passwordForm' v-if='!passwordSuccess' >
-                <el-form-item label="手机号：" prop='phone_number' >
-                    <el-input v-model="form.phone_number" :disabled="true" ></el-input>
+            <el-form :model="form" ref='form' :rules='phoneRules' label-width="150px" class='passwordForm' label-position="left" v-if='!passwordSuccess' >
+                <el-form-item  :label="$t('message.account.origin')" prop='oldPassword' >
+                    <el-input v-model="form.oldPassword"
+                        :placeholder="$t('message.placeholder.oldPassword')" show-password></el-input>
                 </el-form-item>
-
-                <el-form-item label="请输入验证码：" prop='code'>
-                    <div class='code-item' >
-                        <el-input v-model="form.code"  placeholder=""></el-input>
-                        <div class='get-code' @click='getCode(0)' v-if='codeType==1' >获取验证码</div>
-                        <div class='code-time'  v-if='codeType==2'>{{codeTime}}s</div>
-                        <div class='get-code'  v-if='codeType==3' @click='getCode(0)'>重新发送</div>
-                    </div>
-                </el-form-item>
-                 <el-form-item  label="请输入新密码：" prop='password' >
+                <el-form-item  :label="$t('message.account.new')" prop='password' >
                     <el-input v-model="form.password"
-                        placeholder="请输入6-20位新密码" show-password></el-input>
+                        :placeholder="$t('message.placeholder.password')" show-password></el-input>
                 </el-form-item>
-                <el-form-item  label="请确认新密码：" prop='new_password' >
+                <el-form-item  :label="$t('message.account.confirm')" prop='new_password' >
                     <el-input v-model="form.new_password"
-                        placeholder="请确认新密码"
+                        :placeholder="$t('message.placeholder.confirmPassword')"
                         show-password></el-input>
                 </el-form-item>
                 <el-form-item >
                     <el-button  :loading="loading" class="password-submit"  :disabled="passwordDisabled"  type="primary" @click.native.prevent="changePassword"  >
-                        <span>确认</span>
+                        <span>{{$t('message.button.continue')}}</span>
                     </el-button>
                 </el-form-item>
             </el-form>
             <div class='success-box' v-else>
                 <img src="~@/assets/image/success-icon.png" alt="" class='success-icon' >
-                <div class='success-text'>已成功修改密码</div>
-                <div class='success-btn' @click="passwordDialog = false" >确认</div>
+                <div class='success-text'>{{$t('message.button.passwordUp')}}</div>
+                <div class='success-btn' @click="passwordDialog = false" >{{$t('message.button.confirm')}}</div>
             </div>
             <img src="~@/assets/image/close-icon.png" alt="" class='dialog-close' @click='passwordDialog=false' >
         </el-dialog>
@@ -104,9 +97,9 @@ export default {
     data(){
         var validateCheckPass = (rule,value,callback)=>{
             if (value === '') {
-                callback(new Error('请再次输入密码'));
+                callback(new Error(this.$t('message.placeholder.confirmPassword')));
             } else if (value !== this.form.password) {
-                callback(new Error('两次输入密码不一致!'));
+                callback(new Error(this.$t('message.rule.match')));
             } else {
                 callback();
             }
@@ -114,22 +107,21 @@ export default {
         return{
             info:'',
             accountDialog:false,
-            agree:false,
+            agree:true,
             loading:false,
             passwordDialog:false,
             delete_account_url:'',
             username:Cookies.get("username")? maskPhoneNumber(Cookies.get("username") ):'',
             form:{
-                phone_number:Cookies.get("username")? maskPhoneNumber(Cookies.get("username") ):'',
-                code:'',
+                oldPassword:'',
                 password:'',
                 new_password:''
             },
             phoneRules: {
-                phone_number: [{ required: true, message: '请输入手机号', trigger: 'blur' }],
-                code: [{ required: true, trigger: 'blur', message: "请输入验证码" }],
-                password: [{ required: true, trigger: "blur", message: "请输入密码" },
-                {pattern: /^.{6,20}$/, message: '密码位数必须在6~20位之内', trigger: ['blur', 'change']}],
+                oldPassword: [{ required: true, trigger: "blur", message: this.$t('message.placeholder.password') },
+                {pattern: /^.{6,20}$/, message: this.$t('message.placeholder.password'), trigger: ['blur', 'change']}],
+                password: [{ required: true, trigger: "blur", message:this.$t('message.placeholder.password') },
+                {pattern: /^.{6,20}$/, message: this.$t('message.placeholder.password'), trigger: ['blur', 'change']}],
                 new_password: [{validator: validateCheckPass,required: true, trigger: 'blur'}],
             },
             codeType:1, //1获取验证码 2倒计时 3重新发送
@@ -141,7 +133,7 @@ export default {
         passwordDisabled(){
             let pattern =  /^[12][3456789]\d{9}$/
             let patterns = /^.{6,20}$/
-            if(pattern.test(this.form.phone_number)&&this.form.code&&patterns.test(this.form.password)&&patterns.test(this.form.new_password)){
+            if(patterns.test(this.form.oldPassword)&&patterns.test(this.form.password)&&patterns.test(this.form.new_password)){
                 return false
             }else{
                 return true
@@ -360,7 +352,7 @@ export default {
         position: relative;
     }
     .nickname{
-        font-size:var(--fontSize-max);
+        font-size:var(--fontSize-smax);
         color:var(--color-black-100);
         height:40px;
         line-height: 40px;
@@ -386,7 +378,7 @@ export default {
         border-radius:50%;
     }
     .remove-box{
-        width:600px;
+        width:800px;
         margin:0 auto;
     }
     .passwordForm{
@@ -394,29 +386,25 @@ export default {
         margin:30px auto;
     }
     .remove-title{
-        font-size:var(--fontSize-max);
+        font-size:var(--fontSize-smax);
         color:var(--color-black-100);
         text-align: center;
-        margin-bottom:20px;
+        margin-top:120px;
+        margin-bottom:30px;
+        font-weight: 700;
     }
     .remove-tips{
         display: flex;
         align-items: center;
-        justify-content: center;
-        font-size:var(--fontSize-big);
-        color:var(--color-black-60);
-        margin-bottom:10px;
-    }
-    .warning-icon{
-        width:16px;
-        height:16px;
-        margin-right:10px;
+        font-size:var(--fontSize-default);
+        color:#E98C41;
+        margin-bottom:20px;
     }
     .warning-item{
-        font-size:var(--fontSize-big);
-        color:var(--color-warning);
-        line-height: 22px;
-        margin-bottom:80px;
+        font-size:var(--fontSize-default);
+        color:var(--color-black-80);
+        line-height: 24px;
+        margin-bottom:50px;
     }
     .remove-rule{
         display: flex;
@@ -426,12 +414,12 @@ export default {
     }
     .login-text{
         font-size:var(--fontSize-small);
-        color:var(--color-black-40);
+        color:var(--color-black-100);
         margin-left:6px;
     }
     .login-text a{
         text-decoration: none;
-        color:#0d84ff;
+        color:var(--color-primary);
     }
     .remove-submit{
         display: block;
@@ -490,6 +478,31 @@ export default {
         color:#fff;
         font-size:var(--fontSize-big);
         margin-bottom:30px;
+        cursor: pointer;
+    }
+    .dialog-title{
+        width:100%;
+        height:100px;
+        background:#E98C41;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        left:0;
+        top:0;
+        border-top-left-radius: 7px;
+        border-top-right-radius: 7px;
+    }
+    .title-icon{
+        width:50px;
+        height:50px;
+    }
+    .dialog-closes{
+        width:40px;
+        height:40px;
+        position: absolute;
+        right:30px;
+        top:30px;
         cursor: pointer;
     }
 </style>

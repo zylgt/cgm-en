@@ -53,6 +53,9 @@ export default {
 </script>
 
 <style>
+[v-cloak]{
+  display: none;
+}
 html{
   overflow-x: hidden;
 }

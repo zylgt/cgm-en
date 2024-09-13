@@ -57,3 +57,43 @@ export function getRepoetList(data) {
         data: data
     })
 }
+// 获取报告年份
+export function getYear(data) {
+    return request({
+        url: '/report/year/web',
+        method: 'POST',
+        data: data
+    })
+}
+// 分页获取报告列表
+export function getReportList(data) {
+    return request({
+        url: '/report/devicelist/web',
+        method: 'POST',
+        data: data
+    })
+}
+// 同步reader信息
+export function syncReader(data) {
+    return request({
+        url: '/readerdevice/sync',
+        method: 'POST',
+        data: data
+    })
+}
+// 移除reader信息
+export function delReader(data) {
+    return request({
+        url: '/readerdevice/delete',
+        method: 'POST',
+        data: data
+    })
+}
+// 获取所有reader列表
+export function getReader(data) {
+    return request({
+        url: '/readerdevice/getlist',
+        method: 'POST',
+        data: data
+    })
+}

@@ -1,8 +1,8 @@
 <template>
     <div class='setting-userInfo userinfobox' >
         <div class='setting-item-title' >
-            <div class='item-title' >个人信息</div>
-            <div class='item-edit' @click='editShow' v-if='!edit' >修改个人信息</div>
+            <div class='item-title' >{{$t('message.setting.profile.title')}}</div>
+            <div class='item-edit' @click='editShow' v-if='!edit' >{{$t('message.setting.profile.edit')}}</div>
         </div>
         <div class='userInfo-box' v-if='!edit'>
             <div class='userInfo-img' >
@@ -11,43 +11,43 @@
             </div>
             <div class='userInfo-info' >
                 <div class='info-item' >
-                    <div class='info-item-label' >姓名：</div>
+                    <div class='info-item-label' >{{$t('message.setting.profile.name')}}：</div>
                     <div class='info-item-value' >{{info.nickname}}</div>
                 </div>
                 <div class='info-item' >
-                    <div class='info-item-label' >出生日期：</div>
+                    <div class='info-item-label' >{{$t('message.setting.profile.birthday')}}：</div>
                     <div class='info-item-value' >{{info.birthdate?info.birthdate:'--'}}</div>
                 </div>
                 <div class='info-item' >
-                    <div class='info-item-label' >性别：</div>
+                    <div class='info-item-label' >{{$t('message.setting.profile.gender')}}：</div>
                     <div class='info-item-value' >{{info.gender==0?'男':info.gender==1?'女':'--'}}</div>
                 </div>
                 <div class='info-item' >
-                    <div class='info-item-label' >身高：</div>
+                    <div class='info-item-label' >{{$t('message.setting.profile.height')}}：</div>
                     <div class='info-item-value' >{{info.height?info.height:'--'}}</div>
                 </div>
                 <div class='info-item' >
-                    <div class='info-item-label' >体重：</div>
+                    <div class='info-item-label' >{{$t('message.setting.profile.weight')}}：</div>
                     <div class='info-item-value' >{{info.weight?info.weight:'--'}}</div>
                 </div>
                 <div class='info-item' >
-                    <div class='info-item-label' >糖尿病类型：</div>
+                    <div class='info-item-label' >{{$t('message.setting.profile.typeDiabetes')}}：</div>
                     <div class='info-item-value' >{{info.show_diabetes_type?info.show_diabetes_type:'--'}}</div>
                 </div>
                 <div class='info-item' >
-                    <div class='info-item-label' >确诊日期：</div>
+                    <div class='info-item-label' >{{$t('message.setting.profile.diseaseYear')}}：</div>
                     <div class='info-item-value' >{{info.diagnosis_date?info.diagnosis_date:'--'}}</div>
                 </div>
                 <div class='info-item' >
-                    <div class='info-item-label' >治疗方案：</div>
+                    <div class='info-item-label' >{{$t('message.setting.profile.treatment')}}：</div>
                     <div class='info-item-value' >{{info.show_treatment_regimen?info.show_treatment_regimen:'--'}}</div>
                 </div>
                 <div class='info-item' >
-                    <div class='info-item-label' >合并症：</div>
+                    <div class='info-item-label' >{{$t('message.setting.profile.comorbidty')}}：</div>
                     <div class='info-item-value' >{{info.show_comorbidities?info.show_comorbidities:'--'}}</div>
                 </div>
                 <div class='info-item' >
-                    <div class='info-item-label' >并发症：</div>
+                    <div class='info-item-label' >{{$t('message.setting.profile.complication')}}：</div>
                     <div class='info-item-value' >{{info.show_complications?info.show_complications:'--'}}</div>
                 </div>
             </div>
@@ -56,6 +56,7 @@
             <div class='userInfo-img' >
                 <img :src="formData.avatar" alt="" class="userInfo-avater" >
                 <div class='userInfo-nickname' >{{formData.nickname}}</div>
+                <div class='userInfo-change' >{{$t('message.setting.profile.change')}}</div>
                  <el-upload
                         class="upload-demo"
                         ref='upload'
@@ -72,12 +73,25 @@
                         </el-upload>
             </div>
             <div>
-                <el-form ref="formData"  label-width="120px" label-position="left" :rules="rules"  :model="formData" :inline="true">
-                     <el-form-item label="姓名:" prop='nickname'>
+                <el-form ref="formData"  label-width="150px" label-position="left"  :model="formData" :inline="true">
+                        <el-form-item :label="$t('message.setting.profile.firstName')+':'">
                             <input type="text" v-model="formData.nickname" maxlength='15' class='user-inp el-input el-input__inner' @input="limitLength" >
                         </el-form-item>
-                        <el-form-item label="出生日期:" >
-                            <el-date-picker v-model="formData.birthdate" type="date"   placeholder="未填写"
+                        <el-form-item :label="$t('message.setting.profile.lastName')+':'">
+                            <input type="text" v-model="formData.nickname" maxlength='15' class='user-inp el-input el-input__inner' @input="limitLength" >
+                        </el-form-item>
+                        <el-form-item :label="$t('message.setting.profile.gender')+':'"  >
+                            <el-select v-model="formData.gender"  popper-class='edit-select' placeholder=" " :popper-append-to-body='false'>
+                                <el-option  :disabled="true">
+                                    <div class='select-title'>{{$t('message.setting.profile.gender')}}</div>
+                                </el-option>
+                                <el-option :label="$t('message.setting.profile.male')" :value="0" ><div :class='[formData.gender?"":"active","select-item"]'>{{$t('message.setting.profile.male')}}</div></el-option>
+                                <el-option :label="$t('message.setting.profile.female')" :value='1'><div>{{$t('message.setting.profile.female')}}</div></el-option>
+                                <el-option :label="$t('message.setting.profile.nosay')" :value='2'><div>{{$t('message.setting.profile.nosay')}}</div></el-option>
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item :label="$t('message.setting.profile.birthday')+':'"  >
+                            <el-date-picker v-model="formData.birthdate" type="date"   placeholder=" "
                             :picker-options="pickerOptions"
                             :default-value='defaultBirthday'
                             :append-to-body='false'
@@ -85,73 +99,73 @@
                             value-format="yyyy-MM-dd"	>
                             </el-date-picker>
                             <i class="el-icon-arrow-down picker-date-icon "></i>
-                            <span class='age-span' v-if='age'>（{{age}}岁）</span>
+                            <span class='age-span' v-if='age'>（{{age}}）</span>
                         </el-form-item>
-                        <el-form-item label="性别:"  >
-                            <el-select v-model="formData.gender" placeholder="未填写" :popper-append-to-body='false'>
-                                <el-option label="男" :value="0" ><div :class='[formData.gender?"":"active","select-item"]'>男</div></el-option>
-                                <el-option label="女" :value='1'><div>女</div></el-option>
-                            </el-select>
-                        </el-form-item>
-                        <el-form-item label="身高:" >
-                                <el-select v-model="formData.height" placeholder="未填写" :popper-append-to-body='false'>
+                        <el-form-item :label="$t('message.setting.profile.height')+':'" >
+                                <el-select v-model="formData.height"  popper-class='edit-select' placeholder=" " :popper-append-to-body='false'>
+                                <el-option  :disabled="true">
+                                    <div class='select-title'>{{$t('message.setting.profile.height')}}</div>
+                                </el-option>
                                 <el-option  v-for='item in heightArray' :key='item' :label="item+'cm'" :value="item" >
                                     <div :class='[item==175&&!formData.height?"active":"","select-item"]'>{{item}}cm</div>
                                 </el-option>
                             </el-select>
                         </el-form-item>
-                        <el-form-item label="体重:" >
-                                <el-select v-model="formData.weight" placeholder="未填写" :popper-append-to-body='false'>
+                        <el-form-item :label="$t('message.setting.profile.weight')+':'" >
+                                <el-select v-model="formData.weight"  popper-class='edit-select' placeholder=" " :popper-append-to-body='false'>
+                                <el-option  :disabled="true">
+                                    <div class='select-title'>{{$t('message.setting.profile.weight')}}</div>
+                                </el-option>
                                 <el-option  v-for='item in weightArray' :key='item' :label="item+'kg'" :value="item" >
                                         <div :class='[item==60&&!formData.weight?"active":"","select-item"]'>{{item}}kg</div>
                                 </el-option>
                             </el-select>
                         </el-form-item>
-                        <el-form-item label="糖尿病类型:" >
-                                <el-select v-model="formData.diabetes_type" popper-class='edit-select' placeholder="未填写" :popper-append-to-body='false'>
+                        <el-form-item :label="$t('message.setting.profile.typeDiabetes')+':'" >
+                                <el-select v-model="formData.diabetes_type" popper-class='edit-select' placeholder=" " :popper-append-to-body='false'>
                                     <el-option  :disabled="true">
-                                        <div class='select-title'>糖尿病类型</div>
-                                        </el-option>
+                                        <div class='select-title'>{{$t('message.setting.profile.typeDiabetes')}}</div>
+                                    </el-option>
                                     <el-option  v-for='item in diabetes_type_arr' :key='item.item_key' :label="item.item_name" :value="item.item_key" >
                                     </el-option>
                             </el-select>
                         </el-form-item>
-                        <el-form-item label="确诊日期:" v-if='diagnosisShow'>
+                        <el-form-item :label="$t('message.setting.profile.diseaseYear')+':'"  >
                             <el-date-picker v-model="formData.diagnosis_date" type="date" value-format="yyyy-MM-dd"
-                                prefix-icon =' ' placeholder="未填写" :append-to-body='false' :picker-options="diagnosisPickerOptions"></el-date-picker>
+                                prefix-icon =' ' placeholder=" " :append-to-body='false' :picker-options="diagnosisPickerOptions"></el-date-picker>
                                 <i class="el-icon-arrow-down picker-date-icon "></i>
-                                <span class='age-span' v-if='diabetes_year' >（{{diabetes_year}}年）</span>
+                                <span class='age-span' v-if='diabetes_year' >（{{diabetes_year}}{{$t('message.setting.profile.year')}}）</span>
                         </el-form-item>
-                         <el-form-item label="治疗方案:"  class='multiple'>
-                            <el-select v-model="formData.treatment_regimen" popper-class='edit-select' multiple placeholder="未填写" @change='chooseTreatmentRegimen' :popper-append-to-body='false'>
+                         <el-form-item :label="$t('message.setting.profile.treatment')+':'"   class='multiple specialLabel'>
+                            <el-select v-model="formData.treatment_regimen" popper-class='edit-select' multiple placeholder=" " @change='chooseTreatmentRegimen' :popper-append-to-body='false'>
                                 <el-option  :disabled="true">
-                                    <div class='select-title'>治疗方案</div>
+                                    <div class='select-title'>{{$t('message.setting.profile.treatment')}}</div>
                                 </el-option>
                                 <el-option  v-for='item in treatment_regimen_arr' :key='item.item_key' :label="item.item_name" :value="item.item_key" >
                                 </el-option>
                             </el-select>
                         </el-form-item>
-                         <el-form-item label="合并症:"  class='multiple'>
-                                <el-select v-model="formData.comorbidities" popper-class='edit-select' multiple placeholder="未填写" @change='chooseComorbidities' :popper-append-to-body='false'>
+                         <el-form-item :label="$t('message.setting.profile.comorbidty')+':'"   class='multiple'>
+                                <el-select v-model="formData.comorbidities" popper-class='edit-select' multiple placeholder=" " @change='chooseComorbidities' :popper-append-to-body='false'>
                                     <el-option  :disabled="true">
-                                        <div class='select-title'>合并症</div>
+                                        <div class='select-title'>{{$t('message.setting.profile.comorbidty')}}</div>
                                     </el-option>
                                     <el-option  v-for='item in comorbidities_arr' :key='item.item_key' :label="item.item_name" :value="item.item_key" >
                                     </el-option>
                             </el-select>
                         </el-form-item>
-                         <el-form-item label="并发症:"  class='multiple'>
-                                <el-select v-model="formData.complications" popper-class='edit-select' multiple placeholder="未填写" @change='chooseComplications' :popper-append-to-body='false'>
+                         <el-form-item :label="$t('message.setting.profile.complication')+':'"  class='multiple'>
+                                <el-select v-model="formData.complications" popper-class='edit-select' multiple placeholder=" " @change='chooseComplications' :popper-append-to-body='false'>
                                      <el-option  :disabled="true">
-                                        <div class='select-title'>并发症</div>
+                                        <div class='select-title'>{{$t('message.setting.profile.complication')}}</div>
                                     </el-option>
                                     <el-option  v-for='item in complications_arr' :key='item.item_key' :label="item.item_name" :value="item.item_key" >
                                     </el-option>
                             </el-select>
                         </el-form-item>
                         <div class='btn-box' >
-                            <el-button type="info" class='cancel-btn' @click='editShow'>取消</el-button>
-                            <el-button type="primary"  class='confirm-btn' @click="saveSubmit" :loading="loading">保存</el-button>
+                            <el-button type="info" class='cancel-btn' @click='editShow'>{{$t('message.common.cancel')}}</el-button>
+                            <el-button type="primary"  class='confirm-btn' @click="saveSubmit" :loading="loading">{{$t('message.common.confirm')}}</el-button>
                         </div>
                 </el-form>
             </div>
@@ -179,12 +193,6 @@ export default {
                 diagnosis_date:null,
                 nickname:null,
                 avatar:null
-            },
-            rules:{
-                nickname: [
-                    { required: true, message: '姓名栏不能为空', trigger: 'blur' },
-                    { pattern:/^[^*+?.[\]{}()|]/,  message: '姓名不能包含特殊字符', trigger: 'blur' }
-                ],
             },
             defaultBirthday:new Date().setFullYear(new Date().getFullYear()-40),
             pickerOptions:{
@@ -377,7 +385,7 @@ export default {
                         let show_treatment_regimen = _.filter(this.treatment_regimen_arr,(item)=>{
                             return _.indexOf(obj.treatment_regimen,item.item_key)!=-1
                         })
-                        obj.show_diabetes_type = obj.diabetes_type?_.filter(this.diabetes_type_arr,['item_key',obj.diabetes_type])[0].item_name:obj.diabetes_type
+                        obj.show_diabetes_type = obj.diabetes_type!=null?_.filter(this.diabetes_type_arr,['item_key',obj.diabetes_type])[0].item_name:obj.diabetes_type
                         obj.show_comorbidities = _.map(show_comorbidities,'item_name').join(',')
                         obj.show_complications = _.map(show_complications,'item_name').join(',')
                         obj.show_treatment_regimen =_.map(show_treatment_regimen,'item_name').join(',')
@@ -441,7 +449,7 @@ export default {
         justify-content: space-between;
     }
     .item-title{
-        font-size:var(--fontSize-max);
+        font-size:var(--fontSize-smax);
         color:var(--color-black-100);
         border-left:3px solid var(--color-primary);
         padding-left:10px;
@@ -450,7 +458,7 @@ export default {
         font-weight: 700;
     }
     .item-edit{
-        font-size:var(--fontSize-big);
+        font-size:var(--fontSize-default);
         color:var(--color-primary);
         text-decoration: underline;
         cursor: pointer;
@@ -474,10 +482,25 @@ export default {
         width:80px;
         height:80px;
         position: absolute;
-        left:17px;
+        left:35px;
         top:0;
         opacity: 0;
         overflow: hidden;
+    }
+    .userInfo-change{
+        width:80px;
+        height:80px;
+        position: absolute;
+        left:35px;
+        top:0;
+        background: rgba(0,0,0,0.5);
+        text-align: center;
+        line-height: 80px;
+        color:#fff;
+        font-size:14px;
+        text-decoration: underline;
+        overflow: hidden;
+        border-radius:50%;
     }
     .userInfo-avater{
         width:80px;
@@ -486,7 +509,7 @@ export default {
         margin-bottom:10px;
     }
     .userInfo-nickname{
-        font-size:var(--fontSize-max);
+        font-size:var(--fontSize-smax);
         color:var(--color-black-100);
         width:150px;
         text-align: center;
@@ -497,21 +520,22 @@ export default {
         display: grid;
         grid-template-columns:1fr 1fr 1fr;
         column-gap:20px;
-        row-gap:30px;
+        row-gap:40px;
         width:100%;
     }
     .info-item{
         display: flex;
         align-items: baseline;
+        width:350px;
     }
     .info-item-label{
-        width:130px;
-        font-size:var(--fontSize-big);
+        width:200px;
+        font-size:var(--fontSize-default);
         color:var(--color-black-60);
     }
     .info-item-value{
         width:200px;
-        font-size:var(--fontSize-big);
+        font-size:var(--fontSize-default);
         color:var(--color-black-100);
     }
     .btn-box{
@@ -550,13 +574,16 @@ export default {
         color: var(--color-primary);
     }
     .select-title{
-        /* color:#000; */
-       font-size:var(--fontSize-smax);
+        color:#000;
+        font-size:var(--fontSize-big);
+        border-bottom:1px solid #e5e5e5;
+        height:34px;
+        line-height:34px;
     }
     .age-span{
         position: absolute;
         right:-55px;
         top:0;
-        width:55px;
+        width:60px;
     }
 </style>

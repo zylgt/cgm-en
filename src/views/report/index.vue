@@ -15,7 +15,7 @@
         margin-bottom:20px;
     }
     .report-title{
-        font-size:var(--fontSize-max);
+        font-size:30px;
         color:var(--color-black-100);
         font-weight: 700;
     }
@@ -29,7 +29,7 @@
     .report-agp-date{
         height:50px;
         position: relative;
-        width:400px;
+        width:380px;
         border-radius:10px;
         background:#fff;
         cursor: pointer;
@@ -37,11 +37,12 @@
         align-items: center;
         justify-content: center;
         margin-bottom: 20px;
+        border:1px solid rgba(0,0,0,0.05)
     }
     .report-agp-dates{
         height:50px;
         position: relative;
-        width:400px;
+        width:380px;
         border-radius:10px;
         background:#f7f7f7;
         cursor: pointer;
@@ -56,6 +57,7 @@
         height:50px;
         position: relative;
         width:400px;
+        padding:0 10px;
         border-radius:10px;
         background:#fff;
         cursor: pointer;
@@ -64,16 +66,14 @@
         justify-content: center;
         border:1px solid rgba(0,0,0,0.05);
         margin-bottom: 20px;
-        position: absolute;
-        left:0;
-        top:0;
-        z-index:9;
+        box-sizing: border-box;
     }
     .agp-date{
-        font-size:var(--fontSize-big);
+        font-size:var(--fontSize-default);
         color:var(--color-black-100);
         display:inline-block;
         margin:0 10px;
+        width:320px;
     }
     .main-box{
         position: relative;
@@ -89,7 +89,12 @@
         vertical-align: sub;
         margin-right:10px;
     }
-   
+    .edit-agp-icon{
+        width:24px;
+        height:24px;
+        margin-right:30px;
+        vertical-align: sub;
+    }
     .agp-picker{
         position: absolute;
         left:3px;
@@ -142,19 +147,18 @@
     }
     .cgm-cont-title{
         width:100%;
-        height:40px;
-        line-height: 40px;
+        height:50px;
+        line-height: 50px;
         vertical-align: middle;
         padding-left:14px;
         font-size:var(--fontSize-max);
-        color:var(--color-black-100);
+        color:#fff;
         font-weight: 440;
-        background: rgba(50, 186, 192, 0.1);
+        background: var(--color-primary);
         border-radius:4px;
         margin-bottom:10px;
         display: flex;
         align-items: center;
-        box-shadow: 0px 2px 20px 0px #0000000D;
         font-family:MiLan-Medium;
     }
     .title-border{
@@ -178,6 +182,8 @@
     }
     .cgm-agp-info{
         color:var(--color-black-40);
+        font-size: var(--fontSize-default);
+        padding-left:6px;
     }
     .reason-icon{
         width:22px;
@@ -199,5 +205,87 @@
     }
     .tooltips-val-tir{
          color:var(--color-black-80);
+    }
+    /* 日期弹窗 */
+    .datePop-box{
+        width:100%;
+        height: 100%;
+        padding: 10px;
+    }
+    .datePop-title{
+        height:42px;
+        line-height: 42px;
+        border-bottom:1px solid rgba(0,0,0,0.1);
+        font-size:var(--fontSize-smax);
+        color:var(--color-black-100);
+        font-weight: 700;
+    }
+    .datePop-sub-title{
+        font-size:var(--fontSize-default);
+        color:var(--color-black-100);
+        padding:10px 0;
+    }
+    .datePop-days{
+        display: flex;
+        align-items: center;
+        margin-bottom:20px;
+        width: 100%;
+        justify-content: space-between;
+    }
+    .datePop-days-item{
+        width:160px;
+        height:42px;
+        border-radius:10px;
+        border:1px solid rgba(0,0,0,0.1);
+        text-align: center;
+        line-height: 42px;
+        font-size:var(--fontSize-default);
+        color:var(--color-black-80);
+        cursor: pointer;
+    }
+    .datePop-days-item.active{
+        background: var(--color-primary);
+        color:#fff;
+    }
+    .datePop-change-day{
+        width:100%;
+        height:100px;
+        border-radius:10px;
+        background:#f7f7f7;
+        box-sizing: border-box;
+        padding:20px;
+        font-size:var(--fontSize-default);
+        color:var(--color-black-100);
+    }
+    .datePop-btn{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin:40px 0;
+    }
+    .cancel-btn{
+        width:140px;
+        height:50px;
+        border-radius:10px;
+        background: #f7f7f7;
+        text-align: center;
+        line-height: 50px;
+        font-size:var(--fontSize-default);
+        color:var(--color-black-80);
+        font-weight: 600;
+        margin-right:30px;
+        cursor: pointer;
+    }
+    .confirm-btn{
+        width:140px;
+        height:50px;
+        border-radius:10px;
+        background:var(--color-primary);
+        text-align: center;
+        line-height: 50px;
+        font-size:var(--fontSize-default);
+        color:#fff;
+        font-weight: 600;
+        cursor: pointer;
     }
 </style>

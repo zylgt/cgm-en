@@ -1,4 +1,4 @@
-import {formatDate,formatTime} from '@/utils/formatTime'
+import {formatDate,formatTime,formatEn} from '@/utils/formatTime'
 import {mapGetters} from "vuex"
 import Progress from '@/views/report/components/Progress'
 import {getAgpInfo,getEvent} from '@/api/dataApi'
@@ -65,7 +65,7 @@ export default{
         let end_ts = new Date()
         let start_ts = new Date().setDate(end_ts.getDate() - 13)
         this.chooseDay(new Date(start_ts),end_ts)
-        this.agpDate = [formatDate(start_ts,"YYYY-mm-dd"), formatDate(end_ts,"YYYY-mm-dd")] 
+        this.agpDate = ['2024-05-20', '2024-05-24'] 
         this.chooseGetData()
     },
     methods: {
@@ -73,9 +73,6 @@ export default{
         changeDate(e){
             this.chooseDay(new Date(e[0]), new Date(e[1]))
             this.chooseGetData()
-        },
-        pickerFocus(){
-            this.$refs.datePicker.focus()
         },
         // 选择天数
         chooseDay(date1,date2){

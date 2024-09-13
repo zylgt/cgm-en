@@ -7,79 +7,61 @@
                     
                 </div>
                 <div class='agp-fr' >
-                    <img src="~@/assets/image/printer.png" alt="" class='agp-icon' @click='print' >
-                    <img src="~@/assets/image/down-icon.png" alt="" class='agp-icon' @click='handleExport' >
-                    <img src="~@/assets/image/share.png" alt="" class='agp-icon agp-fr-icon'>
+                    <img src="~@/assets/image/printer.png" alt="" class='edit-agp-icon' @click='print' >
+                    <img src="~@/assets/image/down-icon.png" alt="" class='edit-agp-icon' @click='handleExport' >
+                    <img src="~@/assets/image/mail.png" alt="" class='edit-agp-icon agp-fr-icon'>
                     <el-button type="primary" @click="upload">
                         <img src="~@/assets/image/btn-upload.png" alt="" class='btn-upload' >
-                        上传数据
+                         {{$t('message.reports.upLoad')}}
                     </el-button>
                 </div>
             </div>
-            <div class='report-agp-date' >
-                    <div class='report-agp-date-box' @click='pickerFocus'>
-                        <img src="~@/assets/image/date-calendar.png" alt="" class='agp-icon' >
-                        <div class='agp-date' >{{agpDate[0]}} — {{agpDate[1]}}（{{dayDate}}天）</div>
-                        <img src="~@/assets/image/select-icon.png" alt="" class='select-icon' >
-                    </div>
-                    <el-date-picker
-                        ref='datePicker'
-                        class='agp-picker'
-                        v-model="agpDate"
-                        type="daterange"
-                        align="right"
-                        unlink-panels
-                        range-separator="至"
-                        start-placeholder="开始日期"
-                        end-placeholder="结束日期"
-                        value-format="yyyy-MM-dd"
-                        format="yyyy-MM-dd"
-                        :append-to-body='false'
-                        @change="changeDate"
-                        :picker-options="pickerOptions">
-                    </el-date-picker>
+            <div class='report-agp-date-box'  v-popover:datePopover @click='openPopover("date")' >
+                <img src="~@/assets/image/date-calendar.png" alt="" class='agp-icon' >
+                <div class='agp-date' >{{agpDate[0]}} — {{agpDate[1]}}（{{dayDate}}{{$t('message.common.day')}}）</div>
+                <img src="~@/assets/image/select-icon.png" alt="" class='select-icon' >
             </div>
             <div class='main-box'>
                 <Progress v-if='progressShow' />
                 <!-- 基本信息 -->
                 <div class='agp-main-box' :style='{"opacity":progressShow?0:1}' >
                     <div class='agp-cont-main'>
-                        <div class='cgm-cont-title'><span class='title-border' ></span>基本信息</div>
+                        <div class='cgm-cont-title'><span class='title-border' ></span>{{$t('message.infomation.basicTitle')}}</div>
                         <div class='report-base-user' >
                             <div class='report-base-user-item' >
-                                <div class='report-base-user-label'>姓名：</div>
+                                <div class='report-base-user-label'>{{$t('message.infomation.name')}}：</div>
                                 <div class='report-base-user-value'>{{info.nickname?info.nickname:'--'}}</div>
                             </div>  
                             <div class='report-base-user-item' >
-                                <div class='report-base-user-label'>年龄：</div>
+                                <div class='report-base-user-label'>{{$t('message.infomation.age')}}：</div>
                                 <div class='report-base-user-value'>{{info.age?info.age:'--'}}</div>
                             </div>  
                             <div class='report-base-user-item' >
-                                <div class='report-base-user-label'>糖尿病类型：</div>
+                                <div class='report-base-user-label'>{{$t('message.bgInfo.typeDiabetes')}}：</div>
                                 <div class='report-base-user-value'>{{info.diabetes_type?info.diabetes_type:'--'}}</div>
                             </div>  
                             <div class='report-base-user-item' >
-                                <div class='report-base-user-label'>病程：</div>
+                                <div class='report-base-user-label'>{{$t('message.bgInfo.diseaseYear')}}：</div>
                                 <div class='report-base-user-value'>{{info.diabetes_year?info.diabetes_year:'--'}}</div>
                             </div>  
                             <div class='report-base-user-item' >
-                                <div class='report-base-user-label'>葡萄糖目标范围：</div>
+                                <div class='report-base-user-label'>{{$t('message.bgInfo.targerRange')}}：</div>
                                 <div class='report-base-user-value'>{{info.glucose_range_lower_limit}}-{{info.glucose_range_lupper_limit}}{{unit}}</div>
                             </div>  
                         </div>
                         <div class='report-data-source'>
-                            <div class='report-base-user-item' >
-                                <div class='report-base-user-label'>传感器序列号</div>
+                            <div class='report-base-user-item0' >
+                                <div class='report-base-user-label'>{{$t('message.sensorcode')}}</div>
                             </div>  
                             <div class='report-base-user-item1' >
-                                <div class='report-base-user-label'>数据来源</div>
+                                <div class='report-base-user-label'>{{$t('message.source')}}</div>
                             </div>  
                             <div class='report-base-user-item2' >
-                                <div class='report-base-user-label'>同步时间</div>
+                                <div class='report-base-user-label'>{{$t('message.synctime')}}</div>
                             </div>  
                         </div>
                         <div class='report-data-sources' v-if='info.device.length<=0'>
-                            <div class='report-base-user-item' >
+                            <div class='report-base-user-item0' >
                                 <div class='report-base-user-value'>--</div>
                             </div>  
                             <div class='report-base-user-item1' >
@@ -91,7 +73,7 @@
                         </div>
                         <div v-else >
                             <div class='report-data-sources' v-for='(item,index) in info.device' :key='index'>
-                                <div class='report-base-user-item' >
+                                <div class='report-base-user-item0' >
                                     <div class='report-base-user-value'>{{item.nickname?item.nickname:'--'}}</div>
                                 </div>  
                                 <div class='report-base-user-item1' >
@@ -107,84 +89,150 @@
                     <div class='agp-cont' id='overviewpage' v-else>
                         <el-row type="flex" justify="space-between">
                             <el-col :span="12" class='agp-cont-main agp-cont-main1' >
-                                <div class='cgm-cont-title'>  <span class='title-border' ></span>血糖数据</div>
+                                <div class='cgm-cont-title'>  <span class='title-border' ></span>{{$t('message.reports.glucoseStatistics')}}</div>
                                 <!-- <div class='cgm-agp-info-box cgm-agp-info-box1'>
                                     <div class='cgm-agp-info'></div>
                                     <img src="~@/assets/image/reason-icon.png" alt="" class='reason-icon' >
                                 </div> -->
                                 <div class='bg-data-item' >
                                     <div class='bg-data-label' >
-                                        <div>CGM佩戴天数</div>
+                                        <div>{{$t('message.reports.wearingDay')}}</div>
                                         <div class='bg-data-tip' ></div>
                                     </div>
                                     <div class='bg-data-val' >{{bgInfo.wearsDay}}</div>
                                 </div>
                                 <div class='bg-data-item' >
                                     <div class='bg-data-label' >
-                                        <div>CGM有效记录的时间占比：</div>
-                                        <div class='bg-data-tip' >目标值>70%才可得到有效数据分析</div>
+                                        <div>{{$t('message.reports.activeTime')}}</div>
+                                        <div class='bg-data-tip' >{{$t('message.common.target')}}>70%</div>
                                     </div>
                                     <div :class='[bgInfo.effective>70?"":"active","bg-data-val"]' >{{bgInfo.effective}}%</div>
                                 </div>
                                 <div class='bg-data-item' v-if='unit=="mg/dL"'>
                                     <div class='bg-data-label' >
-                                        <div>MG平均葡萄糖值：</div>
-                                        <div class='bg-data-tip' >目标值＜118 mg/dL</div>
+                                        <div>{{$t('message.mean')}}</div>
+                                        <div class='bg-data-tip' >{{$t('message.common.target')}}＜118 mg/dL</div>
                                     </div>
                                     <div class='bg-data-val' >{{bgInfo.mean}}mg/dL</div>
                                 </div>
                                 <div class='bg-data-item' v-else>
                                     <div class='bg-data-label' >
-                                        <div>MG平均葡萄糖值：</div>
-                                        <div class='bg-data-tip' >目标值＜6.6mmol/L</div>
+                                        <div>{{$t('message.mean')}}</div>
+                                        <div class='bg-data-tip' >{{$t('message.common.target')}}＜6.6mmol/L</div>
                                     </div>
                                     <div class='bg-data-val' >{{bgInfo.mean}}mmol/L</div>
                                 </div>
                                 <div class='bg-data-item' >
                                     <div class='bg-data-label' >
-                                        <div>GMI葡萄糖管理指标：</div>
-                                        <div class='bg-data-tip' >目标值＜7%</div>
+                                        <div>{{$t('message.cmi')}}</div>
+                                        <div class='bg-data-tip' >{{$t('message.common.target')}}＜7%</div>
                                     </div>
-                                    <div class='bg-data-val'  >{{resultDay>=10?bgInfo.GMI+'%':'无足够数据'}}</div>
+                                    <div class='bg-data-val'  >{{resultDay>=10?bgInfo.GMI+'%':$t('message.common.noData')}}</div>
                                 </div>
                                 <div class='bg-data-item' >
                                     <div class='bg-data-label' >
-                                        <div>CV变异系数：</div>
-                                        <div class='bg-data-tip' >目标值＜33%</div>
+                                        <div>CV{{$t('message.cv')}}</div>
+                                        <div class='bg-data-tip' >{{$t('message.common.target')}}＜33%</div>
                                     </div>
                                     <div class='bg-data-val' >{{bgInfo.CV}}%</div>
                                 </div>
                             </el-col>
                             <el-col :span="12" class='agp-cont-main agp-cont-main1'>
-                                <div class='cgm-cont-title'>  <span class='title-border' ></span>葡萄糖目标范围内时间</div>
+                                <div class='cgm-cont-title'>  <span class='title-border' ></span>{{$t('message.tir')}}</div>
                                 <div class='cgm-agp-info-box'>
-                                    <div class='cgm-agp-info'>葡萄糖目标范围内占比越高，代表血糖控制的越好。</div>
+                                    <div class='cgm-agp-info'>{{$t('message.reports.tirs.explain')}}</div>
                                     <img src="~@/assets/image/reason-icon.png" alt="" class='reason-icon'  v-popover:tirPopover @click='openPopover("tir")' >
                                 </div>
                                 <TIR :dataList='tir'/>
                             </el-col>
                         </el-row>
                         <div class='agp-cont-main' >
-                            <div class='cgm-cont-title'><span class='title-border' ></span>AGP图谱</div>
+                            <div class='cgm-cont-title'><span class='title-border' ></span>{{$t('message.reports.agp.title')}}</div>
                             <div class='cgm-agp-info-box'>
-                                <div class='cgm-agp-info'>中位数葡萄糖曲位于目标范围内，且越平坦，表示血糖稳定性越好。25%-75%区间（图中深蓝色区域）与5%-95%区间（图中浅蓝色区域）均显示日间血糖波动情况，区间越宽提示相应时间段血糖波动越大。其中影响 25%-75%区间的因素主要是是生理状态(如胰岛素抵抗等)和药物治疗等。影响5%-95%区间的因素主要是饮食，运动等。</div>
+                                <div class='cgm-agp-info'>{{$t('message.reports.agp.explain')}}</div>
                                 <img src="~@/assets/image/reason-icon.png" alt="" class='reason-icon'  v-popover:agpPopover @click='openPopover("agp")'>
                             </div>
                             <AGP  :dataList='agpList' :height='370'/>
                         </div>
                         <div class='agp-cont-main' >
-                                <div class='cgm-cont-title'><span class='title-border' ></span>每日血糖曲线</div>
+                                <div class='cgm-cont-title'><span class='title-border' ></span>{{$t('message.reports.day.title')}}</div>
                                 <div class='cgm-agp-info-box'>
-                                    <div class='cgm-agp-info'>每日血糖展示了14天中每天的血糖变化情况。</div>
+                                    <div class='cgm-agp-info'>{{$t('message.reports.day.explain')}}</div>
                                     <img src="~@/assets/image/reason-icon.png" alt="" class='reason-icon' v-popover:dayPopover @click='openPopover("day")'>
                                 </div>
                                 <DayChart :dataList='agpdayList' @readerIng='dayReader'/>
+                        </div>
+                        <div class='agp-cont-main' >
+                                <div class='cgm-cont-title'><span class='title-border' ></span>{{$t('message.reports.summaryDay.title')}}</div>
+                                <DaySummary :dataList='agpdayList' @readerIng='dayReader'/>
+                        </div>
+                        <div class='agp-cont-main' >
+                                <div class='cgm-cont-title'><span class='title-border' ></span>{{$t('message.reports.trendDay.title')}}</div>
+                                 <div class='event-type'>
+                                    <div class='event-type-item' >
+                                        <img src="~@/assets/image/event-icon0.png" alt="" class='event-icon' >
+                                        <p class='event-type-label' >{{$t('message.reports.trendDay.eventType0')}}</p>
+                                    </div>
+                                    <div class='event-type-item' >
+                                        <img src="~@/assets/image/event-icon1.png" alt="" class='event-icon' >
+                                        <p class='event-type-label' >{{$t('message.reports.trendDay.eventType1')}}</p>
+                                    </div>
+                                    <div class='event-type-item' >
+                                        <img src="~@/assets/image/event-icon2.png" alt="" class='event-icon' >
+                                        <p class='event-type-label' >{{$t('message.reports.trendDay.eventType2')}}</p>
+                                    </div>
+                                    <div class='event-type-item' >
+                                        <img src="~@/assets/image/event-icon3.png" alt="" class='event-icon' >
+                                        <p class='event-type-label' >{{$t('message.reports.trendDay.eventType3')}}</p>
+                                    </div>
+                                    <div class='event-type-item' >
+                                        <img src="~@/assets/image/event-icon4.png" alt="" class='event-icon' >
+                                        <p class='event-type-label' >{{$t('message.reports.trendDay.eventType4')}}</p>
+                                    </div>
+                                    <div class='event-type-item' >
+                                        <img src="~@/assets/image/event-icon5.png" alt="" class='event-icon' >
+                                        <p class='event-type-label' >{{$t('message.reports.trendDay.eventType5')}}</p>
+                                    </div>
+                                    <div class='event-type-item' >
+                                        <img src="~@/assets/image/event-icon6.png" alt="" class='event-icon' >
+                                        <p class='event-type-label' >{{$t('message.reports.trendDay.eventType6')}}</p>
+                                    </div>
+                                </div>
+                                <div v-for='(item,index) in agpdayList' :key='index'>
+                                    <DayAnalysis :dataList='item' :eventList='eventList[item.date]'/>
+                                </div>
                         </div>
                     </div>
                 </div>
             </div>
 
         </div>
+        <!-- 日期选择弹窗 -->
+        <el-popover
+            placement="bottom-start"
+            width="740"
+            trigger="manual"
+            ref="datePopover"
+            v-model='dateVisible'
+            :append-to-body="false">
+            <div class='datePop-box' >
+                <div class='datePop-title'>{{$t('message.reports.selectDate.title')}}</div>
+                <div class='datePop-sub-title'>{{$t('message.reports.selectDate.subTitle')}}</div>
+                <div class='datePop-days'>
+                    <div :class='[dateValue==7?"active":"","datePop-days-item"]' @click='selectDay(7)'>{{$t('message.reports.selectDate.day7')}}</div>
+                    <div :class='[dateValue==14?"active":"","datePop-days-item"]' @click='selectDay(14)'>{{$t('message.reports.selectDate.day14')}}</div>
+                    <div :class='[dateValue==30?"active":"","datePop-days-item"]' @click='selectDay(30)'>{{$t('message.reports.selectDate.day30')}}</div>
+                    <div :class='[dateValue==90?"active":"","datePop-days-item"]' @click='selectDay(90)'>{{$t('message.reports.selectDate.day90')}}</div>
+                </div>
+                <div class='datePop-change-day' >
+                    {{start_time}}-{{end_time}}
+                </div>
+                <div class='datePop-btn' >
+                    <div class='cancel-btn'  @click='dateVisible=false'>{{$t('message.common.cancel')}}</div>
+                    <div class='confirm-btn' @click='confirmDate'>{{$t('message.common.confirm')}}</div>
+                </div>
+            </div>
+        </el-popover>
         <!-- 解释弹窗 -->
         <el-popover
             ref="tirPopover"
@@ -241,43 +289,22 @@
         <el-dialog
         :visible.sync="dialogVisible"
         :show-close="false"
-        :title='dialogType=="print"?"打印报告":"下载报告"'
         custom-class='printToask'
         width="1060"
         >
             <div class='slot-popover'  id='popover'>
-                <div class='slot-popover-cont slot-popover-conts'>
-                    <div class='report-agp-date report-agp-dates' >
-                            <img src="~@/assets/image/date-calendar.png" alt="" class='agp-icon' >
-                            <div class='agp-date' >{{agpDate[0]}} — {{agpDate[1]}}（4天）</div>
-                            <img src="~@/assets/image/select-icon.png" alt="" class='select-icon' >
-                            <el-date-picker
-                                class='agp-picker'
-                                v-model="agpDate"
-                                type="daterange"
-                                align="right"
-                                unlink-panels
-                                range-separator="至"
-                                start-placeholder="开始日期"
-                                end-placeholder="结束日期"
-                                value-format="yyyy-MM-dd"
-                                format="yyyy-MM-dd"
-                                @change="changeDate"
-                                :picker-options="pickerOptions">
-                            </el-date-picker>
+                <div class='slot-progress' >
+                    <img src="~@/assets/image/downdata.png" alt="" class='down-icon' >
+                    <div class='cgm-progress' >
+                        <div class='cgm-bg-progress' >
+                            <div class='cgm-resulr-progress' :style='{"width":percentage*4+"px"}'></div>
+                        </div>
+                        <div class='progress-result' >{{percentage}}%</div>
                     </div>
-                    <div class='popover-cont-label' >
-                        <div class='popover-cont-label-label' v-if='dialogType=="print"'>请选择您想要打印的报告内容：</div>
-                        <div class='popover-cont-label-label' v-else>请选择您想要下载的报告内容：</div>
-                         <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
+                    <div class='slot-progress-title' >{{$t('message.reports.generationReport')}}</div>
+                    <div class='slot-progress-tips' >
+                        {{$t('message.reports.tips')}}
                     </div>
-                    <el-checkbox-group v-model="checkedDowns" @change="handleCheckedCitiesChange">
-                        <el-checkbox v-for="item in downloadList" :label="item" :key="item">{{item}}</el-checkbox>
-                    </el-checkbox-group>
-                </div>
-                <div class='slot-popover-btn'>
-                    <el-button type="primary" v-if='dialogType=="print"'>打印报告</el-button>
-                    <el-button type="primary" v-else>下载报告</el-button>
                 </div>
             </div>
             <img src="~@/assets/image/close-icon.png" alt="" class='dialog-close' @click='dialogVisible=false' >
@@ -285,23 +312,28 @@
     </div>
 </template>
 <script>
-import {formatDate,formatTime} from '@/utils/formatTime'
+import {formatDate,formatTime,formatEn} from '@/utils/formatTime'
 import { AGPUtils } from "@/utils/algorithm/AGP";
 import { TIRUtils } from "@/utils/algorithm/TIR";
 import { GlucoseUtils } from "@/utils/algorithm/Glucose";
+import {getAgpInfo,getEvent} from '@/api/dataApi'
 import TIR from '@/views/components/Chart/TIR'
 import AGP from '@/views/components/Chart/AGPchart'
 import DayChart from '@/views/components/Chart/DayChart'
+import DaySummary from '@/views/components/Chart/Daysummary'
+import DayAnalysis from '@/views/report/components/dayAnalysis'
 import Empty from '@/views/components/Empty/empty'
+import Progress from '@/views/report/components/Progress'
 import mixin from "./mixin"
-  import {mapGetters} from "vuex"
+import {mapGetters} from "vuex"
 export default {
     data(){
         return{
-            agpDates:'',
+            agpDate:['',''], //日期选中值
             tirVisible:false,
             agpVisible:false,
             dayVisible:false,
+            dateVisible:false,
             info:{
                 nickname:'',
                 diabetes_type:'',
@@ -317,19 +349,253 @@ export default {
             agpList:{},//agp
             bgInfo:{},//血糖数据
             resultDay:'',//实际血糖数据天数
+            dateValue:'',//选择的天数
+            start_time:'', //开始时间
+            end_time:'', //结束时间
+            dayDate:14,
+            empty:true,
+            downProgress:0,
+            progressShow:false,
+            eventList:[],
+            dialogVisible:false, //下载打印弹窗开关
+            percentage:2,
         }
     },
-    mixins: [mixin],
     components: {
-        TIR,AGP,DayChart,Empty
+        TIR,AGP,DayChart,Empty,DaySummary,DayAnalysis,Progress
+    },
+    computed:{
+        ...mapGetters([
+           'unit','targetScope']),
     },
     created(){
-
+        
     },
     mounted(){
-       
+        let end_ts = new Date()
+        let start_ts = new Date().setDate(end_ts.getDate() - 13)
+        this.chooseDay(new Date(start_ts),end_ts)
+        this.agpDate = ['2024-05-20', '2024-05-24'] 
+        this.start_time = this.agpDate[0]
+        this.end_time = this.agpDate[1]
+        this.chooseGetData()
     },
     methods:{
+        // 选择天数
+        chooseDay(date1,date2){
+            this.progressShow = true
+            let s_date = date1.setHours(0,0,0)/1000
+            let e_date = date2.setHours(23,59,59)/1000
+            let oneDay = 24 * 60 * 60 ; // 每天的毫秒数
+            let diff = Math.abs(s_date - e_date); // 计算差值的绝对值
+            this.dayDate  = Math.ceil(diff / oneDay)
+        },
+        // 判断从哪里拉取数据
+        chooseGetData(){
+            if( _.indexOf(this.$store.state.report.chooseDateList,this.agpDate.join('/'))==-1){
+                this.getData()
+                this.getEventList()
+            }else{
+                let result  = this.$store.state.report.data[this.agpDate.join('/')]
+                let events  = this.$store.state.report.events[this.agpDate.join('/')]
+                if(result.length>0){
+                    this.empty = false
+                }else{
+                    this.empty = true
+                }
+                this.handelTemplateDay(result)
+                this.handelEventDay(events)
+                this.info =  this.$store.state.report.info[this.agpDate.join('/')]
+            }
+        },
+        // 从云拉取数据
+        getData(){
+            let s = new Date(this.agpDate[0])
+            let e = new Date(this.agpDate[1])
+            let start_ts = s.setHours(0,0,0)/1000
+            let end_ts = e.setHours(23,59,59)/1000
+            getAgpInfo({start_ts:start_ts,end_ts:end_ts}).then(response => {
+                    if(response.code == 1000){
+                        if(response.data.devices.length>0){
+                            response.data.devices.forEach(item=>{
+                                item.upDate = formatDate(item.update_ts*1000,"YYYY年mm月dd日")
+                            })
+                        }
+
+                        let target = null
+                        if(response.data.glucose_unit==0){
+                            target = [GlucoseUtils.mgdlToMmol(response.data.glucose_range_lower_limit),GlucoseUtils.mgdlToMmol(response.data.glucose_range_lupper_limit)]
+                        }else{
+                            target = [response.data.glucose_range_lower_limit,response.data.glucose_range_lupper_limit]
+                        }
+                        let params = {
+                            nickname:response.data.nickname,
+                            diabetes_type:response.data.diabetes_type,
+                            age:response.data.age,
+                            diabetes_year:response.data.diabetes_year,
+                            glucose_range_lower_limit:target[0],
+                            glucose_range_lupper_limit:target[1],
+                            device:response.data.devices
+                        }
+                        this.$store.dispatch('setInfo',{key:this.agpDate.join('/'),value:params}) //处理完数据存vuex
+                        this.$store.dispatch('setTargetScope',target)
+                        this.$store.dispatch('setUnit',response.data.glucose_unit==0?'mmol/L':'mg/dL')
+                        this.info = params
+
+                        let arrayData = response.data.datas
+                       
+                        if(arrayData.length>0){
+                            console.log(formatTime(new Date()),'得到数据')   
+                            this.empty = false
+                            this.handelTemplateDay(this.handleData(arrayData,start_ts,end_ts))
+                            this.$store.dispatch('setChooseDateList',this.agpDate.join('/'))
+                        }else{
+                            this.empty = true
+                            this.progressShow = false
+                        }
+                    }else{
+                        this.progressShow = false
+                        this.$message({
+                            type: 'error',
+                            message: response.msg
+                        });
+                    }
+            }).catch((res) => {
+                this.progressShow = false
+                console.log(res)
+            })
+        },
+        // 云拉取事件
+        getEventList(){
+            let s = new Date(this.agpDate[0])
+            let e = new Date(this.agpDate[1])
+            let start_ts = s.setHours(0,0,0)/1000
+            let end_ts = e.setHours(23,59,59)/1000
+            getEvent({event_type:-1,start_ts:start_ts,end_ts:end_ts}).then(response => {
+                if(response.code == 1000){
+                    this.$store.dispatch('setEvents',{key:this.agpDate.join('/'),value:response.data}) //处理完数据存vuex
+                    this.handelEventDay(response.data)
+
+                }else{
+                    this.$message({
+                        type: 'error',
+                        message: response.msg
+                    });
+                }
+            }).catch((res) => {
+            })
+        },
+        processArray(arr, interval) {
+            let result = [];
+
+            for (let i = 0; i < arr.length - 1; i++) {
+                result.push(arr[i]);
+
+                let diff = arr[i + 1].DataTs - arr[i].DataTs;
+                let addTs = arr[i].DataTs + interval;
+                while (diff > interval) {
+                result.push({DataTs: addTs, value: undefined});
+                diff = arr[i + 1].DataTs - addTs;
+                addTs += interval;
+                }
+            }
+            result.push(arr[arr.length - 1]);
+
+            return result;
+        },
+
+        filterArray  (data) {
+            const result = [];
+
+            const seenTimes = new Set();
+            let levelLowInvalidMg = 20
+            let levelHighInvalidMg = 800
+            let levelTooLowMg = 36
+            let levelTooHighMg = 540
+            data.forEach(item => {
+                const timeStr = formatDate(item.DataTs*1000,'YYYY-mm-dd HH:MM')
+
+                if (!seenTimes.has(timeStr)) {
+                seenTimes.add(timeStr);
+                if (item.Value < levelLowInvalidMg || item.Value > levelHighInvalidMg) {
+                    result.push({...item, value: undefined});
+                } else if (item.Value < levelTooLowMg) {
+                    result.push({
+                    ...item,
+                    value: levelTooLowMg,
+                    });
+                } else if (item.Value > levelTooHighMg) {
+                    result.push({
+                    ...item,
+                    value: levelTooHighMg,
+                    });
+                } else {
+                    result.push({
+                    ...item,
+                    value: item.Value,
+                    });
+                }
+                }
+            });
+            // console.log(result)
+            return result;
+        },
+
+        handleData (objects, s_ts, e_ts)  {
+            let measuringInterval = 60
+            objects = this.processArray(objects, measuringInterval);
+            objects = this.filterArray(objects);
+            let that = this
+            let startTs = objects[0].DataTs;
+            while (startTs - measuringInterval >= s_ts) {
+                objects.unshift({
+                DataTs: startTs - measuringInterval,
+                value: undefined,
+                Value:undefined
+                });
+                startTs = startTs - measuringInterval;
+            }
+
+            let endTs = objects[objects.length - 1].DataTs;
+            while (endTs + measuringInterval < e_ts) {
+                objects.push({
+                DataTs: endTs + measuringInterval,
+                value: undefined,
+                Value:undefined
+                });
+                endTs = endTs + measuringInterval;
+            }
+            this.$store.dispatch('setData',{key:this.agpDate.join('/'),value:objects}) //处理完数据存vuex
+            return objects;
+        },
+        // 全部事件分割为每天事件
+        handelEventDay(datas){
+            let data = _.clone(datas)
+            // let data = _.concat(_.clone(datas),_.clone(datas))
+            let unit = this.unit
+            let eventList ={};
+            let sameList = {}
+            let repeatNum = 1
+            data.forEach(item=>{
+                let key = formatDate(item.event_ts*1000,'YYYY-mm-dd')
+                let zeroTs = new Date(key).setHours(0,0,0)/1000
+                item.xIndex = (item.event_ts-zeroTs)/60
+                if(sameList[item.event_ts]){
+                    repeatNum++
+                    sameList[item.event_ts].push(item)
+                }else{
+                    repeatNum = 1
+                    sameList[item.event_ts] = [item]
+                }
+                item.yPosition = unit=='mmol/L'?1*repeatNum:18*repeatNum
+                if(eventList[key]){
+                    eventList[key].push(item)
+                }else{
+                    eventList[key] = [item]
+                }
+            })
+            this.eventList = eventList
+        },
         // 打开解释弹窗
         openPopover(key){
             switch(key){
@@ -348,6 +614,9 @@ export default {
                     this.tirVisible = false
                     this.agpVisible = false
                     break;
+                case 'date':
+                    this.dateVisible = true
+
             }
         },
         // 自组件需要的数据
@@ -427,7 +696,7 @@ export default {
                 let originValue = _.map(item, 'Value');
                 let handelValue = _.compact(value)
                 dayList.push({
-                    day: formatDate(item[0].DataTs*1000,'mm.dd'),
+                    day: formatDate(item[0].DataTs*1000,'mm-dd'),
                     week: formatDate(item[0].DataTs*1000,'WW'),
                     value:value,
                     resultValue:handelValue,
@@ -457,6 +726,43 @@ export default {
         // 每日血糖渲染完成
         dayReader(val){
             this.progressShow = val
+        },
+        upload(){
+            this.$router.push('/upLoad')
+        },
+          // 选择下载。打印的内容
+        handleCheckedCitiesChange(val){
+            let checkedCount = val.length;
+            this.checkAll = checkedCount === this.downloadList.length;
+            this.isIndeterminate = checkedCount > 0 && checkedCount < this.downloadList.length;
+        },
+        // 全选
+        handleCheckAllChange(val){
+            this.checkedDowns = val ? this.downloadList : [];
+            this.isIndeterminate = false;
+        },
+          // 打印
+        async print(){
+            this.dialogVisible = true
+            this.dialogType='print'
+        },
+        // 导出pdf
+        handleExport() {
+            this.dialogVisible = true
+            this.dialogType='export'
+        },
+        // 选择天数
+        selectDay(val){
+            this.dateValue = val
+            const end = new Date();
+            const start = new Date();
+            start.setTime(start.getTime() - 3600 * 1000 * 24 *( val-1));
+            this.start_time = formatEn(start)
+            this.end_time = formatEn(end)
+        },
+        // 根据日期获取数据
+        confirmDate(){
+
         }
     },
 }
@@ -498,9 +804,11 @@ export default {
         display: flex;
         align-items: center;
         font-size:18px;
-        width:45%;
     }
-     .report-base-user-item1{
+    .report-base-user-item0{
+         width:35%;
+    }
+    .report-base-user-item1{
         font-size:18px;
         flex-grow: 2;
          width:45%;
@@ -510,10 +818,16 @@ export default {
         width:20%;
     }
     .report-base-user-label{
+        font-size: var(--fontSize-smax);
         color:var(--color-black-60);
     }
     .report-base-user-value{
+        font-size: var(--fontSize-smax);
         color:var(--color-black-100);
+        width:140px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-weight: 600;
     }
     .report-data-source{
         width:100%;
@@ -542,21 +856,22 @@ export default {
         justify-content: space-between;
         margin:0;
         height:74px;
-        border-bottom:1px solid var(--color-black-10);
+        padding:0 6px;
+        border-bottom:1px solid var(--color-black-30);
     }
     .bg-data-item:last-child{
         border: none;
     }
     .bg-data-label{
-        font-size:var(--fontSize-max);
+        font-size:var(--fontSize-smax);
         color:var(--color-black-100);
     }
     .bg-data-tip{
-        font-size:var(--fontSize-big);
+        font-size:var(--fontSize-default);
         color:var(--color-black-60);
     }
     .bg-data-val{
-        font-size:24px;
+        font-size:var(--fontSize-max);
         color:var(--color-black-100);
         font-weight: 440;
         font-family:MiLan-Medium;
@@ -566,5 +881,72 @@ export default {
     }
     .printToask{
         height:1080px;
+    }
+    .event-type{
+        display: flex;
+        align-items: center;
+        margin-top:20px;
+    }
+    .event-type-item{
+        display: flex;
+        align-items: center;
+        margin-right:30px;
+    }
+    .event-icon{
+        width:30px;
+        height:30px;
+    }
+    .event-type-label{
+        font-size:var(--fontSize-default);
+        color: var(--color-black-60);
+        margin-left:6px;
+    }
+    /* pdf弹框 */
+    .slot-progress{
+        width:460px;
+        margin:0 auto;
+        padding:50px 0;
+    }
+    .down-icon{
+        width:80px;
+        height:80px;
+        display: block;
+        margin:0 auto;
+        margin-bottom:30px;
+    }
+    .cgm-progress{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .cgm-bg-progress{
+        width:400px;
+        margin-right:10px;
+        position: relative;
+        border-radius:80px;
+        background:#eaeaea;
+        height:12px;
+    }
+    .cgm-resulr-progress{
+        height: 12px;
+        border-radius:80px;
+        background:var(--color-primary);
+    }
+    .progress-result{
+        font-size:var(--fontSize-max);
+        color:var(--color-primary);
+        width:50px;
+    }
+    .slot-progress-title{
+        text-align: center;
+        width:100%;
+        font-size:var(--fontSize-smax);
+        color:var(--color-primary);
+        margin-bottom:20px;
+    }
+    .slot-progress-tips{
+        font-size:var(--fontSize-default);
+        color:var(--color-black-60);
+        text-align: center;
     }
 </style>

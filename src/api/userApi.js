@@ -96,20 +96,6 @@ export function getInfo(data) {
     })
 }
 // 上传头像
-// export function upAvatar(data) {
-//     return request({
-//         url: '/user/uploadlogo',
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'multipart/form-data'
-//         },
-//         data: data,
-//         transformRequest:[function(){
-//             return data;
-//         }]
-//     })
-// }
-// 上传头像
 export function upAvatar(data) {
     return request({
         url: '/user/uploadlogo/web',
@@ -121,5 +107,45 @@ export function upAvatar(data) {
         transformRequest:[function(){
             return data;
         }]
+    })
+}
+// 邮箱注册
+export function register(data) {
+    return request({
+        url: '/webuser/regist/email',
+        method: 'POST',
+        data: data
+    })
+}
+// 发送邮箱验证码
+export function sendEmailCode(data) {
+    return request({
+        url: '/user/sendmailcode',
+        method: 'POST',
+        data: data
+    })
+}
+// 发送邮箱虚拟验证码
+export function sendEmailTest(data) {
+    return request({
+        url: '/user/sendmailtest',
+        method: 'POST',
+        data: data
+    })
+}
+// 验证邮箱验证码
+export function verifymailcode(data) {
+    return request({
+        url: '/user/verifymailcode',
+        method: 'POST',
+        data: data
+    })
+}
+// 验证用户是否存在
+export function userExit(data) {
+    return request({
+        url: '/user/exist',
+        method: 'POST',
+        data: data
     })
 }

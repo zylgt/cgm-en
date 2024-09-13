@@ -1,36 +1,36 @@
 <template>
     <div class='set-bg' >
          <div class='setting-item-title' >
-            <div class='item-title' >血糖设置</div>
-            <div class='item-edit' @click='editShow' v-if='!edit' >修改通用设置</div>
+            <div class='item-title' >{{$t('message.setting.bg.title')}}</div>
+            <div class='item-edit' @click='editShow' v-if='!edit' >{{$t('message.setting.profile.edit')}}</div>
         </div>
         <div class='set-bg-info' v-if='!edit'>
             <div class='common-set' >
-                <div class='common-set-item' >
-                    <div class='set-item-label' >血糖单位设置：</div>
+                <!-- <div class='common-set-item' >
+                    <div class='set-item-label' >{{$t('message.setting.bg.title')}}：</div>
                     <div class='set-item-value' >{{bgInfo.glucose_unit==0?'mmol/L':'mg/dL'}}</div>
-                </div>
+                </div> -->
                 <div class='common-set-item' >
-                    <div class='set-item-label' >时间显示格式：</div>
+                    <div class='set-item-label' >{{$t('message.setting.bg.format')}}：</div>
                     <div class='set-item-value' >{{timeFormat}}小时制</div>
                 </div>
             </div>
             <div class='common-set' >
                 <div class='common-set-item' >
-                    <div class='set-item-label' >设定葡萄糖目标范围：</div>
+                    <div class='set-item-label' >{{$t('message.setting.bg.range')}}：</div>
                     <div class='set-item-value' >{{bgInfo.glucose_range_lower_limit}}-{{bgInfo.glucose_range_lupper_limit}}{{ bgInfo.glucose_unit == 0 ? 'mmol/L':'mg/dL'}}</div>
                 </div>
                 <div class='common-set-item' >
-                    <div class='set-item-label' >低血糖警报值：</div>
+                    <div class='set-item-label' >{{$t('message.setting.bg.veryLow')}}：</div>
                     <div class='set-item-value' >{{ bgInfo.glucose_unit == 0 ? '3.9mmol/L':'70mg/dL'}}</div>
                 </div>
                 <div class='common-set-item' >
-                    <div class='set-item-label' >高血糖警报值：</div>
+                    <div class='set-item-label' >{{$t('message.setting.bg.veryHigh')}}：</div>
                     <div class='set-item-value' >{{ bgInfo.glucose_unit == 0 ? '13.9mmol/L':'251mg/dL'}}</div>
                 </div>
             </div>
             <div class='set-preview' >
-                <div class='set-item-label' >设置预览：</div>
+                <div class='set-item-label' >{{$t('message.setting.bg.preview')}}：</div>
                 <t-chart
                             style="width: 1200px;height:400px;"
                             :option="option"
@@ -42,23 +42,23 @@
         <div class='set-bg-edit' v-else>
             <div class='common-set' >
                 <div class='common-set-item' >
-                    <div class='set-item-label' >时间显示格式：</div>
+                    <div class='set-item-label' >{{$t('message.setting.bg.format')}}：</div>
                     <div class='set-item-edit' >
-                        <div :class='[item.checked?"active":"","set-item-edit-item"]' v-for='(item,index) in timeShow' :key='item.value' @click="timeSelect(index)">{{item.value}}小时制</div>
+                        <div :class='[item.checked?"active":"","set-item-edit-item"]' v-for='(item,index) in timeShow' :key='item.value' @click="timeSelect(index)">{{item.value}} {{$t('message.setting.bg.hour')}}</div>
                     </div>
                 </div>
-                <div class='common-set-item' >
+                <!-- <div class='common-set-item' >
                     <div class='set-item-label' >血糖单位设置：</div>
                     <div class='set-item-edit' >
                         <div :class='[item.checked?"active":"","set-item-edit-item"]' v-for='(item,index) in bgUnit' :key='item.value' @click="unitSelect(index)">{{item.value==0?'mmol/L':'mg/dL'}}</div>
                     </div>
-                </div>
+                </div> -->
             </div>
             <div class='common-set' >
                 <div class='common-set-item common-edit-item' >
-                    <div class='set-item-label' >设定葡萄糖目标范围：</div>
+                    <div class='set-item-label' >{{$t('message.setting.bg.setRange')}}：</div>
                     <div class='set-item-value' >
-                        建议您咨询医生设定合适的葡萄糖目标范围，修改后的范围回应用在所有报告中，您当前的葡萄糖目标范围是
+                        {{$t('message.setting.bg.setrangeTip')}}
                         <el-select v-model="minTarget" placeholder="请选择" @change="minChange" :popper-append-to-body='false'>
                             <el-option
                             v-for="item in targetMin"
@@ -82,26 +82,28 @@
             </div>
             <div class='common-set' >
                 <div class='common-set-item' >
-                    <div class='set-item-label' >低血糖警报值：</div>
+                    <div class='set-item-label' >{{$t('message.setting.bg.veryLow')}}：</div>
                     <div class='set-item-value' >{{ unit == 0 ? '3.9mmol/L':'70mg/dL'}}</div>
                 </div>
                 <div class='common-set-item' >
-                    <div class='set-item-label' >高血糖警报值：</div>
+                    <div class='set-item-label' >{{$t('message.setting.bg.veryHigh')}}：</div>
                     <div class='set-item-value' >{{ unit == 0 ? '13.9mmol/L':'251mg/dL'}}</div>
                 </div>
             </div>
             <div class='set-preview' >
-                <div class='set-item-label' >设置预览：</div>
+                <div class='set-item-label' >{{$t('message.setting.bg.preview')}}：</div>
                 <t-chart
                             style="width: 1200px;height:400px;"
                             :option="options"
                             :init-options="initOptions"
                             theme="tduck-echarts-theme"
                         />
+                
             </div>
+            <div class='set-range-tips' >{{$t('message.setting.bg.tips')}}</div>
             <div class='btn-box' >
-                <el-button type="info" class='cancel-btn' @click='editShow'>取消</el-button>
-                <el-button type="primary"  class='confirm-btn' @click="saveTarget" :loading="loading">保存</el-button>
+                <el-button type="info" class='cancel-btn' @click='editShow'>{{$t('message.common.cancel')}}</el-button>
+                <el-button type="primary"  class='confirm-btn' @click="saveTarget" :loading="loading">{{$t('message.common.confirm')}}</el-button>
             </div>
         </div>
     </div>
@@ -122,8 +124,10 @@ export default {
                     {
                         height:300,
                         left:80,
-                        right:30,
-                        top:50
+                        right:80,
+                        top:50,
+                        show:true,
+                        borderColor:'#666'
                     }
                 ],
                 xAxis: [
@@ -134,17 +138,9 @@ export default {
                         axisTick: false,
                         splitLine:{
                             show:false,
-                            lineStyle:{
-                                color:'var(--color-black-60)'
-                            },
-                            interval:59
                         },
                         axisLine: {
-                            show: true,
-                            lineStyle: {
-                                color: 'var(--color-black-60)',
-                                width:1,
-                            },
+                            show: false,
                         },
                         data:Array.from({length:60*24},(item, index) => index),
                         axisLabel: {
@@ -160,7 +156,7 @@ export default {
                                 }
                             },
                             interval:0,
-                            color: 'var(--color-black-60)',
+                            color: 'var(--color-black-40)',
                             fontSize: 20, 
                             margin:14
                         }
@@ -174,12 +170,12 @@ export default {
                         max: 15,
                         splitLine:{
                             lineStyle:{
-                                color:'var(--color-black-60)'
+                                color:'var(--color-black-20)'
                             }
                         },
                         axisLabel: {
                             formatter: '{value}',
-                            color: 'var(--color-black-60)',
+                            color: 'var(--color-black-40)',
                             fontSize: 20,
                             margin:14
                         }
@@ -199,14 +195,14 @@ export default {
                                 yAxis:3.9,
                                 lineStyle: {
                                     color: 'var(--color-error)',
-                                    width: 2,
+                                    width: 0,
                                     type:'solid'
                                 },
                                 label: {
                                     color: 'var(--color-error)',
                                     fontSize: 20,
                                     distance: 14,
-                                    position:'start'
+                                    position:'end'
                                 },
                                 },
                                 {
@@ -214,14 +210,14 @@ export default {
                                 yAxis:10,
                                 lineStyle: {
                                     color: 'var(--color-warning)',
-                                    width: 2,
+                                    width: 0,
                                     type:'solid'
                                 },
                                 label: {
                                     color: 'var(--color-warning)',
                                     fontSize: 20,
                                     distance:14,
-                                    position:'start'
+                                    position:'end'
                                 },
                                 },
                             ],
@@ -236,7 +232,7 @@ export default {
                                 }]
                             ],
                             itemStyle:{
-                                color:'rgba(72, 160, 220, 0.05)'
+                                color:'rgba(72, 160, 220, 0.2)'
                             }
                         },
                     }
@@ -247,8 +243,10 @@ export default {
                     {
                         height:300,
                         left:80,
-                        right:30,
-                        top:50
+                        right:80,
+                        top:50,
+                        show:true,
+                        borderColor:'#666'
                     }
                 ],
                 xAxis: [
@@ -259,17 +257,9 @@ export default {
                         axisTick: false,
                         splitLine:{
                             show:false,
-                            lineStyle:{
-                                color:'var(--color-black-60)'
-                            },
-                            interval:59
                         },
                         axisLine: {
-                            show: true,
-                            lineStyle: {
-                                color: 'var(--color-black-60)',
-                                width:1,
-                            },
+                            show: false,
                         },
                         data:Array.from({length:60*24},(item, index) => index),
                         axisLabel: {
@@ -285,7 +275,7 @@ export default {
                                 }
                             },
                             interval:0,
-                            color: 'var(--color-black-60)',
+                            color: 'var(--color-black-40)',
                             fontSize: 20, 
                             margin:14
                         }
@@ -299,12 +289,12 @@ export default {
                         max: 15,
                         splitLine:{
                             lineStyle:{
-                                color:'var(--color-black-60)'
+                                color:'var(--color-black-20)'
                             }
                         },
                         axisLabel: {
                             formatter: '{value}',
-                            color: 'var(--color-black-60)',
+                            color: 'var(--color-black-40)',
                             fontSize: 20,
                             margin:14
                         }
@@ -324,14 +314,14 @@ export default {
                                 yAxis:3.9,
                                 lineStyle: {
                                     color: 'var(--color-error)',
-                                    width: 2,
+                                    width: 0,
                                     type:'solid'
                                 },
                                 label: {
                                     color: 'var(--color-error)',
                                     fontSize: 20,
                                     distance: 14,
-                                    position:'start'
+                                    position:'end'
                                 },
                                 },
                                 {
@@ -339,14 +329,14 @@ export default {
                                 yAxis:10,
                                 lineStyle: {
                                     color: 'var(--color-warning)',
-                                    width: 2,
+                                    width: 0,
                                     type:'solid'
                                 },
                                 label: {
                                     color: 'var(--color-warning)',
                                     fontSize: 20,
                                     distance:14,
-                                    position:'start'
+                                    position:'end'
                                 },
                                 },
                             ],
@@ -361,7 +351,7 @@ export default {
                                 }]
                             ],
                             itemStyle:{
-                                color:'rgba(72, 160, 220, 0.05)'
+                                color:'rgba(72, 160, 220, 0.2)'
                             }
                         },
                     }
@@ -449,17 +439,17 @@ export default {
                                     let h = Math.floor(value/60) 
                                     let moment = h
                                     if(h>12){
-                                        moment = h-12+'pm'
+                                        moment = h-12+'PM'
                                     }else if(h==12){
-                                        moment = h+'pm'
+                                        moment = h+'PM'
                                     }else{
                                         if(h==0){h=12}
-                                        moment = h+'am'
+                                        moment = h+'AM'
                                     }
                                     return moment;
                                 }
                                 if(index+1===24*60){
-                                    return '12am'
+                                    return '12AM'
                                 }
                             }
                             this.option.xAxis[0].axisLabel.formatter = function (value, index) {
@@ -467,17 +457,17 @@ export default {
                                     let h = Math.floor(value/60) 
                                     let moment = h
                                     if(h>12){
-                                        moment = h-12+'pm'
+                                        moment = h-12+'PM'
                                     }else if(h==12){
-                                        moment = h+'pm'
+                                        moment = h+'PM'
                                     }else{
                                         if(h==0){h=12}
-                                        moment = h+'am'
+                                        moment = h+'AM'
                                     }
                                     return moment;
                                 }
                                 if(index+1===24*60){
-                                    return '12am'
+                                    return '12AM'
                                 }
                             }
                             this.timeShow[1].checked = true
@@ -626,7 +616,7 @@ export default {
         margin-bottom:30px;
     }
     .item-title{
-        font-size:var(--fontSize-max);
+        font-size:var(--fontSize-smax);
         color:var(--color-black-100);
         border-left:3px solid var(--color-primary);
         padding-left:10px;
@@ -635,7 +625,7 @@ export default {
         font-weight: 700;
     }
     .item-edit{
-        font-size:var(--fontSize-big);
+        font-size:var(--fontSize-default);
         color:var(--color-primary);
         text-decoration: underline;
         cursor: pointer;
@@ -656,11 +646,11 @@ export default {
         width:100%;
     }
     .set-item-label{
-        font-size:var(--fontSize-big);
+        font-size:var(--fontSize-default);
         color:var(--color-black-60);
     }
     .set-item-value{
-        font-size:var(--fontSize-big);
+        font-size:var(--fontSize-default);
         color:var(--color-black-100);
     }
     .set-preview{
@@ -678,15 +668,16 @@ export default {
         border:1px solid #e5e5e5;
         text-align: center;
         line-height: 42px;
-        font-size:var(--fontSize-big);
+        font-size:var(--fontSize-default);
         color:var(--color-black-80);
         margin-left:20px;
         cursor: pointer;
     }
     .active{
         border:1px solid var(--color-primary);
-        color: var(--color-primary);
-        background: rgba(50, 186, 192, 0.1);
+        color: #fff;
+        background: var(--color-primary);
+
     }
     .btn-box{
         width:100%;
@@ -719,5 +710,11 @@ export default {
         line-height: 51px;
         font-size:var(--fontSize-big);
         color:#fff;
+    }
+    .set-range-tips{
+         font-size:var(--fontSize-default);
+         color:var(--color-warning);
+         padding-left:210px;
+         margin-bottom:30px;
     }
 </style>

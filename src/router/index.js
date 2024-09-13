@@ -28,15 +28,15 @@ const iconSetting = require('@/assets/image/icon-setting.png');
 const iconHelp = require('@/assets/image/icon-help.png');
 const iconReportCheck = require('@/assets/image/icon-report-check.png');
 const iconUploadCheck = require('@/assets/image/icon-upload-check.png');
-const iconSettingCheck = require('@/assets/image/icon-upload-check.png');
-const iconHelpCheck = require('@/assets/image/icon-upload-check.png');
+const iconSettingCheck = require('@/assets/image/icon-setting-check.png');
+const iconHelpCheck = require('@/assets/image/icon-help-check.png');
 
 const routes = [
   {
     path: '/login',
     name: 'login',
     meta: { title: "登录"},
-    component:(resolve) => require(["@/views/login/login"], resolve)
+    component:(resolve) => require(["@/views/login/index"], resolve)
   },{
     path:'/',
     redirect: "/report/overview",
@@ -74,15 +74,15 @@ const routes = [
       component:(resolve) => require(["@/views/Procedure/upLoad"], resolve),
       meta:{title:'upLoad',icon:iconUpload,icons:iconUploadCheck,isShow:true}
     },{
-      path:'/setting',
-      name:'setting',
-      component:(resolve) => require(["@/views/setting/setting"], resolve),
-      meta:{title:'setting',icon:iconSetting,icons:iconSettingCheck,isShow:true},
-    },{
       path:'/help',
       name:'help',
       component:(resolve) => require(["@/views/help/help"], resolve),
       meta:{title:'help',icon:iconHelp,icons:iconHelpCheck,isShow:true}
+    },{
+      path:'/setting',
+      name:'setting',
+      component:(resolve) => require(["@/views/setting/setting"], resolve),
+      meta:{title:'setting',icon:iconSetting,icons:iconSettingCheck,isShow:true},
     },{
       path:'/account',
       name:'account',

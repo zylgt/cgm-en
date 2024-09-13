@@ -1,56 +1,59 @@
 <template>
     <div class='deviceInfo' >
         <div class='deviceInfo-title-box'>
-            <div class='deviceInfo-title' >设备信息</div>
+            <div class='deviceInfo-title' >{{$t('message.deviceInfo.title')}}</div>
             <img src="~@/assets/image/close-icon.png" alt="" class='close-icon'  @click="closePopover" >
         </div>
-        <div class='deviceInfo-tips' >最近更新时间：2024年3月14日</div>
+        <div class='deviceInfo-tips' >{{$t('message.deviceInfo.updataTime')}}：2024年3月14日</div>
         <div class='deviceInfo-list' >
             <div class='deviceInfo-item'>
-                <div class='device-item-title' >设备1</div>
+                <div class='device-item-title' >
+                    <div>{{$t('message.deviceInfo.device')}}1</div>
+                    <div class='delet-device' >{{$t('message.deviceInfo.delete')}}</div>
+                </div>
                 <div class='device-item-main' >
                     <img src="~@/assets/image/device-img1.png" alt="" class='device-img' >
                     <div class='device-item-info' >
-                        <div class='device-info-title' >设备信息：</div>
+                        <div class='device-info-title' >{{$t('message.deviceInfo.title')}}：</div>
                         <div class='device-info-list'>
-                            <div class='device-info-label'>设备型号：</div>
+                            <div class='device-info-label'>{{$t('message.deviceInfo.deviceModel')}}：</div>
                             <div class='device-info-value' >ipone 11</div>
                         </div>
                          <div class='device-info-list'>
-                            <div class='device-info-label'>软件信息：</div>
+                            <div class='device-info-label'>{{$t('message.deviceInfo.version')}}：</div>
                             <div class='device-info-value' >ipone 11</div>
                         </div>
                          <div class='device-info-list'>
-                            <div class='device-info-label'>数据更新日期：</div>
+                            <div class='device-info-label'>{{$t('message.deviceInfo.upDate')}}：</div>
                             <div class='device-info-value' >ipone 11</div>
                         </div>
                          <div class='device-info-list'>
-                            <div class='device-info-label'>目标血糖范围：</div>
+                            <div class='device-info-label'>{{$t('message.deviceInfo.targerRange')}}：</div>
                             <div class='device-info-value' >ipone 11</div>
                         </div>
                     </div>
                     <div class='device-item-warning'>
-                        <div class='device-info-title' >警报设置：</div>
+                        <div class='device-info-title' >{{$t('message.deviceInfo.alarmSet')}}：</div>
                         <div class='device-info-list'>
-                            <div class='device-info-label'>紧急低血糖警报</div>
+                            <div class='device-info-label'>{{$t('message.deviceInfo.urgentLow')}}</div>
                             <div class='device-info-status-active' >开启</div>
                             <!-- <div class='device-info-status-close' >关闭</div> -->
-                            <div class='device-info-value' >低于3.0mmol/L</div>
+                            <div class='device-info-value' >{{$t('message.deviceInfo.less')}}3.0mmol/L</div>
                         </div>
                          <div class='device-info-list'>
-                            <div class='device-info-label'>低血糖警报</div>
-                            <div class='device-info-status-active' >开启</div>
-                            <!-- <div class='device-info-status-close' >关闭</div> -->
-                            <div class='device-info-value' >ipone 11</div>
-                        </div>
-                         <div class='device-info-list'>
-                            <div class='device-info-label'>高血糖警报</div>
+                            <div class='device-info-label'>{{$t('message.deviceInfo.low')}}</div>
                             <div class='device-info-status-active' >开启</div>
                             <!-- <div class='device-info-status-close' >关闭</div> -->
                             <div class='device-info-value' >ipone 11</div>
                         </div>
                          <div class='device-info-list'>
-                            <div class='device-info-label'>新号丢失警报</div>
+                            <div class='device-info-label'>{{$t('message.deviceInfo.veryHigh')}}</div>
+                            <div class='device-info-status-active' >开启</div>
+                            <!-- <div class='device-info-status-close' >关闭</div> -->
+                            <div class='device-info-value' >ipone 11</div>
+                        </div>
+                         <div class='device-info-list'>
+                            <div class='device-info-label'>{{$t('message.deviceInfo.signalLoss')}}</div>
                             <!-- <div class='device-info-status-active' >开启</div> -->
                             <div class='device-info-status-close' >关闭</div>
                             <div class='device-info-value' >ipone 11</div>
@@ -198,10 +201,11 @@ export default {
     .close-icon{
         width:24px;
         height:24px;
+        cursor: pointer;
     }
     .deviceInfo-tips{
-        font-size:var(--fontSize-big);
-        color: var(--color-black-80);
+        font-size:var(--fontSize-default);
+        color: var(--color-black-40);
         margin-bottom:20px;
     }
     .deviceInfo-item{
@@ -216,9 +220,18 @@ export default {
         margin-bottom:14px;
     }
     .device-item-title{
-        font-size:var(--fontSize-max);
+        font-size:var(--fontSize-smax);
         color:var(--color-black-80);
         margin-bottom:10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .delet-device{
+         font-size:var(--fontSize-default);
+        color:var(--color-error);
+        text-decoration: underline;
+        cursor: pointer;
     }
     .device-item-main{
         display: flex;
@@ -235,8 +248,8 @@ export default {
         margin-right:40px;
     } 
     .device-info-title{
-        font-size:var(--fontSize-big);
-        color:var(--color-black-80);
+        font-size:var(--fontSize-default);
+        color:var(--color-black-100);
         font-weight: 700;
         margin-bottom:20px;
     }
@@ -247,28 +260,29 @@ export default {
         font-weight: 400;
     }
     .device-info-status-active{
-        font-size:var(--fontSize-smax);
+        font-size:var(--fontSize-default);
         color:var(--color-primary);
         width:60px;
         margin:0 20px;
         margin-right:60px;
     }
     .device-info-status-close{
-        font-size:var(--fontSize-smax);
+        font-size:var(--fontSize-default);
         color:var(--color-error);
         width:60px;
         margin:0 20px;
         margin-right:60px;
     }
     .device-info-label{
-        font-size:var(--fontSize-smax);
+        font-size:var(--fontSize-default);
         color:var(--color-black-40);
         width:150px;
         margin-right:30px;
     }
     .device-info-value{
-        font-size:var(--fontSize-smax);
-        color:var(--color-black-80);
+        font-size:var(--fontSize-default);
+        color:var(--color-black-100);
+        font-weight: 600;
         width:180px;
     }
 </style>

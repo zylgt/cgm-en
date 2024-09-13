@@ -8,33 +8,33 @@
                         <div class='tir-key-box'>
                             <div class='tir-key-legend' :style='{backgroundColor:item.color}' ref='legend' :data-index='item.index' ></div>
                             <div class='tir-key-desc' >
-                                <div class='tir-key-key' >{{item.key}}</div>
+                                <div class='tir-key-key' >{{$t('message.reports.tirs.'+item.key)}} </div>
                                 <div class='tir-key-range' >{{unit=='mg/dL'?item.descmg:item.desc}}</div>
                             </div>
                         </div>
                         <div class='tir-value'>
                             <div class='tir-key-key ' > 
-                                <span v-if='item.index==2' :class='[Number(item.value)<item.target?"active":"","tir-print-keys"]' >{{item.value}}%</span>
-                                <span v-if='item.index!=2' :class='[Number(item.value)>item.target?"active":"","tir-print-key"]' >{{item.value}}%</span>
-                                ({{item.duration[0]}}时{{item.duration[1]}}分)
+                                <span v-if='item.index==2' :class='[Number(item.value)<=item.target?"active":"","tir-print-keys"]' >{{item.value}}%</span>
+                                <span v-if='item.index!=2' :class='[Number(item.value)>=item.target?"active":"","tir-print-key"]' >{{item.value}}%</span>
+                                ({{item.duration[0]}}H{{item.duration[1]}}M)
                             </div>
-                            <div class='tir-key-range' v-if='item.index==2'>目标值＞{{item.target}}%</div>
-                            <div class='tir-key-range' v-else>目标值＜{{item.target}}%</div>
+                            <div class='tir-key-range' v-if='item.index==2'>{{$t('message.common.target')}}＞{{item.target}}%</div>
+                            <div class='tir-key-range' v-else>{{$t('message.common.target')}}＜{{item.target}}%</div>
                         </div>
                     </div>
                 </div>
                 <div class='tir-all-1' v-if='highTarget!=0' :style='{height:highTargetHeight+"px"}' >
-                    <div class='tir-all-line'></div>
+                    <div :class='[highLine?"":"disabled","tir-all-line"]'></div>
                     <div class='tir-all-value' >
-                        <div :class='[Number(highTarget)>25?"active":"","tir-key-key"]' >{{highTarget}}%</div>
-                        <div class='tir-key-range' >目标值＜25%</div>
+                        <div :class='[Number(highTarget)>=25?"active":"","tir-key-key"]' >{{highTarget}}%</div>
+                        <div class='tir-key-range' >{{$t('message.common.target')}}＜25%</div>
                     </div>
                 </div>
                 <div class='tir-all-2'  v-if='lowTarget!=0' :style='{height:lowTargetHeight+"px"}'>
-                    <div class='tir-all-line' ></div>
+                    <div :class='[lowLine?"":"disabled","tir-all-line"]'></div>
                     <div class='tir-all-value'  >
-                        <div :class='[Number(lowTarget)>4?"active":"","tir-key-key"]' >{{lowTarget}}%</div>
-                        <div class='tir-key-range' >目标值＜4%</div>
+                        <div :class='[Number(lowTarget)>=4?"active":"","tir-key-key"]' >{{lowTarget}}%</div>
+                        <div class='tir-key-range' >{{$t('message.common.target')}}＜4%</div>
                     </div>
                 </div>
             </div>
@@ -51,7 +51,7 @@ export default {
     data(){
         return{
             levels: [
-                {key: '很高：', 
+                {key: 'veryHigh', 
                     value:1,  
                     duration:[],
                     color: '#E98C41',
@@ -61,7 +61,7 @@ export default {
                     index:0
                 },
                 {
-                    key: '高：',
+                    key: 'high',
                     value: 1,
                     duration:[],
                     color: '#F6C059',
@@ -71,7 +71,7 @@ export default {
                     index:1
                 },
                 {
-                    key: '目标范围:',
+                    key: 'inrange',
                     value: 60,
                     duration:[],
                     color: '#A6CF39',
@@ -80,14 +80,16 @@ export default {
                     target:'70',
                     index:2
                 },
-                {key: '低：', value: 30,  duration:[],color: '#F43F31', desc: '3.0~3.8mmol/L', descmg:'54-69mg/dL',target:'4', index:3},
-                {key: '很低：', value:0,  duration:[],color: '#96251C', desc: '<3.0mmol/L', descmg:'<54/dL',target:'1', index:4},
+                {key: 'low', value: 30,  duration:[],color: '#F43F31', desc: '3.0~3.8mmol/L', descmg:'54-69mg/dL',target:'4', index:3},
+                {key: 'veryLow', value:0,  duration:[],color: '#96251C', desc: '<3.0mmol/L', descmg:'<54/dL',target:'1', index:4},
             ],
             tirList:[],
             canvas:null,
             ctx:null,
             highTarget:0,
             lowTarget:0,
+            highLine:false,
+            lowLine:false,
             highTargetHeight:0,
             lowTargetHeight:0,
         }
@@ -135,8 +137,10 @@ export default {
             this.levels[1].descmg = this.targetScope[1]+1+'-250mg/dL'
             this.levels[3].desc = '3.0-'+_.round(this.targetScope[0]-0.1,1)+'mmol/L'
             this.levels[3].descmg = '54-'+(this.targetScope[0]-1)+'mg/dL'
-            this.highTarget = Number(this.levels[0].value) && Number(this.levels[1].value) ?_.round(Number(this.levels[0].value)+Number(this.levels[1].value),1):0
-            this.lowTarget =  Number(this.levels[3].value) && Number(this.levels[4].value) ?_.round(Number(this.levels[3].value)+Number(this.levels[4].value),1):0
+            this.highTarget = Number(this.levels[0].value) || Number(this.levels[1].value) ?_.round(Number(this.levels[0].value)+Number(this.levels[1].value),1):0
+            this.lowTarget =  Number(this.levels[3].value) || Number(this.levels[4].value) ?_.round(Number(this.levels[3].value)+Number(this.levels[4].value),1):0
+            this.highLine = Number(this.levels[0].value) && Number(this.levels[1].value)
+            this.lowLine = Number(this.levels[3].value) && Number(this.levels[4].value)
             this.tirList = _.filter(this.levels,function(e){return e.value>0})
             console.log(_.filter(this.levels,function(e){return e.value>0}))
             console.log(formatTime(new Date()),'TIR计算完成')
@@ -219,13 +223,21 @@ export default {
         },
         // 计算高血糖，低血糖总比例的高度
         handelHeight(){
+            let levels = this.levels
             let legend = _.sortBy(this.$refs.legend,['dataset.index']) //图例的位置
-            if(this.highTarget!=0){
+            if(this.highLine){
                 // 计算高度
                 this.highTargetHeight = legend[1].offsetTop - legend[0].offsetTop
+            }else if( Number(levels[0].value) || Number(levels[1].value)){
+                // 计算高度
+                this.highTargetHeight = legend[0].offsetTop
             }
-            if(this.lowTarget!=0){
+            if(this.lowLine){
+                // 计算高度
                 this.lowTargetHeight = legend[legend.length-1].offsetTop - legend[legend.length-2].offsetTop
+            }else if( Number(levels[3].value) || Number(levels[4].value)){
+                // 计算高度
+                this.lowTargetHeight =  legend[legend.length-1].offsetTop-legend[legend.length-1].offsetTop
             }
         },
         // 画图
@@ -309,6 +321,7 @@ export default {
     .TIR{
         height:300px;
         display: flex;
+        padding:0 6px;
     }
     .canvas{
         width:80px;
@@ -341,9 +354,10 @@ export default {
         margin-right:10px;
     }
     .tir-key-key{
-        font-size:var(--fontSize-max);
+        font-size:var(--fontSize-smax);
         color:var(--color-black-100);
         line-height: 26px;
+        font-weight: 600;
     }
     .tir-key-key.active{
          color:var(--color-error);
@@ -352,11 +366,12 @@ export default {
         font-size:24px;
         font-weight: 440;
         line-height: 26px;
+        font-weight: 600;
     }
     .tir-print-keys{
         color:#A6CF39;
         font-size:24px;
-        font-weight: 440;
+        font-weight: 600;
         line-height: 26px;
     }
     .tir-print-keys.active{
@@ -366,7 +381,7 @@ export default {
         color:var(--color-error);
     }
     .tir-key-range{
-        font-size:var(--fontSize-big);
+        font-size:var(--fontSize-default);
         color:var(--color-black-60);
         line-height: 18px;
     }
@@ -403,6 +418,9 @@ export default {
         border:1px solid var(--color-black-40);
         border-left:none;
         margin-right:10px;
+    }
+    .tir-all-line.disabled{
+        opacity: 0;
     }
     .tir-all-value{
         width:120px;

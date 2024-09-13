@@ -206,7 +206,7 @@ export default {
                 
             },
             dayInfo:'',
-            color: ['#E5B769','#D191E1','#83B1E9','#D7796E','#B5D87F','#E9EB5C','#32BAC0'],
+            color: ['#E5B769','#D191E1','#83B1E9','#D7796E','#B5D87F','#E9EB5C','#48A0DC'],
             checkAll:true,
             chartDate:[],
             tooltipValue:0,
@@ -446,7 +446,7 @@ export default {
     background:#E9EB5C;
 }
 .checkDay6{
-    background:#32BAC0;
+    background:#48A0DC;
 }
 .noCheckDay{
     background: #908D8D;

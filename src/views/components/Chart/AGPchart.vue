@@ -8,22 +8,22 @@
             <div class='agp-legend' >
                 <div class='agp-legend-item' >
                     <div class='apg-legend-shape1'>—</div>
-                    <div class='agp-legend-info' >50%中位线</div>
+                    <div class='agp-legend-info' >50%{{$t('message.reports.agp.chartLegend1')}}</div>
                 </div>
                 <div class='agp-legend-item' >
                     <div class='apg-legend-shape2'></div>
-                    <div class='agp-legend-info' >25%-75%区间</div>
+                    <div class='agp-legend-info' >25%-75%{{$t('message.reports.agp.chartLegend2')}}</div>
                 </div>
                 <div class='agp-legend-item' >
                     <div class='apg-legend-shape3'></div>
-                    <div class='agp-legend-info' >5%-95%区间</div>
+                    <div class='agp-legend-info' >5%-95%{{$t('message.reports.agp.chartLegend3')}}</div>
                 </div>
                 <div class='agp-legend-item' >
                     <div class='apg-legend-shape4-box'>
                         <p class='apg-legend-shape4'></p>
                         <p class='apg-legend-shape4'></p>
                     </div>
-                    <div class='agp-legend-info' >目标范围</div>
+                    <div class='agp-legend-info' >{{$t('message.reports.agp.chartLegend4')}}</div>
                 </div>
             </div>
             <t-chart
@@ -51,10 +51,12 @@
                 option: {
                     grid:[
                         {
+                            show:true,
                             height:300,
                             left:140,
                             right:120,
-                            top:30
+                            top:30,
+                            borderColor:'#666'
                         }
                     ],
                     xAxis: [
@@ -65,13 +67,10 @@
                             axisTick: false,
                             splitLine:{
                                 show:false,
-                                lineStyle:{
-                                    color:'var(--color-black-60)'
-                                },
                                 interval:59
                             },
                             axisLine: {
-                                show: true,
+                                show: false,
                                 lineStyle: {
                                     color: 'var(--color-black-60)',
                                     width:1,
@@ -91,7 +90,7 @@
                                     }
                                 },
                                 interval:0,
-                                color: 'var(--color-black-60)',
+                                color: 'var(--color-black-40)',
                                 fontSize: 20, 
                                 margin:14
                             }
@@ -106,12 +105,12 @@
                             interval:3,
                             splitLine:{
                                 lineStyle:{
-                                   color:'var(--color-black-60)'
+                                   color:'var(--color-black-20)'
                                 }
                             },
                             axisLabel: {
                                 formatter: '{value}',
-                                color: 'var(--color-black-60)',
+                                color: 'var(--color-black-40)',
                                 fontSize: 20,
                                 margin:14
                             }
@@ -143,7 +142,7 @@
                             opacity: 0,
                             },
                             areaStyle: {
-                            color: '#D6F1F2',
+                            color: '#DAECF8',
                             },
                             stack: 'confidence-band',
                             symbol: 'none',
@@ -162,7 +161,7 @@
                             opacity: 0,
                             },
                             areaStyle: {
-                            color: '#94DBDE',
+                            color: '#B6D9F1',
                             },
                             stack: 'confidence-band',
                             symbol: 'none',
@@ -181,7 +180,7 @@
                             opacity: 0,
                             },
                             areaStyle: {
-                            color: '#D6F1F2',
+                            color: '#DAECF8',
                             },
                             stack: 'confidence-band',
                             symbol: 'none',
@@ -224,7 +223,7 @@
                                     color: 'var(--color-error)',
                                     fontSize: 20,
                                     distance: 14,
-                                    position:'start'
+                                    position:'end'
                                 },
                                 },
                                 {
@@ -239,7 +238,7 @@
                                     color: 'var(--color-warning)',
                                     fontSize: 20,
                                     distance:14,
-                                    position:'start'
+                                    position:'end'
                                 },
                                 },
                             ],
@@ -296,17 +295,17 @@
                             let h = Math.floor(value/60) 
                             let moment = h
                             if(h>12){
-                                moment = h-12+'pm'
+                                moment = h-12+'PM'
                             }else if(h==12){
-                                 moment = h+'pm'
+                                 moment = h+'PM'
                             }else{
                                 if(h==0){h=12}
-                                moment = h+'am'
+                                moment = h+'AM'
                             }
                             return moment;
                         }
                         if(index+1===24*60){
-                            return '12am'
+                            return '12AM'
                         }
                     }
                 }
@@ -402,12 +401,12 @@
     .apg-legend-shape2{
         width:20px;
         height:20px;
-        background:#94DBDE;
+        background:#B6D9F1;
     }
     .apg-legend-shape3{
         width:20px;
         height:20px;
-        background:#D6F1F2;
+        background:#DAECF8;
     }
     .apg-legend-shape4{
         width:20px;
