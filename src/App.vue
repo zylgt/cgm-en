@@ -76,4 +76,18 @@ html,body{
   /* height:100%; */
   width: 1920px;
 }
+  .agp-top{
+        display: flex;
+        display: -webkit-flex;
+        display:-webkit-inline-flex;
+        align-items: center;
+        justify-content: space-between;
+        width:100%;
+        margin-bottom:20px;
+    }
+    .report-title{
+        font-size:30px;
+        color:var(--color-black-100);
+        font-weight: 700;
+    }
 </style>

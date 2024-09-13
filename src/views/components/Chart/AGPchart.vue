@@ -37,9 +37,7 @@
 </template>
 <script>
     import TChart from '@/views/components/TChart'
-    import { hasEventListener } from "@/utils/utils";
-    import {formatDate,formatTime} from '@/utils/formatTime'
-    import { AGPUtils } from "@/utils/algorithm/AGP";
+    import {formatTime} from '@/utils/formatTime'
     import { GlucoseUtils } from "@/utils/algorithm/Glucose";
     import {mapGetters} from "vuex"
     export default {

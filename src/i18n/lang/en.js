@@ -36,7 +36,7 @@ export default {
 
     },
     logout:'Logout',
-    account:'Account',
+    accounts:'Account',
     changePassword:'Change Password',
     common:{
       cancel:'Cancel',
@@ -44,7 +44,7 @@ export default {
       day:'Days',
       target:'Target',
       noData:'Not Enough Data',
-      save:"Save"
+      save:"Save",
     },
     route:{
       report:'Reports',
@@ -53,7 +53,12 @@ export default {
       help:'Support',
       AGP:'AGP Report',
       overview:'OverView',
-      account:'Account'
+      account:'Account',
+      guide:'User Guide',
+      faq:'FAQ',
+      information:"Safety Information",
+      customer:'Contact Us',
+      about:'About'
     },
     reports:{
       title:'OverView',

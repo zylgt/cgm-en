@@ -76,8 +76,40 @@ const routes = [
     },{
       path:'/help',
       name:'help',
-      component:(resolve) => require(["@/views/help/help"], resolve),
-      meta:{title:'help',icon:iconHelp,icons:iconHelpCheck,isShow:true}
+      redirect: "/help",
+      component:(resolve) => require(["@/views/help/index"], resolve),
+      meta:{title:'help',icon:iconHelp,icons:iconHelpCheck,isShow:true},
+      children:[{
+        path:'/help',
+        name:'help',
+        component:(resolve) => require(["@/views/help/help"], resolve),
+        meta:{title:'help',icon:iconUpload,icons:iconUploadCheck,isShow:true}
+      },{
+        path:'/guide',
+        name:'guide',
+        component:(resolve) => require(["@/views/help/guide"], resolve),
+        meta:{title:'guide',icon:iconUpload,icons:iconUploadCheck,isShow:true}
+      },{
+        path:'/faq',
+        name:'faq',
+        component:(resolve) => require(["@/views/help/faq"], resolve),
+        meta:{title:'faq',icon:iconUpload,icons:iconUploadCheck,isShow:true}
+      },{
+        path:'/information',
+        name:'information',
+        component:(resolve) => require(["@/views/help/information"], resolve),
+        meta:{title:'information',icon:iconUpload,icons:iconUploadCheck,isShow:true}
+      },{
+        path:'/customer',
+        name:'customer',
+        component:(resolve) => require(["@/views/help/customer"], resolve),
+        meta:{title:'customer',icon:iconUpload,icons:iconUploadCheck,isShow:true}
+      },{
+        path:'/about',
+        name:'about',
+        component:(resolve) => require(["@/views/help/about"], resolve),
+        meta:{title:'about',icon:iconUpload,icons:iconUploadCheck,isShow:true}
+      }]
     },{
       path:'/setting',
       name:'setting',
@@ -110,11 +142,12 @@ const router = new VueRouter({
 })
 router.beforeEach((to, from, next) =>{
   if(!getToken()){
-    if(to.path=='/login'){
-      next()
-    }else{
-      router.push('/login')
-    }
+    next()
+    // if(to.path=='/login'){
+    //   next()
+    // }else{
+    //   router.push('/login')
+    // }
   }else{
     next()
     sysend.track('ready', () => {

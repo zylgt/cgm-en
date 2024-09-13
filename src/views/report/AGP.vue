@@ -18,7 +18,7 @@
             </div>
             <div class='report-agp-date-box'  v-popover:datePopover @click='openPopover("date")' >
                 <img src="~@/assets/image/date-calendar.png" alt="" class='agp-icon' >
-                <div class='agp-date' >{{agpDate[0]}} — {{agpDate[1]}}（{{dayDate}}{{$t('message.common.day')}}）</div>
+                <div class='agp-date' > {{start_time}}-{{end_time}}（{{dayDate}}{{$t('message.common.day')}}）</div>
                 <img src="~@/assets/image/select-icon.png" alt="" class='select-icon' >
             </div>
             <div class='main-box'>
@@ -199,7 +199,7 @@
                                     </div>
                                 </div>
                                 <div v-for='(item,index) in agpdayList' :key='index'>
-                                    <DayAnalysis :dataList='item' :eventList='eventList[item.date]'/>
+                                    <DayAnalysis :dataList='item' :eventList='item.events' />
                                 </div>
                         </div>
                     </div>
@@ -225,7 +225,7 @@
                     <div :class='[dateValue==90?"active":"","datePop-days-item"]' @click='selectDay(90)'>{{$t('message.reports.selectDate.day90')}}</div>
                 </div>
                 <div class='datePop-change-day' >
-                    {{start_time}}-{{end_time}}
+                    {{start_times}}-{{end_times}}
                 </div>
                 <div class='datePop-btn' >
                     <div class='cancel-btn'  @click='dateVisible=false'>{{$t('message.common.cancel')}}</div>
@@ -324,6 +324,7 @@ import DaySummary from '@/views/components/Chart/Daysummary'
 import DayAnalysis from '@/views/report/components/dayAnalysis'
 import Empty from '@/views/components/Empty/empty'
 import Progress from '@/views/report/components/Progress'
+import Cookies from 'js-cookie'
 import mixin from "./mixin"
 import {mapGetters} from "vuex"
 export default {
@@ -352,6 +353,8 @@ export default {
             dateValue:'',//选择的天数
             start_time:'', //开始时间
             end_time:'', //结束时间
+            start_times:'',
+            end_times:"",
             dayDate:14,
             empty:true,
             downProgress:0,
@@ -374,10 +377,18 @@ export default {
     mounted(){
         let end_ts = new Date()
         let start_ts = new Date().setDate(end_ts.getDate() - 13)
-        this.chooseDay(new Date(start_ts),end_ts)
-        this.agpDate = ['2024-05-20', '2024-05-24'] 
-        this.start_time = this.agpDate[0]
-        this.end_time = this.agpDate[1]
+        if(Cookies.get('choose_s')){
+            console.log(Cookies.get('choose_s')*1000)
+            this.start_time = formatEn( Cookies.get('choose_s')*1000)
+            this.end_time =formatEn( Cookies.get('choose_e')*1000)
+            this.agpDate = [Cookies.get('choose_s')*1000,Cookies.get('choose_e')*1000]
+            this.chooseDay(new Date(Cookies.get('choose_s')*1000),new Date(Cookies.get('choose_e')*1000))
+        }else{
+            this.start_time = formatEn(start_ts)
+            this.end_time = formatEn(end_ts)
+            this.agpDate = [start_ts,end_ts]
+            this.chooseDay(new Date(start_ts),end_time)
+        }
         this.chooseGetData()
     },
     methods:{
@@ -392,33 +403,34 @@ export default {
         },
         // 判断从哪里拉取数据
         chooseGetData(){
-            if( _.indexOf(this.$store.state.report.chooseDateList,this.agpDate.join('/'))==-1){
+            let indexOfDate = [formatDate(this.agpDate[0],'YYYY-mm-dd'),formatDate(this.agpDate[1],'YYYY-mm-dd')]
+            if( _.indexOf(this.$store.state.report.chooseDateList,indexOfDate.join('/'))==-1){
                 this.getData()
-                this.getEventList()
             }else{
-                let result  = this.$store.state.report.data[this.agpDate.join('/')]
-                let events  = this.$store.state.report.events[this.agpDate.join('/')]
+                let result  = this.$store.state.report.data[indexOfDate.join('/')]
+                let events  = this.$store.state.report.events[indexOfDate.join('/')]
+                let bg_events  = this.$store.state.report.bgevents[indexOfDate.join('/')]
                 if(result.length>0){
                     this.empty = false
                 }else{
                     this.empty = true
                 }
-                this.handelTemplateDay(result)
-                this.handelEventDay(events)
-                this.info =  this.$store.state.report.info[this.agpDate.join('/')]
+                this.handelTemplateDay(result,events,bg_events)
+                this.info =  this.$store.state.report.info[indexOfDate.join('/')]
             }
         },
         // 从云拉取数据
         getData(){
             let s = new Date(this.agpDate[0])
             let e = new Date(this.agpDate[1])
-            let start_ts = s.setHours(0,0,0)/1000
-            let end_ts = e.setHours(23,59,59)/1000
+            let start_ts =parseInt(s.setHours(0,0,0)/1000) 
+            let end_ts = parseInt(e.setHours(23,59,59)/1000)
             getAgpInfo({start_ts:start_ts,end_ts:end_ts}).then(response => {
+                    let checkDate = [formatDate(this.agpDate[0],'YYYY-mm-dd'),formatDate(this.agpDate[1],'YYYY-mm-dd')]
                     if(response.code == 1000){
                         if(response.data.devices.length>0){
                             response.data.devices.forEach(item=>{
-                                item.upDate = formatDate(item.update_ts*1000,"YYYY年mm月dd日")
+                                item.upDate = formatEn(item.update_ts)
                             })
                         }
 
@@ -437,7 +449,7 @@ export default {
                             glucose_range_lupper_limit:target[1],
                             device:response.data.devices
                         }
-                        this.$store.dispatch('setInfo',{key:this.agpDate.join('/'),value:params}) //处理完数据存vuex
+                        this.$store.dispatch('setInfo',{key:checkDate.join('/'),value:params}) //处理完数据存vuex
                         this.$store.dispatch('setTargetScope',target)
                         this.$store.dispatch('setUnit',response.data.glucose_unit==0?'mmol/L':'mg/dL')
                         this.info = params
@@ -447,8 +459,9 @@ export default {
                         if(arrayData.length>0){
                             console.log(formatTime(new Date()),'得到数据')   
                             this.empty = false
-                            this.handelTemplateDay(this.handleData(arrayData,start_ts,end_ts))
-                            this.$store.dispatch('setChooseDateList',this.agpDate.join('/'))
+                            this.handelTemplateDay(this.handleData(arrayData,start_ts,end_ts),this.handelEventDay(response.data.events),this.handelWarningDay(response.data.bg_events))
+                            
+                            this.$store.dispatch('setChooseDateList',checkDate.join('/'))
                         }else{
                             this.empty = true
                             this.progressShow = false
@@ -463,26 +476,6 @@ export default {
             }).catch((res) => {
                 this.progressShow = false
                 console.log(res)
-            })
-        },
-        // 云拉取事件
-        getEventList(){
-            let s = new Date(this.agpDate[0])
-            let e = new Date(this.agpDate[1])
-            let start_ts = s.setHours(0,0,0)/1000
-            let end_ts = e.setHours(23,59,59)/1000
-            getEvent({event_type:-1,start_ts:start_ts,end_ts:end_ts}).then(response => {
-                if(response.code == 1000){
-                    this.$store.dispatch('setEvents',{key:this.agpDate.join('/'),value:response.data}) //处理完数据存vuex
-                    this.handelEventDay(response.data)
-
-                }else{
-                    this.$message({
-                        type: 'error',
-                        message: response.msg
-                    });
-                }
-            }).catch((res) => {
             })
         },
         processArray(arr, interval) {
@@ -565,13 +558,13 @@ export default {
                 });
                 endTs = endTs + measuringInterval;
             }
-            this.$store.dispatch('setData',{key:this.agpDate.join('/'),value:objects}) //处理完数据存vuex
+             let checkDate = [formatDate(this.agpDate[0],'YYYY-mm-dd'),formatDate(this.agpDate[1],'YYYY-mm-dd')]
+            this.$store.dispatch('setData',{key:checkDate.join('/'),value:objects}) //处理完数据存vuex
             return objects;
         },
         // 全部事件分割为每天事件
         handelEventDay(datas){
             let data = _.clone(datas)
-            // let data = _.concat(_.clone(datas),_.clone(datas))
             let unit = this.unit
             let eventList ={};
             let sameList = {}
@@ -588,13 +581,51 @@ export default {
                     sameList[item.event_ts] = [item]
                 }
                 item.yPosition = unit=='mmol/L'?1*repeatNum:18*repeatNum
+                item.type = 1 //普通事件
                 if(eventList[key]){
                     eventList[key].push(item)
                 }else{
                     eventList[key] = [item]
                 }
             })
-            this.eventList = eventList
+            let checkDate = [formatDate(this.agpDate[0],'YYYY-mm-dd'),formatDate(this.agpDate[1],'YYYY-mm-dd')]
+           this.$store.dispatch('setEvents',{key:checkDate.join('/'),value:eventList}) //处理完数据存vuex
+           return eventList
+        },
+         // 警告信息分割为每天事件
+        handelWarningDay(datas){
+            let checkDate = [formatDate(this.agpDate[0],'YYYY-mm-dd'),formatDate(this.agpDate[1],'YYYY-mm-dd')]
+            if(datas&&datas.length>0){
+                let data = _.clone(datas)
+                let unit = this.unit
+                let warningList ={};
+                let sameList = {}
+                let repeatNum = 1
+                data.forEach(item=>{
+                    item.event_ts = item.message_ts
+                    let key = formatDate(item.event_ts*1000,'YYYY-mm-dd')
+                    let zeroTs = new Date(key).setHours(0,0,0)/1000
+                    if(sameList[item.event_ts]){
+                        repeatNum++
+                        sameList[item.event_ts].push(item)
+                    }else{
+                        repeatNum = 1
+                        sameList[item.event_ts] = [item]
+                    }
+                    if(warningList[key]){
+                        warningList[key].push(item)
+                    }else{
+                        warningList[key] = [item]
+                    }
+                    item.type = 2 //报警事件
+                })
+                this.$store.dispatch('setBgEvents',{key:checkDate.join('/'),value:eventList}) //处理完数据存vuex
+                return warningList
+            }else{
+                 this.$store.dispatch('setBgEvents',{key:checkDate.join('/'),value:[]}) //处理完数据存vuex
+                return []
+            }
+            
         },
         // 打开解释弹窗
         openPopover(key){
@@ -620,10 +651,10 @@ export default {
             }
         },
         // 自组件需要的数据
-        handelTemplateDay(data){
+        handelTemplateDay(data,events,bg_events){
             this.handelAgp(data)
             this.handelTir(data)
-            this.handelDay(data)
+            this.handelDay(data,events,bg_events)
             this.handelBg(data)
         },
         // agp图谱
@@ -684,28 +715,142 @@ export default {
             console.log(result)
             this.tir = result
         },
+         // 计算总值为100
+        handelRoundTir(result){
+            let veryHighRate = (result.veryHighRate * 100).toFixed(1);
+            let highRate = (result.highRate * 100).toFixed(1);
+            let normalRate = (result.normalRate * 100).toFixed(1);
+            let lowRate = (result.lowRate * 100).toFixed(1);
+            let veryLowRate = (result.veryLowRate * 100).toFixed(1);
+
+            var rateObjs = [
+                {origV: result.veryHighRate * 100, resultV: veryHighRate},
+                {origV: result.highRate * 100, resultV: highRate},
+                {origV: result.normalRate * 100, resultV: normalRate},
+                {origV: result.lowRate * 100, resultV: lowRate},
+                {origV: result.veryLowRate * 100, resultV: veryLowRate},
+            ];
+
+            // 求和
+            let rateSumMax = 100;
+            let rateSum = rateObjs.reduce(function (total, rateObj) {
+                return total + parseFloat(rateObj.resultV);
+            }, 0);
+            if (rateSum !== rateSumMax) {
+                const changeValue = 0.1;
+                let changeCount = 0;
+                if (rateSum > rateSumMax) {
+                // >100，5入的需减
+                const changeRateCount =
+                    parseFloat((rateSum - rateSumMax).toFixed(1)) / changeValue;
+                rateObjs.forEach((rateObj, i) => {
+                    if (
+                    rateObj.resultV > changeValue &&
+                    rateObj.resultV > rateObj.origV &&
+                    changeCount < changeRateCount
+                    ) {
+                    rateObjs[i] = {
+                        origV: rateObj.origV,
+                        resultV: (parseFloat(rateObj.resultV) - changeValue).toFixed(1),
+                    };
+                    changeCount++;
+                    }
+                });
+                } else {
+                // <100，4舍的需加
+                const changeRateCount =
+                    parseFloat((rateSumMax - rateSum).toFixed(1)) / changeValue;
+                rateObjs.forEach((rateObj, i) => {
+                    if (
+                    rateObj.resultV < rateObj.origV &&
+                    changeCount < changeRateCount
+                    ) {
+                    rateObjs[i] = {
+                        origV: rateObj.origV,
+                        resultV: (parseFloat(rateObj.resultV) + changeValue).toFixed(1),
+                    };
+                    changeCount++;
+                    }
+                });
+                }
+                veryHighRate = rateObjs[0].resultV;
+                highRate = rateObjs[1].resultV;
+                normalRate = rateObjs[2].resultV;
+                lowRate = rateObjs[3].resultV;
+                veryLowRate = rateObjs[4].resultV;
+            }
+            return {
+                veryHighRate,
+                highRate,
+                normalRate,
+                lowRate,
+                veryLowRate
+            }
+        },
         // 每日血糖
-        handelDay(data){
+        handelDay(data,events,bg_events){
             let tirTarget =  this.unit=='mmol/L'?[_.round(GlucoseUtils.mmolToMgdl(this.targetScope[0]),1),_.round(GlucoseUtils.mmolToMgdl(this.targetScope[1]),1)]:this.targetScope
             let DdatArray = _.cloneDeep(data)
             let singleDay  = _.chunk(DdatArray,60*24) ;
             let max = _.maxBy(DdatArray,'Value').Value>540?540:_.maxBy(DdatArray,'Value').Value
             let dayList = new Array()
+            let event_length = 0 //事件条数用来计算高度
             singleDay.forEach(item=>{
                 let value = _.map(item, 'value');
                 let originValue = _.map(item, 'Value');
                 let handelValue = _.compact(value)
+                let eventArray = events?events[formatDate(item[0].DataTs*1000,'YYYY-mm-dd')]:[]
+                let bgEventsArray =bg_events?bg_events[formatDate(item[0].DataTs*1000,'YYYY-mm-dd')]:[]
+                let e_l = eventArray==undefined?0:eventArray.length
+                let b_e_l =  bgEventsArray==undefined?0:bgEventsArray.length
+                event_length = e_l + b_e_l
+                 let all_events = null
+                if(eventArray&&bgEventsArray){
+                    all_events = _.concat(eventArray,bgEventsArray)
+                }else if(eventArray){
+                    all_events = eventArray
+                }else{
+                    all_events = bgEventsArray
+                }
+                let result = TIRUtils.getTIRResult(_.compact(originValue),tirTarget[1],tirTarget[0])?TIRUtils.getTIRResult(_.compact(originValue),tirTarget[1],tirTarget[0]):''
                 dayList.push({
+                    date:formatDate(item[0].DataTs*1000,'YYYY-mm-dd'),
                     day: formatDate(item[0].DataTs*1000,'mm-dd'),
                     week: formatDate(item[0].DataTs*1000,'WW'),
                     value:value,
-                    resultValue:handelValue,
+                    resultValue:_.compact(originValue),
                     max:max,
-                    tir:TIRUtils.getTIRResult(_.compact(originValue),tirTarget[1],tirTarget[0])?(Number(TIRUtils.getTIRResult(_.compact(originValue),tirTarget[1],tirTarget[0]).normalRate)*100).toFixed(1):''
+                    tir:this.handelRoundTir(result).normalRate,
+                    height:720+event_length*55,
+                    events:all_events
                 })
             })
             this.agpdayList =  dayList
             this.resultDay = _.filter(dayList,function(o){return o.resultValue.length>0}).length
+        },
+        // pdf分页
+        padPage(dayList){
+           let pageTwoHeight = 1605 //剩余高度
+           let pdfHeight = 2375
+           let pdfDayData = [[]]
+           let page = 0;
+            dayList.forEach((item,index)=>{
+                if(pageTwoHeight-item.height>0){
+                        this.pageTwoList.push(item) //第二页的内容
+                        pageTwoHeight = pageTwoHeight-item.height
+                }else{  //剩余的进行分页处理
+                    if(pdfHeight-item.height>0){
+                        pdfDayData[page].push(item)
+                    }else{
+                        pdfHeight = 2375
+                        page++
+                        pdfDayData.push([item])
+                    }
+                    pdfHeight = pdfHeight-item.height
+                }
+            
+            })
+            this.pdfDayData = pdfDayData
         },
         // 血糖数据
         handelBg(data){
@@ -717,7 +862,7 @@ export default {
             if(unit=='mmol/L'){
                 bgInfo.mean = GlucoseUtils.mgdlToMmol(bgInfo.mean)
             }
-            let filteredArray = BdatArray.filter(item => item.Value >= 36 && item.Value <= 540);
+            let filteredArray = BdatArray.filter(item => item.Value >= 40 && item.Value <= 400);
             bgInfo.effective = _.round((filteredArray.length/originList.length)*100,1)
             bgInfo.wearsDay = Math.ceil(Number(_.compact(BdatArray).length)/1440)
             bgInfo.allData = filteredArray
@@ -756,13 +901,18 @@ export default {
             this.dateValue = val
             const end = new Date();
             const start = new Date();
-            start.setTime(start.getTime() - 3600 * 1000 * 24 *( val-1));
-            this.start_time = formatEn(start)
-            this.end_time = formatEn(end)
+            let start_ts = start.setTime(start.getTime() - 3600 * 1000 * 24 *( val-1));
+            this.start_times = formatEn(start_ts)
+            this.end_times = formatEn(end)
+            this.agpDate = [start_ts,end.getTime()]
         },
         // 根据日期获取数据
         confirmDate(){
-
+            this.chooseGetData()
+            this.start_time = formatEn(this.agpDate[0])
+            this.end_time = formatEn(this.agpDate[1])
+            this.chooseDay(new Date(this.agpDate[0]),new Date(this.agpDate[1]))
+            this.dateVisible = false
         }
     },
 }
@@ -865,10 +1015,12 @@ export default {
     .bg-data-label{
         font-size:var(--fontSize-smax);
         color:var(--color-black-100);
+        font-weight: 600;
     }
     .bg-data-tip{
         font-size:var(--fontSize-default);
         color:var(--color-black-60);
+        font-weight: 400;
     }
     .bg-data-val{
         font-size:var(--fontSize-max);

@@ -74,10 +74,7 @@
             </div>
             <div>
                 <el-form ref="formData"  label-width="150px" label-position="left"  :model="formData" :inline="true">
-                        <el-form-item :label="$t('message.setting.profile.firstName')+':'">
-                            <input type="text" v-model="formData.nickname" maxlength='15' class='user-inp el-input el-input__inner' @input="limitLength" >
-                        </el-form-item>
-                        <el-form-item :label="$t('message.setting.profile.lastName')+':'">
+                        <el-form-item :label="$t('message.setting.profile.name')+':'">
                             <input type="text" v-model="formData.nickname" maxlength='15' class='user-inp el-input el-input__inner' @input="limitLength" >
                         </el-form-item>
                         <el-form-item :label="$t('message.setting.profile.gender')+':'"  >
@@ -91,15 +88,21 @@
                             </el-select>
                         </el-form-item>
                         <el-form-item :label="$t('message.setting.profile.birthday')+':'"  >
-                            <el-date-picker v-model="formData.birthdate" type="date"   placeholder=" "
-                            :picker-options="pickerOptions"
-                            :default-value='defaultBirthday'
-                            :append-to-body='false'
-                            prefix-icon =' '
-                            value-format="yyyy-MM-dd"	>
-                            </el-date-picker>
-                            <i class="el-icon-arrow-down picker-date-icon "></i>
-                            <span class='age-span' v-if='age'>（{{age}}）</span>
+                            <div class="picker-box" >
+                                <el-date-picker v-model="formData.birthdate" type="date"   placeholder=" "
+                                :picker-options="pickerOptions"
+                                :default-value='defaultBirthday'
+                                :append-to-body='false'
+                                prefix-icon =' '
+                                value-format="yyyy-MM-dd"
+                                class='special-picker'
+                                @change="birthdayChange"
+                                ref='birthdayPicker'>
+                                </el-date-picker>
+                                <i class="el-icon-arrow-down picker-date-icon "></i>
+                                <span class='age-span' v-if='age'>（{{age}}）</span>
+                                <div class='special-data' @click="birthdayPicker">{{showBirthday}}</div>
+                            </div>
                         </el-form-item>
                         <el-form-item :label="$t('message.setting.profile.height')+':'" >
                                 <el-select v-model="formData.height"  popper-class='edit-select' placeholder=" " :popper-append-to-body='false'>
@@ -131,10 +134,13 @@
                             </el-select>
                         </el-form-item>
                         <el-form-item :label="$t('message.setting.profile.diseaseYear')+':'"  >
-                            <el-date-picker v-model="formData.diagnosis_date" type="date" value-format="yyyy-MM-dd"
-                                prefix-icon =' ' placeholder=" " :append-to-body='false' :picker-options="diagnosisPickerOptions"></el-date-picker>
+                          <el-date-picker v-model="formData.diagnosis_date" type="date" value-format="yyyy-MM-dd"
+                                prefix-icon =' ' placeholder=" " :append-to-body='false' :picker-options="diagnosisPickerOptions" 
+                                @change="diabeteChange"
+                                ref='diabetePicker'></el-date-picker>
                                 <i class="el-icon-arrow-down picker-date-icon "></i>
                                 <span class='age-span' v-if='diabetes_year' >（{{diabetes_year}}{{$t('message.setting.profile.year')}}）</span>
+                                 <div class='special-data' @click="diabetePicker">{{diabetesShow}}</div>
                         </el-form-item>
                          <el-form-item :label="$t('message.setting.profile.treatment')+':'"   class='multiple specialLabel'>
                             <el-select v-model="formData.treatment_regimen" popper-class='edit-select' multiple placeholder=" " @change='chooseTreatmentRegimen' :popper-append-to-body='false'>
@@ -176,6 +182,7 @@
 import Cookies from 'js-cookie'
 import maskPhoneNumber from '@/utils/phone'
 import {getInfo,configs,saveInfo,upAvatar} from '@/api/userApi'
+import {formatDate,formatTime,formatEn} from '@/utils/formatTime'
 export default {
     data(){
         return{
@@ -194,6 +201,8 @@ export default {
                 nickname:null,
                 avatar:null
             },
+            showBirthday:'',
+            diabetesShow:'',
             defaultBirthday:new Date().setFullYear(new Date().getFullYear()-40),
             pickerOptions:{
                 disabledDate (time) {
@@ -315,6 +324,22 @@ export default {
             })
         },
         // 选择
+         birthdayPicker(){
+            this.$nextTick(()=>{
+                this.$refs.birthdayPicker.focus()
+            })
+        },
+        birthdayChange(val){
+            this.showBirthday = formatEn(val)
+        },
+        diabetePicker(){
+            this.$nextTick(()=>{
+                this.$refs.diabetePicker.focus()
+            })
+        },
+        diabeteChange(val){
+            this.diabetesShow = formatEn(val)
+        },
         chooseComorbidities(val){
             if(val[val.length-1] == 0){
                 this.formData.comorbidities = [0]
@@ -389,6 +414,8 @@ export default {
                         obj.show_comorbidities = _.map(show_comorbidities,'item_name').join(',')
                         obj.show_complications = _.map(show_complications,'item_name').join(',')
                         obj.show_treatment_regimen =_.map(show_treatment_regimen,'item_name').join(',')
+                        obj.birthdate = response.data.birthdate?formatEn(response.data.birthdate):null
+                        obj.diagnosis_date = response.data.diagnosis_date?formatEn(response.data.diagnosis_date):null
                         this.info = obj
                     }else{
                         this.$message({
@@ -585,5 +612,21 @@ export default {
         right:-55px;
         top:0;
         width:60px;
+    }
+    .special-data{
+        position: absolute;
+        left:0;
+        top:0;
+        padding-left:20px;
+        border:1px solid var(--color-black-10);
+        width:100%;
+        height:40px;
+        border-radius:7px;
+        line-height: 40px;
+        background:#fff;
+    }
+    .picker-box{
+        width:300px;
+        position: relative;
     }
 </style>

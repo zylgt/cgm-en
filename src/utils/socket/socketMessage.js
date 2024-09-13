@@ -1,7 +1,7 @@
 import Socket from '@/utils/socket/webSocket'
 import store from '@/store'
-import {lastIndex,upData} from '@/api/dataApi'
-
+import {lastIndex,upData,syncReader} from '@/api/dataApi'
+import router from '@/router'
 // 处理数据
 export async function handelMessage (res) {
     switch(res.path){
@@ -9,25 +9,47 @@ export async function handelMessage (res) {
             //  判断是否有更新，没有更新进行下一步
             Socket.getReaderList()
             break;
+        case 'findNewReader':
+            /**
+             * 检测到有驱动插入
+             * 设备为0，直接连接
+             * 设备为1，不做处理，因为已经处于同步数据状态
+             * 设备为2且处于选择reader界面，直接追加到设备列表
+             */
+            if(store.getters.deviceList.length<=0){
+                store.dispatch('setReaderConnect',1)
+                Socket.connectReader(res.data.device)
+            }else if(store.getters.deviceList.length>1&&store.getters.upStep==3){
+                store.dispatch('setDeviceList',[res.data.device])
+            }
+            break;
         case 'getReaderDevices': //获取redaer列表，如果只有一台直接连接，否则选取连接
-            store.dispatch('setDeviceList',res.data.devices)
-            store.dispatch('setUpStep',3)
+            console.log(res)
             if(res.data.devices.length==1){
                 store.dispatch('setReaderConnect',1)
+                store.dispatch('setUpStep',3)
                 Socket.connectReader(res.data.devices[0])
+            }else if(res.data.devices.length>1){
+                store.dispatch('setReaderConnect',2)
+                store.dispatch('setDeviceList',res.data.devices)
+                store.dispatch('setUpStep',3)
+            }else{
+                store.dispatch('setReaderConnect',0)
+                store.dispatch('setUpStep',3)
             }
             break;
         case 'connectReaderDevice': //连接reader
-            store.dispatch('setReaderConnect',2)
             Socket.getReaderInfo()
             break;
-        case 'getReaderDeviceInfo': //获取reader信息，判断是否需要同步时间和目标范围
-            // 判断reader时间与当前时间差值为1000，则同步时间
-            let timestamp = Math.floor(Date.now() / 1000)
-            if( Math.abs(timestamp-res.data.currentTime)>=1000){
-                Socket.setTime({timestamp:timestamp})
-            }
-            Socket.cgmList() // 同时获取绑定的发射器列表
+        case 'getReaderDeviceInfo': //获取reader信息
+            upReader(res.data)
+            Socket.setTime() 
+            break;
+        case 'setTime':
+            Socket.setRange(store.getters.originTargetScope)
+            break;
+        case 'setGlucoseRange':
+            Socket.cgmList() // 获取绑定的发射器列表
             break;
         case 'getBindDevices': //获取reader绑定的发射器列表
             store.dispatch('setCgmList',res.data.devices)
@@ -94,6 +116,10 @@ function getBgData(mac,size,start_index,last_index){
         Socket.queryGlucoseData({"mac":mac,"size":size,"startIndex":start_index})
     }else{
         console.log('传完了')
+        Socket.transferStatus(2) // 下发传输状态
+        store.dispatch('setUpStep',1) 
+        router.push('/report/overview')
+        
     }
 }
 /**
@@ -103,6 +129,7 @@ function getBgData(mac,size,start_index,last_index){
 
 function upLoad(data){
     let datas  = []
+    Socket.transferStatus(1) // 下发传输状态
     data.values.forEach(item=>{
         datas.push({
            "data_index":item.index,
@@ -148,9 +175,41 @@ function upLoad(data){
     }).catch((res) => {
         console.log(res)
     })
-    // // 模拟服务器上传成功时间
-    // setTimeout(function(){
-        
-    // },100)
 }
 
+/**
+ * 上传reader信息
+ */
+function upReader(data){
+    let params={
+        "mac": data.readerMac,
+        "firmware": data.firmware,
+        "current_time": data.currentTime,
+        "manufacturer": data.manufacturer,
+        "model": data.model,
+        "hardware": data.hardware,
+        "hattery": data.battery,
+        "high": data.high,
+        "low": data.low,
+        "emergent_alarm_low": data.emergentAlarmLow,
+        "emergent_alarm_low_on": data.emergentAlarmLowOn,
+        "alarm_low": data.alarmLow,
+        "alarm_low_on": data.alarmLowOn,
+        "alarm_high": data.alarmHigh,
+        "alarm_high_on": data.alarmHighOn,
+        "loss_time": data.lossTime,
+        "loss_alarm_on": data.lossAlarmOn
+    }
+    syncReader(params).then(response => {
+        if(response.code == 1000){
+            console.log('上传成功')
+        }else{
+            this.$message({
+                type: 'error',
+                message: response.msg
+            });
+        }
+    }).catch((res) => {
+        console.log(res)
+    })
+}

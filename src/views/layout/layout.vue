@@ -23,8 +23,7 @@
                             <i :class="[dropDown?'user-more':'','el-icon-arrow-down']"></i>
                         </div>
                         <el-dropdown-menu slot="dropdown" :append-to-body="false" class='drop-menu' >
-                            <!-- <el-dropdown-item command="change">{{$t("message.changePassword")}}</el-dropdown-item> -->
-                            <el-dropdown-item command="account" style='text-align:center;' >{{$t("message.account")}}</el-dropdown-item>
+                            <el-dropdown-item command="account" style='text-align:center;' >{{$t("message.accounts")}}</el-dropdown-item>
                             <el-dropdown-item command="signout" style='text-align:center;' >{{$t("message.logout")}}</el-dropdown-item>
                         </el-dropdown-menu>
                     </el-dropdown>
@@ -42,7 +41,6 @@
 <script>
 import Cookies from 'js-cookie'
 import {removeToken} from '@/utils/auth'
-import maskPhoneNumber from '@/utils/phone'
 import Horizontal from "./horizontal"
 import Vertical from "./vertical"
 import {mapGetters} from "vuex"

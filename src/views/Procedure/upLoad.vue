@@ -40,7 +40,7 @@
                     <div class='unistall-text-tips' >{{$t('message.Driver.install.startUpTip')}}</div>
             </div>
             <div class='step-box' v-if='upStep==3'>
-                <div class='step-box step1' v-if='startConnect'>
+                <div class='step-box step1'  v-if='readerConnect==0'>
                     <div class='title' >
                         {{$t('message.Driver.connect.oneTitle')}}
                     </div>
@@ -61,10 +61,10 @@
                         </div>
                     </div>
                     <div class='btn-box flex-end' >
-                        <el-button type="primary"  @click='startReader'> {{$t('message.Driver.connect.upBtn')}}</el-button>
+                       
                     </div>
                 </div>
-                <div class='step-box step1' v-if='deviceList.length>1&&!startConnect' >
+                <div class='step-box step1'  v-if='readerConnect==2'>
                      <div class='title' >
                         {{$t('message.Driver.connect.moreTitle')}}
                         <div class='title-tips' >{{$t('message.Driver.connect.moreTip')}}</div>
@@ -79,7 +79,7 @@
                         <el-button type="primary"  @click='connectReader'> {{$t('message.Driver.connect.upBtn')}}</el-button>
                     </div>
                 </div>
-                <div class='step-box step2' v-if='readerConnect==1&&!startConnect' >
+                <div class='step-box step2'  v-if='readerConnect==1' >
                     <i class="el-icon-loading loading-icon "></i>
                     <div class='unistall-text step3-unistall-text' >{{$t('message.Driver.upCloude.title')}}</div>
                     <div class='unistall-text-tips step3-unistall-text-tips' > <img src="~@/assets/image/waring-icon.png" alt="" class='waring-icon' > {{$t('message.Driver.upCloude.tip')}}</div>

@@ -19,7 +19,7 @@
                                 ({{item.duration[0]}}H{{item.duration[1]}}M)
                             </div>
                             <div class='tir-key-range' v-if='item.index==2'>{{$t('message.common.target')}}＞{{item.target}}%</div>
-                            <div class='tir-key-range' v-else>{{$t('message.common.target')}}＜{{item.target}}%</div>
+                            <div class='tir-key-range' v-if='item.index==0||item.index==4'>{{$t('message.common.target')}}＜{{item.target}}%</div>
                         </div>
                     </div>
                 </div>

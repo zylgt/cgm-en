@@ -5,6 +5,7 @@ const report = {
         data:{}, //选择过的日期数据集
         info:{},//报告基本信息
         events:{}, //事件列表信息
+        bgevents:{}, //事件列表
     },
     mutations:{
         SET_CHOOSE_DATE_LIST(state,chooseDate){
@@ -23,6 +24,10 @@ const report = {
             if(_.has(state.events, data))return;
             Vue.set(state.events,data.key,data.value)
         },
+        SET_BG_EVENTS(state,data){
+            if(_.has(state.bgevents, data))return;
+            Vue.set(state.bgevents,data.key,data.value)
+        }
     },
     actions:{
         setChooseDateList({commit},data){
@@ -36,6 +41,9 @@ const report = {
         },
         setEvents({commit},data){
             commit('SET_EVENTS',data)
+        },
+        setBgEvents({commit},data){
+            commit('SET_BG_EVENTS',data)
         }
     }
 }

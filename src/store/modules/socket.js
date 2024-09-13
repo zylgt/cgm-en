@@ -4,13 +4,18 @@ const socket = {
         upProgess:0 ,//已经上传条数
         upLimit:0 ,//上传数据条数
         upStep:1 , //上传步骤 1启动驱动 2启动中 3连接设备 4同步数据
-        readerConnect:0, //reader连接状态 0初始状态 1连接中 2连接成功
+        readerConnect:0, //reader连接状态 0未连接 1连接中 2选择连接 
         cgmList:[], //reader绑定的发射器列表
         errorCode:0, //0未发生错误 1驱动未安装 2驱动启动失败 3驱动有更新 5reader连接失败 6数据同步失败
+        socketStatus:1, //1连接 2关闭 3错误
     },
     mutations:{
         SET_DEVICE_LIST:(state,deviceList) => {
-            state.deviceList = deviceList
+            if(deviceList.length==1){
+                state.deviceList.push(deviceList)
+            }else{
+                state.deviceList = deviceList
+            }
         },
         SET_UP_PROGESS:(state,upProgess) => {
             state.upProgess = upProgess
@@ -30,7 +35,10 @@ const socket = {
         },
         SET_UP_LIMIT:(state,upLimit) => {
             state.upLimit = upLimit
-        }
+        },
+        SET_SOCKET_STATUS:(state,socketStatus) => {
+            state.socketStatus = socketStatus
+        },
     },
     actions:{
         setDeviceList({commit},data){
@@ -54,6 +62,9 @@ const socket = {
         },
         seUpLimit({commit},data){
             commit('SET_UP_LIMIT',data)
+        },
+        setSocketStatus({commit},data){
+            commit('SET_SOCKET_STATUS',data)
         }
     }
 }

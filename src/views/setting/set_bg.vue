@@ -12,7 +12,7 @@
                 </div> -->
                 <div class='common-set-item' >
                     <div class='set-item-label' >{{$t('message.setting.bg.format')}}：</div>
-                    <div class='set-item-value' >{{timeFormat}}小时制</div>
+                    <div class='set-item-value' >{{timeFormat}}{{$t('message.setting.bg.hour')}}</div>
                 </div>
             </div>
             <div class='common-set' >

@@ -40,7 +40,7 @@ export class GlucoseUtils {
     const GMI = parseFloat((3.31 + 0.02392 * mean).toFixed(1));
     return {
       mean: mean, // 单位：mg/dL
-      SDBG: SD,
+      SDBG: parseFloat(SD.toFixed(1)),
       CV: CV, // 单位：%
       GMI: GMI, // 单位：%
     };

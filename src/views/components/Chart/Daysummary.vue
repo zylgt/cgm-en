@@ -74,11 +74,19 @@ export default {
                     },
                     {
                         type: 'category',
-                        name:'TIR',
+                         name:'{a|TIR}',
                         nameLocation:'start',
                         nameTextStyle:{
                             color:'#666',
-                            fontSize:18
+                            fontSize:18,
+                             padding:[30,0,0,0],
+                            rich:{
+                                a:{
+                                    color:'#666',
+                                    fontSize:18,
+                                    padding:[30,0,0,0]
+                                }
+                            }
                         },
                         nameGap:86,
                         gridIndex:0,
@@ -284,10 +292,18 @@ export default {
             let tir = []
             let max = null
             list.forEach(item=>{
-                let avg = _.round(_.mean(item.value), 1)
+                 let avg =_.compact(item.resultValue).length>0?GlucoseUtils.calculateMeanCvGmi(_.compact(item.resultValue)).mean:null
                 xData.push(item.day)
-                avgList.push(unit=='mg/dL'?avg:GlucoseUtils.mgdlToMmol(avg)) //平均值
-                tir.push(item.tir)
+                avgList.push(unit=='mg/dL'? Math.round(avg):GlucoseUtils.mgdlToMmol(avg)) //平均值
+                tir.push({value:item.tir,label:{
+                    'show':true,
+                    'distance':5,
+                    'color':'#000',
+                    'fontSize':20,
+                    'fontWeight':600,
+                    'formatter':'{c}%',
+                    'position':item.tir>=20&&item.tir<=40&&max/2-50<=avg?'bottom':'top'
+                }})
                 max = item.max
             })
             this.option.tooltip = {

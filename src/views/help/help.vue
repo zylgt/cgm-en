@@ -1,39 +1,65 @@
 <template>
     <div>
-        <div class='unit' >
-            <div class='unit-item'  @click='setUnit("mg/dL")'>mg/dL</div>
-            <div class='unit-item' @click='setUnit("mmol/L")'>mmol/L</div>
+         <div class='help-main' >
+            <div class='agp-top help-top' >
+                <div class='agp-top-fl' >
+                    <div class='report-title'> {{$t('message.route.'+$route.meta.title)}}</div>
+                </div>
+            </div>
+            <div class='help-list' v-for='item in list' :key='item.path' @click="go(item.path)" >{{$t('message.route.'+item.meta.title)}}</div>
         </div>
     </div>
 </template>
 <style scoped>
-    .unit{
-        display: flex;
-        align-items: center;
-        justify-content: center;
+    .help-top{
+        margin-bottom:50px;
     }
-    .unit-item{
-        width:100px;
-        height:40px;
-        border-radius:6px;
-        border:1px solid #ccc;
-        text-align: center;
-        line-height: 40px;
-        color: #333;
-        margin-right:10px;
-    }
+   .help-main{
+     width:100%;
+     margin:0 auto;
+   }
+   .help-list{
+        width:100%;
+        height:80px;
+        line-height: 80px;
+        padding-left:20px;
+        box-sizing: border-box;
+        background: #fff;
+        border-radius:10px;
+        margin-bottom:20px;
+        cursor: pointer;
+   }
 </style>
 <script>
 export default {
     data(){
         return{
-
+            list:[]
         }
     },
+    mounted(){
+        let path = this.$route.path
+            let columnsAsideList= this.$router.options.routes[1].children
+            const currentPathSplit = path.split("/")
+            let currentData = {}
+            columnsAsideList.map((v, k) => {
+                if (v.path === `/${currentPathSplit[1]}`) {
+                    v["k"] = k
+                    currentData["item"] = [{ ...v }]
+                    currentData["children"] = [{ ...v }]
+                    if (v.children){
+                        currentData["children"] = v.children
+                    }else{
+                        currentData["children"] = []
+                    }
+                }
+            })
+            this.list = currentData.children.splice(1)
+    },
     methods:{
-        setUnit(unit){
-            this.$store.dispatch('setUnit',unit)
-        }
+      go(path){
+        this.$router.push(path)
+      }
     }
 }
 </script>

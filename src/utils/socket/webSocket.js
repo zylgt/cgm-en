@@ -4,6 +4,7 @@ import {aesEncrypt,aesDecrypt} from '@/utils/socket/aes'
 import {handelMessage} from '@/utils/socket/socketMessage'
 import socketLog from '@/utils/socket/socketLog'
 import store from '@/store'
+import router from '@/router'
 
 let socket = null; //实例对象
 let lockReconnect = false; //是否真正建立连接
@@ -16,7 +17,7 @@ let exchange_shareKey = "com.ihealth.cgm" //AES加密共享秘钥
 let privateKey = null //私钥
 const initwebSocket = async()=>{
     if("WebSocket" in window){
-        var wsUrl = 'ws://ivd.cgm3.com:'+port[port_index]+'/uploader'
+        var wsUrl = 'wss://cgm3.jiuan.com:'+port[port_index]+'/uploader'
         socketLog.log('尝试连接'+wsUrl,)
         socket = new WebSocket(wsUrl);
         status = 0
@@ -45,6 +46,7 @@ const openWebsocket = async(e) => {
     socketLog.log('连接成功')
     lockReconnect = true
     status = 1
+    store.dispatch('setSocketStatus',1) //驱动启动失败
     // 连接建立成功后开始协商秘钥
     let publickey = await getEcdhPublicKey()
     socketLog.log("开始协商秘钥...")
@@ -89,9 +91,7 @@ const sendWebsocket =(data) =>{
 }
    
 
-const webSocketOnError = (e) => {
-    socketLog.log('连接中断',e)
-}  
+
 // 接收数据
 const webSocketOnMessage = async(e) => {
     let info = JSON.parse(e.data)
@@ -105,6 +105,10 @@ const webSocketOnMessage = async(e) => {
     if(code==506){  //reader已连接，直接执行下一步
         store.dispatch('setReaderConnect',2)
        getReaderInfo()
+    }
+    if(code==512){  //驱动上报设备断开连接,返回首页
+        store.dispatch('upStep',1) 
+        router.push('/report/overview')
     }
     if(code!=200){
         socketLog.log('响应错误:code'+info.code+"msg:"+info.msg)
@@ -126,9 +130,13 @@ const webSocketOnMessage = async(e) => {
 }
 
 
+const webSocketOnError = (e) => {
+    socketLog.log('连接中断',e)
+    store.dispatch('setSocketStatus',3) //socket连接发生错误
+}  
 
 const closeWebsocket= (e) => {
-   
+    store.dispatch('setSocketStatus',2) //socket连接关闭
     lockReconnect = false
     if(e.code==1000||e.code>1010){
         socketLog.log('连接已关闭',e)
@@ -171,6 +179,7 @@ const getReaderList = () => {
 //连接Reader设备,这里默认连接设备列表的第一个设备  
 const connectReader = (device) =>{
     socketLog.log("连接Reader设备")
+    console.log(device)
     let content = {"path": "connectReaderDevice","data":{"readerMac":device.readerMac}}
     sendWebsocket(content)
 }
@@ -185,14 +194,13 @@ const connectReader = (device) =>{
  //同步时间
  const setTime = (data) =>{
     socketLog.log("同步时间")
-    let timestamp = Math.floor(Date.now() / 1000);
-    let content = {"path": "setTime", "data":data}
+    let content = {"path": "setTime"}
     sendWebsocket(content)
 }
 
 // 同步目标范围
 const setRange = (data) => {
-    let content = {"path": "setGlucoseRange","data":{"low":54,"high":180}}
+    let content = {"path": "setGlucoseRange","data":{"low":data[0],"high":data[1]}}
     sendWebsocket(content)
 }
 
@@ -208,6 +216,11 @@ const queryGlucoseData = (data) => {
     sendWebsocket(content)
 }
 
+// 下发传输状态
+const transferStatus = (data) => {
+    let content ={"path": "transferStatus","data":{"status":data}}
+    sendWebsocket(content)
+}
 
 
 export default {
@@ -220,5 +233,6 @@ export default {
     setRange,
     cgmList,
     queryGlucoseData,
-    close
+    close,
+    transferStatus
 }
