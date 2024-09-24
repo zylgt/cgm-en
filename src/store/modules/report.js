@@ -1,3 +1,4 @@
+import PdfLoader from '@/utils/htmlpdf';
 import Vue from 'vue'
 const report = {
     state:{
@@ -6,6 +7,8 @@ const report = {
         info:{},//报告基本信息
         events:{}, //事件列表信息
         bgevents:{}, //事件列表
+        PdfLoad:false,
+        pdfFile:''
     },
     mutations:{
         SET_CHOOSE_DATE_LIST(state,chooseDate){
@@ -27,6 +30,12 @@ const report = {
         SET_BG_EVENTS(state,data){
             if(_.has(state.bgevents, data))return;
             Vue.set(state.bgevents,data.key,data.value)
+        },
+        SET_PDF_LOAD(state,data){
+            state.PdfLoad = data
+        },
+        SET_PDF(state,data){
+            state.pdfFile = data
         }
     },
     actions:{
@@ -44,6 +53,12 @@ const report = {
         },
         setBgEvents({commit},data){
             commit('SET_BG_EVENTS',data)
+        },
+        setPdfLoad({commit},data){
+            commit('SET_PDF_LOAD',data)
+        },
+        setPdf({commit},data){
+            commit('SET_PDF',data)
         }
     }
 }

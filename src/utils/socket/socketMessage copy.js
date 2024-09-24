@@ -75,23 +75,8 @@ export async function handelMessage (res) {
             getLimit(res.data.devices,limit)
             if(res.data.devices.length>0){
                 store.dispatch('setUpStep',4)
-                let upLength = 0
-                for(var i=0 ;i<res.data.devices.length;i++){
-                    let item = res.data.devices[i]
-                    if(await getLastIndex(item.mac)==-1){
-                        getBgData(item.mac,50,await getLastIndex(item.mac)==-1?item.firstIndex:await getLastIndex(item.mac)+1,item.lastIndex)
-                        break ;
-                    }else{
-                        upLength++
-                        if(upLength>=res.data.devices.length){
-                            store.dispatch('setUpStep',5) //重新上传
-                            store.dispatch('setReaderConnect',0) //重新上传
-                            Socket.transferStatus(2) // 下发传输状态
-                            router.push('/report/overview')
-                        }
-                    }
-
-                }
+                getBgData(res.data.devices[0].mac,50,await getLastIndex(res.data.devices[0].mac)==-1?res.data.devices[0].firstIndex:await getLastIndex(res.data.devices[0].mac)+1,res.data.devices[0].lastIndex)
+                
             }
             break;
         case 'getGlucoseData': //获取的血糖数据

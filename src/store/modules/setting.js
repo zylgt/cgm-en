@@ -5,6 +5,7 @@ const setting = {
         originTargetScope:[70,180],//原始目标范围
         timeFormat:localStorage.getItem('timeFormat')==null||localStorage.getItem('timeFormat')=='undefined'?24:localStorage.getItem('timeFormat'), //时间格式,默认24小时制
         height:1080 ,//网页的高度，尺寸变化跟着变化
+        scale:1, //缩放比例
     },
     mutations:{
         SET_UNIT(state,unit){
@@ -14,6 +15,7 @@ const setting = {
             state.targetScope = targetScope
         },
         SET_ORIGIN_TARGET_SCOPE(state,originTargetScope){
+            console.log(originTargetScope)
             state.originTargetScope = originTargetScope
         },
         SET_TIME_FORMAT(state,timeFormat){
@@ -22,6 +24,9 @@ const setting = {
         },
         SET_HEIGHT(state,height){
             state.height = height
+        },
+        SET_SCALE(state,scale){
+            state.scale = scale
         }
     },
     actions:{
@@ -39,6 +44,9 @@ const setting = {
         },
         setHeight({commit},data){
             commit('SET_HEIGHT',data)
+        },
+        setScale({commit},data){
+            commit('SET_SCALE',data)
         }
     }
 }

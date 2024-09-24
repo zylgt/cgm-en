@@ -22,6 +22,7 @@ export default {
     let zoom = borwerWidth/baseWidth
     document.body.style.transform="scale("+zoom+")"
     this.$store.dispatch('setHeight',borwerHeight/zoom - 90)
+    this.$store.dispatch('setScale',zoom)
     this.resultHeight  = borwerHeight/zoom
     document.body.style.height = borwerHeight/zoom+'px'
     window.onresize = ()=>{
@@ -29,6 +30,7 @@ export default {
       zoom = borwerWidth/baseWidth
       borwerHeight = window.innerHeight
       document.body.style.transform = "scale("+zoom+")"
+      this.$store.dispatch('setScale',zoom)
       this.$store.dispatch('setHeight',borwerHeight/zoom - 90)
       document.body.style.height = borwerHeight/zoom+'px'
       this.resultHeight  = borwerHeight/zoom

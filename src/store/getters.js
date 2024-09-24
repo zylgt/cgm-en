@@ -12,5 +12,9 @@ const getters = {
   originTargetScope:state=>state.setting.originTargetScope,
   timeFormat:state=>state.setting.timeFormat,
   PageHeight:state=>state.setting.height ,
+  scale:state=>state.setting.scale,
+  driver:state=>state.socket.driver,
+  PdfLoad:state=>state.report.PdfLoad,
+  pdfFile:state=>state.report.pdfFile,
 }
 export default getters

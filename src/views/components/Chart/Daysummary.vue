@@ -166,7 +166,7 @@ export default {
                             color:'#e5e5e5'
                         },
                         label:{
-                            show:true,
+                            show:false,
                             distance:5,
                             color:'#000',
                             fontWeight:600,
@@ -189,7 +189,7 @@ export default {
                             }
                         },
                         label:{
-                            show:true,
+                            show:false,
                             distance:5,
                             color:'#000',
                             fontSize:20,
@@ -296,7 +296,7 @@ export default {
                 xData.push(item.day)
                 avgList.push(unit=='mg/dL'? Math.round(avg):GlucoseUtils.mgdlToMmol(avg)) //平均值
                 tir.push({value:item.tir,label:{
-                    'show':true,
+                    'show':list.length>30?false:true,
                     'distance':5,
                     'color':'#000',
                     'fontSize':20,
@@ -337,8 +337,13 @@ export default {
             this.option.series[0].data = avgList
             this.option.series[1].data = tir
             this.option.series[0].label.show = avgList.length>30?false:true
-            this.option.series[1].label.show = avgList.length>30?false:true
         },
+    },
+    watch:{
+        dataList:function(n,o){
+            let data = n
+            this.readerIng(data)
+        }
     }
 }
 </script>

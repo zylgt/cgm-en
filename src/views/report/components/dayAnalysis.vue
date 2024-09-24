@@ -24,7 +24,7 @@
                         </div>
                         <div class='analysis-info-item' >
                             
-                            <div :class='[dayInfo.tir<70?"active":"","analysis-info-value"]' >{{dayInfo.tir}} <span class='analysis-info-value-unit' >%</span></div>
+                            <div :class='[dayInfo.tir<=70?"active":"","analysis-info-value"]' >{{dayInfo.tir}} <span class='analysis-info-value-unit' >%</span></div>
                             <div class='analysis-info-label' >{{$t('message.reports.trendDay.tir')}}</div>
                         </div>
                         <div class='analysis-info-item' >
@@ -57,35 +57,45 @@
                         <div class='table-event-type' >
                             <img src="~@/assets/image/event-icon0.png" alt="" class='table-event-icon'  v-if='scope.row.event_type==0'>
                             <img src="~@/assets/image/event-icon1.png" alt="" class='table-event-icon'  v-if='scope.row.event_type==1'>
-                            <img src="~@/assets/image/event-icon2.png" alt="" class='table-event-icon'  v-if='scope.row.event_type==2'>
-                            <img src="~@/assets/image/event-icon3.png" alt="" class='table-event-icon'  v-if='scope.row.event_type==3'>
+                            <img src="~@/assets/image/event-icon2.png" alt="" class='table-event-icon'  v-if='scope.row.event_type==3'>
+                            <img src="~@/assets/image/event-icon3.png" alt="" class='table-event-icon'  v-if='scope.row.event_type==2'>
                             <img src="~@/assets/image/event-icon4.png" alt="" class='table-event-icon'  v-if='scope.row.event_type==4'>
                             <img src="~@/assets/image/event-icon5.png" alt="" class='table-event-icon'  v-if='scope.row.event_type==5'>
                             <img src="~@/assets/image/event-icon6.png" alt="" class='table-event-icon'  v-if='scope.row.event_type==6'>
-                            <span v-if='scope.row.event_type==0'>{{scope.row.event_body.eat_name}}</span>
-                            <span v-if='scope.row.event_type==1'>{{scope.row.event_body.sport_name}}</span>
-                            <span v-if='scope.row.event_type==2'>{{scope.row.event_body.medicine_name}}</span>
-                            <span v-if='scope.row.event_type==3'>{{scope.row.event_body.insulin_name}}</span>
-                            <span v-if='scope.row.event_type==4'>{{scope.row.event_body.sleep_name}}</span>
+                            <span v-if='scope.row.event_type==0'>{{$t('message.tableEvent.food'+scope.row.food_time)}}</span>
+                            <span v-if='scope.row.event_type==1'>{{$t('message.reports.trendDay.eventType1')}}</span>
+                            <span v-if='scope.row.event_type==3'>{{$t('message.tableEvent.insulinTime'+scope.row.insulin_type)}}</span>
+                            <span v-if='scope.row.event_type==2'>{{$t('message.reports.trendDay.eventType3')}}</span>
+                            <span v-if='scope.row.event_type==4'>{{scope.row.sleep_name}}</span>
                             <span v-if='scope.row.event_type==5'>指尖血</span>
-                            <span v-if='scope.row.event_type==6'>{{scope.row.event_body.custom_name}}</span>
+                            <span v-if='scope.row.event_type==6'>{{scope.row.custom_name}}</span>
+                            <span v-if='scope.row.message_type==3'>高血糖</span>
+                            <span v-if='scope.row.message_type==2'>低血糖</span>
                         </div>
                     </template>
                 </el-table-column>
                 <el-table-column  prop="event"  :label="$t('message.reports.trendDay.recordDetails')">
                     <template slot-scope="scope"> 
                         <div class='table-event-type' >
-                            <span v-if='scope.row.event_type==0'>{{scope.row.event_body.remark}}</span>
-                            <span v-if='scope.row.event_type==1'>{{scope.row.event_body.total_minute}}分钟</span>
-                            <span v-if='scope.row.event_type==2'>{{scope.row.event_body.medicine_time_name}}</span>
-                            <span v-if='scope.row.event_type==3'>{{scope.row.event_body.medicine_name}}</span>
+                            <span v-if='scope.row.event_type==0'>--</span>
+                            <span v-if='scope.row.event_type==1'>{{scope.row.sport_minute}}{{$t('message.tableEvent.minutes')}}</span>
+                            <span v-if='scope.row.event_type==2'>{{drug_tiime?$t('message.tableEvent.drugTime'+scope.row.drug_tiime):drug_tiime}}</span>
+                            <span v-if='scope.row.event_type==3'>{{scope.row.insulin_value}}U</span>
                             <span v-if='scope.row.event_type==4'>{{scope.row.event_body.total_minute}}分钟</span>
                             <span v-if='scope.row.event_type==5'>{{scope.row.event_body.fingertipblood_name}}</span>
                             <span v-if='scope.row.event_type==6'>{{scope.row.event_body.remark}}</span>
+                            <span v-if='scope.row.message_type==3'>--</span>
+                            <span v-if='scope.row.message_type==2'>--</span>
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column  prop="value"  :label="$t('message.reports.trendDay.glucoseLevel')"></el-table-column>
+                <el-table-column  prop="value"  :label="$t('message.reports.trendDay.glucoseLevel')">
+                     <template slot-scope="scope"> 
+                        <div v-if='scope.row.value&&scope.row.event_type!=5' >{{scope.row.value}}{{unit}}</div>
+                        <div v-if='scope.row.event_type==5' >{{scope.row.event_body.bg}}{{unit}}</div>
+                        <div v-if='scope.row.bgValue' >{{scope.row.bgValue}}{{unit}}</div>
+                    </template>
+                </el-table-column>
             </el-table>
         </div>
         
@@ -109,7 +119,7 @@ import img6 from '@/assets/image/event-icon6.png'
 export default {
     data(){
         return{
-            eventChecked:false, //事件记录开关
+            // eventChecked:false, //事件记录开关
             initOptions: {
                 renderer: 'svg'
             },
@@ -291,6 +301,9 @@ export default {
         },
         eventList:{
             type:Array
+        },
+        eventChecked:{
+            type:Boolean
         }
     },
     components: {
@@ -308,7 +321,6 @@ export default {
     methods:{
         // 处理数据
         handelOption(data){
-            console.log(data)
             let dayInfo = _.cloneDeep(data)
             if(dayInfo.resultValue.length>0){
                 let unit = this.unit
@@ -324,8 +336,8 @@ export default {
                 dayInfo.day = formatDate(dayInfo.day,'mm月dd日')
                 dayInfo.fluctate = unit=='mg/dL'?fluctate:GlucoseUtils.mgdlToMmol(fluctate);
                 dayInfo.avg = unit=='mg/dL'? Math.round(avg):GlucoseUtils.mgdlToMmol(avg);
-                dayInfo.lowTir = _.round(Number(lowTir)*100, 1);
-                dayInfo.hightTir =  _.round(Number(hightTir)*100, 1);
+                dayInfo.lowTir = (Number(lowTir)*100).toFixed(1);
+                dayInfo.hightTir = (Number(hightTir)*100).toFixed(1);
                 
                 
                 // 图表数据
@@ -401,35 +413,51 @@ export default {
             let tableData = []
             if(unit != 'mg/dL'){
                 chartValue = chartValue.map(val => GlucoseUtils.mgdlToMmol(val));
-            }
+            } 
             if(eventData){
+                console.log(eventData,'eventData')
                 eventData.forEach(item=>{
-                    let img =[img0,img1,img2,img3,img4,img5,img6]
-                    this.option.series[0].markPoint.data.push({
-                        coord:[item.xIndex,item.yPosition],
-                        symbol:'image://'+img[item.event_type],
-                        symbolSize:30
-                    })
-                    this.option.series[0].markLine.data.push([{
-                        lineStyle:{
-                                color: 'var(--color-black-60)',
-                                width: 1,
-                                type:'dashed'
-                        },
-                        coord:[item.xIndex,chartValue[item.xIndex]],
-                    },{
-                        coord:[item.xIndex,0],
-                    }])
+                    if(item&&item.type==1){
+                        let img =[img0,img1,img2,img3,img4,img5,img6]
+                        this.option.series[0].markPoint.data.push({
+                            coord:[item.xIndex,item.yPosition],
+                            symbol:'image://'+img[item.event_type],
+                            symbolSize:30
+                        })
+                        this.option.series[0].markLine.data.push([{
+                            lineStyle:{
+                                    color: 'var(--color-black-60)',
+                                    width: 1,
+                                    type:'dashed'
+                            },
+                            coord:[item.xIndex,chartValue[item.xIndex]],
+                        },{
+                            coord:[item.xIndex,0],
+                        }])
+                    }
+                    if(unit != 'mg/dL'){
+                        item.value = item?GlucoseUtils.mgdlToMmol(item.value):''
+                        // if(item.event_type==5){
+                        //     item.event_body.bg = GlucoseUtils.mgdlToMmol(item.event_body.bg)
+                        // }
+                    }
                     tableData.push({
-                        id:item.event_id,
+                        // id:item.event_id,
                         ts:formatDate(item.event_ts*1000,'HH:MM'),
                         event_type:item.event_type,
-                        event_body:item.event_body
+                        food_time:item.food_time,
+                        sport_minute:item.sport_minute,
+                        drug_tiime:item.drug_tiime,
+                        insulin_type:item.insulin_type,
+                        insulin_value:item.insulin_value,
+                        value:item?chartValue[item.xIndex]:'',
+                        bgValue:item?item.Value:'',
+                        message_type:item?item.message_type:''
                     })
-                    // this.tableData = tableData
+                    this.tableData = tableData
                 })
             }else{
-                // this.tableData = []
+                this.tableData = []
             }
         },
         // 图表鼠标事件
@@ -463,6 +491,10 @@ export default {
         eventList(n,o){
             this.markEvent(n)
         },
+        eventChecked(n,o){
+            console.log(n,'nnn')
+            this.eventChecked = n
+        }
     }
 }
 </script>

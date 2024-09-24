@@ -97,20 +97,26 @@ const webSocketOnMessage = async(e) => {
     let info = JSON.parse(e.data)
     let path = info.path
     let code = info.code
-    if(code==505||code==504||code==505){   //reader连接失败
+    console.log(code)
+    if(code==505||code==504||code==507){   //reader连接失败
         socketLog.log('响应错误:code'+info.code+"msg:"+info.msg)
         store.dispatch('setErrorCode',5) 
         return
     } 
     if(code==506){  //reader已连接，直接执行下一步
-        store.dispatch('setReaderConnect',2)
-       getReaderInfo()
+        store.dispatch('setReaderConnect',1)
+        cgmList() // 获取绑定的发射器列表
+        getReaderInfo()
+        return
     }
     if(code==512){  //驱动上报设备断开连接,返回首页
-        store.dispatch('upStep',1) 
+        store.dispatch('setUpStep',5)
+        store.dispatch('setReaderConnect',0)
         router.push('/report/overview')
+        return
     }
     if(code!=200){
+        store.dispatch('setErrorCode',6) 
         socketLog.log('响应错误:code'+info.code+"msg:"+info.msg)
         return
     }
@@ -215,7 +221,16 @@ const queryGlucoseData = (data) => {
     let content ={"path": "getGlucoseData","data":data}
     sendWebsocket(content)
 }
-
+// 获取所有事件条数
+const getEventCount = () => {
+    let content ={"path": "getEventCount"}
+    sendWebsocket(content)
+}
+// 获取所有事件
+const getEventData = (data) => {
+    let content ={"path": "getEventData","data":{"size":data}}
+    sendWebsocket(content)
+}
 // 下发传输状态
 const transferStatus = (data) => {
     let content ={"path": "transferStatus","data":{"status":data}}
@@ -232,6 +247,8 @@ export default {
     setTime,
     setRange,
     cgmList,
+    getEventCount,
+    getEventData,
     queryGlucoseData,
     close,
     transferStatus

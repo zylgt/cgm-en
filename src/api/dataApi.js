@@ -97,3 +97,49 @@ export function getReader(data) {
         data: data
     })
 }
+// 获取最新驱动
+export function getDriver(data) {
+    return request({
+        url: '/readerdriver/last',
+        method: 'POST',
+        data: data
+    })
+}
+// 获取reader最新一条事件id
+export function getEventLastId(data) {
+    return request({
+        url: '/readerevent/lastid',
+        method: 'POST',
+        data: data
+    })
+}
+// 上传reader事件
+export function upEvent(data) {
+    return request({
+        url: '/readerevent/upload',
+        method: 'POST',
+        data: data
+    })
+}
+// 分享报告
+export function shareWeb(data) {
+    return request({
+        url: '/report/web/share',
+        method: 'POST',
+        headers:{
+            'Content-Type':'multipart/form-data'
+        },
+        data: data,
+        transformRequest:[function(){
+            return data;
+        }]
+    })
+}
+// 获取最近分享报告6个邮箱
+export function getShareList(data) {
+    return request({
+        url: '/report/web/share/mails',
+        method: 'POST',
+        data: data
+    })
+}

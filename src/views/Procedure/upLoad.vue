@@ -101,7 +101,26 @@
                 <div class='reader-data-tip' >{{$t('message.Driver.upCloude.timeTip')}}</div>
                 <div class='reader-data-tip' >{{$t('message.Driver.upCloude.rangeTip')}}</div>
             </div>
-            <div class='step-progess' >
+            <div class='step-box' v-if='upStep==5'>
+                <div class='step-box step1'  v-if='readerConnect==0'>
+                    <div class='title' >
+                        {{$t('message.Driver.connect.oneTitle')}}
+                    </div>
+                    <div class='procedure_img step3_procedure_img' >
+                        <div class='procedure_img_item' >
+                            <div class='procedure_img_box' >
+                                <img src="~@/assets/image/procedure-img4.png" alt="" class='procedure_img_img' >
+                                <div class='procedure_img_step' >1</div>
+                            </div>
+                            <p class='procedure_img_text' > {{$t('message.Driver.connect.step1')}}</p>
+                        </div>
+                    </div>
+                    <div class='btn-box flex-end' >
+                        <el-button type="primary"  @click='upAgain'> {{$t('message.botton.upData')}}</el-button>
+                    </div>
+                </div>
+            </div>
+            <div class='step-progess' v-if='upStep!=5'>
                 <div :class='[upStep>=1?"active":"","progess-item"]' ></div>
                 <div :class='[upStep>=2?"active":"","progess-item"]' ></div>
                 <div :class='[upStep>=3?"active":"","progess-item"]' ></div>
@@ -116,11 +135,13 @@ import { openProcedure } from "@/utils/socket/monitoringApp";
 import Abnormal from "./abnormal"
 import Socket from '@/utils/socket/webSocket'
 import {mapGetters} from "vuex"
+import {getDriver} from '@/api/dataApi'
 export default {
     data(){
         return{
             chooseIndex:0,//选择要连接的设备
             startConnect:true, //连接reader指导页
+            driverUrl:''
         }
     },
     computed:{
@@ -163,22 +184,30 @@ export default {
                 // 已安装驱动
                 self.$store.dispatch('setErrorCode',0) 
                 self.$store.dispatch('setUpStep',2)
+                // this.getDrivers()
                 setTimeout(function(){ //等待用户点击弹窗判断用户是否要打开驱动
                     self.$websocket.reset();
                     self.$websocket.initwebSocket();
                     self.$store.dispatch('setErrorCode',0) 
+                     
                 },3000)
 
             };
             openProcedure(appUri, openAppFailure, openAppSuccess, timeoutDuration);
         },
         // 下载
-        downLoad(){
+        downLoad(){ 
             console.log('下载驱动')
             this.$store.dispatch('setUpStep',1)
             this.$store.dispatch('setErrorCode',0) 
-            // window.location.href='https://dldir1.qq.com/weixin/mac/WeChatMac.dmg'
-        },
+            if(this.$store.getters.driver.version){
+                window.location.href=this.$store.getters.driver.path
+            }else if(this.driverUrl){
+                window.location.href=this.driverUrl
+            }else{
+                this.getDrivers()
+            }
+        },   
         // 选择要连接的设备
         chooseProcedure(index){
             this.chooseIndex = index
@@ -189,7 +218,6 @@ export default {
         },
         // 开始连接reader
         startReader(){
-            console.log(123)
             this.startConnect = false
             if(this.deviceList==1){
                 this.connectReader()
@@ -201,12 +229,49 @@ export default {
             this.$store.dispatch('setErrorCode',0) 
             this.$websocket.connectReader(this.deviceList[this.chooseIndex])
         },
+        // 再次上传数据
+        upAgain(){
+            this.$store.dispatch('setErrorCode',0) 
+            this.$websocket.getReaderList()
+        },
+        // 获取驱动信息
+        getDrivers(){
+            let params={
+                "platform":this.getUserOS()
+            }
+            getDriver(params).then(response => {
+                if(response.code == 1000){
+                   this.$store.dispatch('setDriver',response.data)
+                  window.location.href=response.data.path
+                   this.driverUrl = response.data.path
+                }else{
+                    this.$message({
+                        type: 'error',
+                        message: response.msg
+                    });
+                }
+            }).catch((res) => {
+                console.log(res)
+            })
+        },
+        // 判断电脑系统
+        getUserOS(){
+            let userOS = 'unknown';
+            const platform = navigator.platform.toLowerCase();
+            if (platform.includes('win')) {
+            userOS = 'windows';
+            } else if (platform.includes('mac')) {
+            userOS = 'mac';
+            }
+            return userOS;
+        }
     }
 }
 </script>
 <style scoped>
     .upLoad{
-        width:100%;
+        width:1580px;
+        margin:0 auto;
         height:100%;
         padding:30px;
         background:#fff;

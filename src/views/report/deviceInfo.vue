@@ -4,15 +4,15 @@
             <div class='deviceInfo-title' >{{$t('message.deviceInfo.title')}}</div>
             <img src="~@/assets/image/close-icon.png" alt="" class='close-icon'  @click="closePopover" >
         </div>
-        <div class='deviceInfo-tips' >{{$t('message.deviceInfo.updataTime')}}：2024年3月14日</div>
+        <div class='deviceInfo-tips' >{{$t('message.deviceInfo.updataTime')}}：{{list.length>0?list[0].current_time:''}}</div>
         <div class='deviceInfo-list' >
             <div class='deviceInfo-item' v-for='(item,index) in list' :key='index' >
                 <div class='device-item-title' >
-                    <div>{{$t('message.deviceInfo.device')}}1</div>
-                    <div class='delet-device' >{{$t('message.deviceInfo.delete')}}</div>
+                    <div>{{$t('message.deviceInfo.device')}}{{index+1}}</div>
+                    <div class='delet-device'  @click='delReader(item.mac)' >{{$t('message.deviceInfo.delete')}}</div>
                 </div>
                 <div class='device-item-main' >
-                    <img src="~@/assets/image/device-img1.png" alt="" class='device-img' >
+                    <img src="~@/assets/image/device-img1.png" alt="" class='device-img'>
                     <div class='device-item-info' >
                         <div class='device-info-title' >{{$t('message.deviceInfo.title')}}：</div>
                         <div class='device-info-list'>
@@ -65,6 +65,7 @@
     </div>
 </template>
 <script>
+import {delReader} from '@/api/dataApi'
 export default {
     data(){
         return{
@@ -73,12 +74,26 @@ export default {
     },
     props:{
         list:{
-            type:'Array'
+            type:Array
         }
     },
     methods:{
         closePopover(){
             this.$emit('closePopover')
+        },
+        delReader(mac){
+            console.log(123)
+            delReader({mac:mac}).then(response => {
+                if(response.code == 1000){
+                    this.$emit('getReaderList')
+                }else{
+                    this.$message({
+                        type: 'error',
+                        message: response.msg
+                    });
+                }
+            }).catch((res) => {
+            })
         }
     }
 }

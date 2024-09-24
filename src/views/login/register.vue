@@ -158,7 +158,7 @@ export default {
                 if(valid){
                     userExit({email:this.registerForm.username}).then(response=>{
                         if(response.code == 1000){
-                        sendEmailTest({email:this.registerForm.username,type:0,lang:'cn'}).then(response => {
+                        sendEmailCode({email:this.registerForm.username,type:0,lang:'cn'}).then(response => {
                             this.loading=false
                             if(response.code == 1000){
                                 this.$message({

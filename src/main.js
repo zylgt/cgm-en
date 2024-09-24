@@ -9,6 +9,9 @@ import md5 from 'js-md5'
 import websocket from './utils/socket/webSocket';
 import {eventBus} from './utils/eventBus'
 
+import Print from 'vue-print-nb'
+Vue.use(Print)
+
 
 import { i18n } from '@/i18n/index.js'
 

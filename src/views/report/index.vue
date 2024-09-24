@@ -1,9 +1,13 @@
-<template>
+<template class='cont-main-box'>
     
         <router-view></router-view>
     
 </template>
 <style >
+    .cont-main-box{
+        width:1680px;
+        margin:0 auto;
+    }
     /* title和日期选择 */
     .agp-top{
         display: flex;
@@ -11,8 +15,10 @@
         display:-webkit-inline-flex;
         align-items: center;
         justify-content: space-between;
-        width:100%;
         margin-bottom:20px;
+        width:1680px;
+        padding:0 80px;
+        margin:0 auto;
     }
     .report-title{
         font-size:30px;
@@ -67,6 +73,7 @@
         border:1px solid rgba(0,0,0,0.05);
         margin-bottom: 20px;
         box-sizing: border-box;
+        margin-left:80px;
     }
     .agp-date{
         font-size:var(--fontSize-default);

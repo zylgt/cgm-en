@@ -16,7 +16,7 @@
                     placement="bottom"
                     width="1160"
                     trigger="manual">
-                        <!-- <DeviceInfo  :list='readerList' @closePopover='closePopover' /> -->
+                        <DeviceInfo  :list='readerList' @closePopover='closePopover' @getReaderList='getReaderList' />
                         <div class='device' slot="reference" @click='visible = true' >{{$t('message.reports.deviceInfo')}}</div>
                     </el-popover>
                     <el-button type="primary" @click='upView'>
@@ -33,59 +33,63 @@
                     <img src="~@/assets/image/more-icon.png" alt="" :class='[yearToggle?"active":"","more-icon"]' v-if='year.length>11' >
                 </div>
             </div>
-            <div class='overview-item'  v-for='(item) in list' :key='item.create_ts'>
-                <div class='overview-compliance-border' ></div>
-                <div class='overview-nocompliance-border' ></div>
-                <div class='overview-info' >
-                    <div class='overview-date' >{{item.start_en_ts}} —— {{item.end_en_ts}}</div>
-                    <div class='overview-tip' >
-                        <div class='overview-mac' > {{$t('message.sensorcode')}}：{{item.mac}}</div>
-                        <div class='overview-sync'> {{$t('message.synctime')}}：2024年3月14日</div>
+            <div class='pagination-box' @scroll="handleScroll" >
+                <div class='overview-item'  v-for='(item) in list' :key='item.create_ts'>
+                    <div class='overview-compliance-border' ></div>
+                    <div class='overview-nocompliance-border' ></div>
+                    <div class='overview-info' >
+                        <div class='overview-date' >{{item.start_en_ts}} —— {{item.end_en_ts}}</div>
+                        <div class='overview-tip' >
+                            <div class='overview-mac' > {{$t('message.sensorcode')}}：{{item.mac}}</div>
+                            <div class='overview-sync'> {{$t('message.synctime')}}：{{item.syns_ts}}</div>
+                        </div>
+                        <div class='overview-bg-date' >
+                            <div class='overview-bg-item' >
+                                <div class='overview-bg-value active' >{{item.bgInfo.tir?item.bgInfo.tir:'--'}}<span class='overview-limit' >%</span>  </div>
+                                <div class='overview-bg-tips'>{{$t('message.tir')}}</div>
+                            </div>
+                            <div class='overview-bg-item' >
+                                <div class='overview-bg-value' >{{item.bgInfo.mean?item.bgInfo.mean:'--'}}<span class='overview-limit' >mg/dL</span></div>
+                                <div class='overview-bg-tips'>{{$t('message.mean')}}</div>
+                            </div>
+                            <div class='overview-bg-item' >
+                                <div class='overview-bg-value' >{{item.bgInfo.GMI?item.bgInfo.GMI:''}} <span v-if='!item.bgInfo.GMI' class='noData' >无足够数据</span> <span class='overview-limit' >%</span></div>
+                                <div class='overview-bg-tips'>{{$t('message.cmi')}}</div>
+                            </div>
+                            <div class='overview-bg-item' >
+                                <div class='overview-bg-value' >{{item.bgInfo.CV?item.bgInfo.CV:'--'}}<span class='overview-limit' >%</span></div>
+                                <div class='overview-bg-tips'>{{$t('message.cv')}}</div>
+                            </div>
+                            <div class='overview-bg-item' >
+                                <div class='overview-bg-value' >{{item.bgInfo.SDBG?item.bgInfo.SDBG:'--'}}<span class='overview-limit' >%</span></div>
+                                <div class='overview-bg-tips'>{{$t('message.sd')}}</div>
+                            </div>
+                        </div>
                     </div>
-                    <div class='overview-bg-date' >
-                        <div class='overview-bg-item' >
-                            <div class='overview-bg-value active' >{{item.bgInfo.tir?item.bgInfo.tir:'--'}}<span class='overview-limit' >%</span>  </div>
-                            <div class='overview-bg-tips'>{{$t('message.tir')}}</div>
+                    <div class='overview-agp' >
+                        <div class='overview-agp-more' @click='agpTab(item.start_ts,item.end_ts)'>
+                        {{$t('message.reports.more')}}
+                            <img src="~@/assets/image/right-arrow.png" alt="" class='right-arrow' >
                         </div>
-                        <div class='overview-bg-item' >
-                            <div class='overview-bg-value' >{{item.bgInfo.mean?item.bgInfo.mean:'--'}}<span class='overview-limit' >mg/dL</span></div>
-                            <div class='overview-bg-tips'>{{$t('message.mean')}}</div>
-                        </div>
-                        <div class='overview-bg-item' >
-                            <div class='overview-bg-value' >{{item.bgInfo.GMI?item.bgInfo.GMI:''}} <span v-if='!item.bgInfo.GMI' class='noData' >无足够数据</span> <span class='overview-limit' >%</span></div>
-                            <div class='overview-bg-tips'>{{$t('message.cmi')}}</div>
-                        </div>
-                        <div class='overview-bg-item' >
-                            <div class='overview-bg-value' >{{item.bgInfo.CV?item.bgInfo.CV:'--'}}<span class='overview-limit' >%</span></div>
-                            <div class='overview-bg-tips'>{{$t('message.cv')}}</div>
-                        </div>
-                         <div class='overview-bg-item' >
-                            <div class='overview-bg-value' >{{item.bgInfo.SDBG?item.bgInfo.SDBG:'--'}}<span class='overview-limit' >%</span></div>
-                            <div class='overview-bg-tips'>{{$t('message.sd')}}</div>
+                    <div class='overview-agp-empty' v-if='item.datas.length<1440*5'>无足够数据</div>
+                        <div class='overview-agp-agp' v-else> 
+                            <AGPview :dataList='item.agp'/>
                         </div>
                     </div>
                 </div>
-                <div class='overview-agp' >
-                    <div class='overview-agp-more' @click='agpTab(item.start_ts,item.end_ts)'>
-                       {{$t('message.reports.more')}}
-                        <img src="~@/assets/image/right-arrow.png" alt="" class='right-arrow' >
-                    </div>
-                   <div class='overview-agp-empty' v-if='item.datas.length<1440*5'>无足够数据</div>
-                    <div class='overview-agp-agp' v-else> 
-                        <AGPview :dataList='item.agp'/>
-                    </div>
-                </div>
+                <div class='list-loading' v-loading='listLoading' v-if='listLoading'></div>
             </div>
+            
         </div>
          <!-- 分页 -->
-        <pagination v-show="total>0" :total="total" :page.sync="queryParams.page" :limit.sync="queryParams.page_size" @pagination="getList" />
+        <!-- <pagination v-show="total>0" :total="total" :page.sync="queryParams.page" :limit.sync="queryParams.page_size" @pagination="getList" /> -->
     </div>
 </template>
 <script>
 import AGPview from '@/views/components/Chart/AGPview'
 import DeviceInfo from '@/views/report/deviceInfo'
-import {formatDate,formatTime,formatEn} from '@/utils/formatTime'
-import {getMonth,getRepoetList,getInfo,getYear,getReportList,getReader} from '@/api/dataApi'
+import {formatDate,formatEn} from '@/utils/formatTime'
+import {getYear,getReportList,getReader} from '@/api/dataApi'
 import {getPreferences} from '@/api/setting'
 import Pagination from '@/components/Pagination'
 import Empty from '@/views/components/Empty/empty'
@@ -112,6 +116,8 @@ export default {
             },
             empty:false,
             pageLoading:true,
+            listLoading:true,
+            scrollFlag:true,
         }
     },
     created(){
@@ -129,6 +135,15 @@ export default {
         AGPview,DeviceInfo,Pagination,Empty
     },
     methods:{
+        // 下拉加载更多
+        handleScroll(event){
+            const { scrollTop, scrollHeight, clientHeight } = event.target;
+                if (scrollTop + clientHeight >= scrollHeight - 20 && this.list.length < this.total&&this.scrollFlag) {
+                    this.queryParams.page++
+                    console.log(111)
+                    this.getList()
+            }
+        },
          // 获取个人偏好详情
         getconfigs(){
             getPreferences({}).then(response => {
@@ -159,7 +174,12 @@ export default {
                         })
                         this.queryParams.start_ts = new Date(response.data[0]+'-01-01 12:00:00').getTime()/1000
                         this.queryParams.end_ts = new Date(response.data[0]+'-12-31 23:59:59').getTime()/1000
+                       
                         this.getList()
+                    }else{
+                        this.pageLoading = false
+                        this.listLoading = false
+                        this.empty = true
                     }
                     year[0].checked = true
                     this.year = year
@@ -174,21 +194,27 @@ export default {
         },
         // 分页获取报告列表
         getList(){
+            this.scrollFlag = false
+            this.listLoading = true
             getReportList(this.queryParams).then(response => {
                 if(response.code == 1000){
-                    if(response.data.length<=0){
+                     this.scrollFlag = true
+                    if(response.data.datas.length<=0&&this.page==1){
                         this.empty = true
                     }else{
                         this.empty = false
-                        response.data.forEach(item=>{
-                            item.start_en_ts = formatEn(item.start_ts)
-                            item.end_en_ts = formatEn(item.end_ts)
+                        response.data.datas.forEach(item=>{
+                            item.start_en_ts = formatEn(item.start_ts*1000)
+                            item.end_en_ts = formatEn(item.end_ts*1000)
+                            item.syns_ts = formatEn(item.create_ts*1000)
                             let handelInfo = this.handelTemplateDay(this.handleData(item.datas,item.start_ts,item.end_ts))
                             item.bgInfo = handelInfo.bgInfo
                             item.agp = handelInfo.agp
+                            this.list.push(item)
                         })
                     }
-                    this.list = response.data
+                    this.total = response.data.total
+                    this.listLoading = false
                     this.pageLoading = false
                 }else{
                     this.$message({
@@ -203,6 +229,9 @@ export default {
         getReaderList(){
             getReader({}).then(response => {
                 if(response.code == 1000){
+                    response.data.forEach(item=>{
+                        item.current_time = formatEn(item.current_time*1000)
+                    })
                     this.readerList = response.data
                 }else{
                     this.$message({
@@ -471,8 +500,17 @@ export default {
     [v-cloak] {
       display: none;
     }
-    .no-data{
+    .pagination-box{
+        height:540px;
+        overflow: scroll;
+    }
+    .list-loading{
         width:100%;
+        height:260px;
+    }
+    .no-data{
+        width:1680px;
+        margin:0 auto;
         height:300px;
         display: flex;
         flex-direction: column;

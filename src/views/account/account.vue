@@ -15,7 +15,7 @@
             <div class="userinfo" >
                 <img :src="info.avatar" alt="" class='avatar' >
                 <div class='nickname' >{{$t('message.account.email')}}:{{username}}</div>
-                <div class='edit_password' @click='passwordDialog = true'>{{$t('message.account.change')}}</div>
+                <div class='edit_password' @click='passwordDialog = true,passwordSuccess=false'>{{$t('message.account.change')}}</div>
                 <div class='remove_account' @click='accountDialog = true'>{{$t('message.account.deactivated')}}</div>
             </div>
         </div>
@@ -61,9 +61,10 @@
         width="1060"
         >   
             <el-form :model="form" ref='form' :rules='phoneRules' label-width="150px" class='passwordForm' label-position="left" v-if='!passwordSuccess' >
-                <el-form-item  :label="$t('message.account.origin')" prop='oldPassword' >
+                <el-form-item  :label="$t('message.account.origin')" prop='oldPassword'  :class='[responsePasswordError?"is-error":"","form-item-special"]' >
                     <el-input v-model="form.oldPassword"
                         :placeholder="$t('message.placeholder.oldPassword')" show-password></el-input>
+                         <div class='error-tips' v-if='responsePasswordError'>{{$t('message.errorCode.'+errorCode)}}</div>
                 </el-form-item>
                 <el-form-item  :label="$t('message.account.new')" prop='password' >
                     <el-input v-model="form.password"
@@ -76,14 +77,14 @@
                 </el-form-item>
                 <el-form-item >
                     <el-button  :loading="loading" class="password-submit"  :disabled="passwordDisabled"  type="primary" @click.native.prevent="changePassword"  >
-                        <span>{{$t('message.button.continue')}}</span>
+                        <span>{{$t('message.botton.continue')}}</span>
                     </el-button>
                 </el-form-item>
             </el-form>
             <div class='success-box' v-else>
                 <img src="~@/assets/image/success-icon.png" alt="" class='success-icon' >
-                <div class='success-text'>{{$t('message.button.passwordUp')}}</div>
-                <div class='success-btn' @click="passwordDialog = false" >{{$t('message.button.confirm')}}</div>
+                <div class='success-text'>{{$t('message.account.passwordUp')}}</div>
+                <div class='success-btn' @click="passwordDialog = false,loading = false" >{{$t('message.botton.confirm')}}</div>
             </div>
             <img src="~@/assets/image/close-icon.png" alt="" class='dialog-close' @click='passwordDialog=false' >
         </el-dialog>
@@ -95,11 +96,11 @@ import maskPhoneNumber from '@/utils/phone'
 import {getInfo,protocol,deleteAccount,sendsmscode,verifysmscode,setPassword} from '@/api/userApi'
 export default {
     data(){
-        var validateCheckPass = (rule,value,callback)=>{
+         var validateCheckPass = (rule,value,callback)=>{
             if (value === '') {
-                callback(new Error(this.$t('message.placeholder.confirmPassword')));
+                callback(new Error('6-20 characters required.'));
             } else if (value !== this.form.password) {
-                callback(new Error(this.$t('message.rule.match')));
+                callback(new Error('Password must match. Please re-enter.'));
             } else {
                 callback();
             }
@@ -126,19 +127,22 @@ export default {
             },
             codeType:1, //1获取验证码 2倒计时 3重新发送
             codeTime:60,
-            passwordSuccess:false
+            passwordSuccess:false,
+            responsePasswordError:false,
+            errorCode:''
         }
     },
     computed:{
         passwordDisabled(){
             let pattern =  /^[12][3456789]\d{9}$/
             let patterns = /^.{6,20}$/
-            if(patterns.test(this.form.oldPassword)&&patterns.test(this.form.password)&&patterns.test(this.form.new_password)){
+            if(patterns.test(this.form.oldPassword)&&patterns.test(this.form.password)&&patterns.test(this.form.new_password)&&this.form.new_password==this.form.password){
                 return false
             }else{
                 return true
             }
         }
+        
     },
     created(){
         this.getprotocol()
@@ -195,114 +199,23 @@ export default {
               console.log(res)
             })
         },
-          // 获取验证码
-        getCode(smsType){
-            console.log(123)
-             this.$refs['form'].validateField('phone_number',value => {
-                console.log(value)
-                if(!value){
-                    this.codeType=2
-                    this.timeOut()
-                    this.setCode()
-                }
-             })
-        },
-        // 验证码倒计时
-        timeOut(){
-            let time = this.codeTime
-            let that = this
-            let timer = setTimeout(function(){
-                if(time>1){
-                    time--
-                    that.codeTime = time
-                    that.timeOut()
-                }else{
-                    that.codeType=3
-                    that.codeTime = 60
-                }
-            },1000)
-            this.timer = timer
-        },
-        // 发送验证码
-        setCode(){
-             sendsmscode({phone_number:Cookies.get("username"),type:2}).then(response => {
-                        this.loading=false
-                        if(response.code == 1000){
-                            this.$message({
-                                type: 'success',
-                                message: '发送成功'
-                            });
-                        }else{
-                            var msg = ''
-                            switch(response.code){
-                                case 2102 :
-                                    msg='验证码发送过于频繁'
-                                    break;
-                                case 2103 :
-                                    msg='验证码不正确'
-                                    break;
-                                case 2104 :
-                                    msg='验证码已过期'
-                                    break;
-                            }
-                            this.$message({
-                                type: 'error',
-                                message: msg
-                            });
-                        }
-                    }).catch((res) => {
-                        console.log(res)
-                    })
-        },
         // 验证验证码
         changePassword(){
             this.$refs.form.validate((valid) => {
                 if(valid){
                     this.loading = true
-                    verifysmscode({phone_number:this.form.phone_number,code:this.form.code,type:2}).then(response => {
-                            this.loading=false
-							if(response.code == 1000){
-                                setPassword({password:this.$md5(this.form.password),new_password:this.$md5(this.form.new_password)}).then(response => {
-                                        if(response.code == 1000){
-                                            this.passwordSuccess = true
-                                        }else{
-                                            
-                                            this.$message({
-                                                type: 'error',
-                                                message: response.msg
-                                            });
-                                        }
-                                }).catch((res) => {
-                                    console.log(res)
-                                })
-							}else{
-                                var msg = ''
-                                switch(response.code){
-                                    case 2101 :
-                                        msg='手机号码不合法'
-                                        break;
-                                    case 2102 :
-                                        msg='验证码发送过于频繁'
-                                        break;
-                                    case 2103 :
-                                        msg='无效的验证码'
-                                        break;
-                                    case 2202 :
-                                        msg='用户不存在'
-                                        break;
-                                    case 2208 :
-                                        msg='尝试次数超过上限，请稍后重试'
-                                        break;
-                                }
-								this.$message({
-                                    type: 'error',
-                                    message: msg
-								});
-							}
-					}).catch((res) => {
-						console.log(res)
-					})
-                  
+                    console.log(this.form.oldPassword,this.form.new_password)
+                    setPassword({old_password:this.$md5(this.form.oldPassword),new_password:this.$md5(this.form.new_password)}).then(response => {
+                        this.loading = false
+                            if(response.code == 1000){
+                                this.passwordSuccess = true
+                            }else{
+                                this.responsePasswordError = true
+                                 this.errorCode = response.code
+                            }
+                    }).catch((res) => {
+                        console.log(res)
+                    })
                 }
              })
         }
@@ -310,9 +223,20 @@ export default {
 }
 </script>
 <style scoped>
-    .account-main{
-        width:76%;
+    .account{
+        width:1680px;
         margin:0 auto;
+    }
+    .account-main{
+        width:1520px;
+        margin:0 auto;
+    }
+     .error-tips{
+        font-size:12px;
+        color:var(--color-error);
+        position: absolute;
+        left:0;
+        top:32px;
     }
   .agp-top{
         display: flex;
@@ -322,6 +246,8 @@ export default {
         justify-content: space-between;
         width:100%;
         margin-bottom:20px;
+        padding:0;
+
     }
     .report-title{
         font-size:var(--fontSize-max);

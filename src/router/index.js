@@ -76,12 +76,12 @@ const routes = [
     },{
       path:'/help',
       name:'help',
-      redirect: "/help",
+      redirect: "/help/helps",
       component:(resolve) => require(["@/views/help/index"], resolve),
       meta:{title:'help',icon:iconHelp,icons:iconHelpCheck,isShow:true},
       children:[{
-        path:'/help',
-        name:'help',
+        path:'/help/helps',
+        name:'helps',
         component:(resolve) => require(["@/views/help/help"], resolve),
         meta:{title:'help',icon:iconUpload,icons:iconUploadCheck,isShow:true}
       },{
@@ -150,16 +150,16 @@ router.beforeEach((to, from, next) =>{
     // }
   }else{
     next()
-    sysend.track('ready', () => {
-      sysend.list().then(tabs => {
-        console.log(tabs)
-        if (tabs.length > 0) {
-            window.close()
-            // window.location.href = '../index.html'
-            window.location.href = 'about:blank'
-        }
-      })
-    })
+    // sysend.track('ready', () => {
+    //   sysend.list().then(tabs => {
+    //     console.log(tabs)
+    //     if (tabs.length > 0) {
+    //         window.close()
+    //         // window.location.href = '../index.html'
+    //         window.location.href = 'about:blank'
+    //     }
+    //   })
+    // })
   }
   
 })

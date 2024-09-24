@@ -33,7 +33,7 @@
             <el-button type="primary" @click="connectReader">{{$t('message.Driver.warning.reConenct')}}</el-button>
         </div>
         <div class='unistall-btns' v-if='type==6'>
-            <el-button type="primary" @click="downLoad">{{$t('message.Driver.connect.upBtn')}}</el-button>
+            <el-button type="primary" @click="upAgain">{{$t('message.Driver.connect.upBtn')}}</el-button>
         </div>
         <div class='unistall-btn' v-if='type==1||type==3'>
             <el-button type="primary" @click="downLoad">{{$t('message.Driver.install.downDriver')}}</el-button>
@@ -53,11 +53,16 @@ export default {
         downLoad(){
             this.$emit('downLoad')
         },
+        upAgain(){
+            this.$emit('upAgain')
+        },
         firing(){
             this.$emit('firing')
         },
         connectReader(){
-            this.$emit('connectReader')
+            // this.$emit('connectReader')
+            this.$store.dispatch('setErrorCode',0) 
+            this.$websocket.getReaderList()
         }
     }
 }

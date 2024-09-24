@@ -47,6 +47,10 @@ export default {
 }
 </script>
 <style scoped>
+    .setting{
+        width:1580px;
+        margin:0 auto;
+    }
     .setting-main{
         margin:0 auto;
     }

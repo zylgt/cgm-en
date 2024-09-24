@@ -47,10 +47,10 @@ export function verifysmscode(data) {
         data: data
     })
 }
-// 设置密码
+// 修改密码
 export function setPassword(data){
     return request({
-        url: '/user/changepassword',
+        url: '/user/changepassword/web',
         method: 'POST',
         data: data
     })

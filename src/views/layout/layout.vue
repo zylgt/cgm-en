@@ -30,7 +30,12 @@
                 </div>
             </div>
         </el-header>
-        <el-container :style='{"height":PageHeight+"px",width:1580+"px"}' class='container'  >
+        <!-- <el-container :style='{"height":PageHeight+"px",width:1580+"px"}' class='container'  >
+            <el-main class='main'  >
+                 <router-view></router-view>
+            </el-main>
+        </el-container> -->
+         <el-container :style='{"height":PageHeight+"px"}' class='container'  >
             <el-main class='main'  >
                  <router-view></router-view>
             </el-main>
@@ -45,6 +50,7 @@ import Horizontal from "./horizontal"
 import Vertical from "./vertical"
 import {mapGetters} from "vuex"
 import {getInfo} from '@/api/userApi'
+import {getPreferences} from '@/api/setting'
 export default {
     data(){
         return{
@@ -76,6 +82,7 @@ export default {
     created(){
         this.setSendChildren()
         this.getInfo()
+        this.getTarget()
     },
     mounted(){
     },
@@ -129,6 +136,33 @@ export default {
             getInfo().then(response => {
                     if(response.code == 1000){
                         this.info = response.data
+                    }else{
+                        this.$message({
+                            type: 'error',
+                            message: response.msg
+                        });
+                    }
+            }).catch((res) => {
+                   console.log(res)
+            })
+        },
+        // 获取目标范围和单位信息
+        getTarget(){
+            getPreferences({}).then(response => {
+                    if(response.code == 1000){
+                        let target = null
+                        if(response.data.glucose_unit==0){
+                            target = [GlucoseUtils.mgdlToMmol(response.data.glucose_range_lower_limit),GlucoseUtils.mgdlToMmol(response.data.glucose_range_lupper_limit)]
+                        }else{
+                            target = [response.data.glucose_range_lower_limit,response.data.glucose_range_lupper_limit]
+                        }
+                      
+                        this.minTarget = target[0]
+                        this.maxTarget = target[1]
+                        this.unit =  response.data.glucose_unit
+                        this.$store.dispatch('setUnit',this.unit==0?'mmol/L':'mg/dL')
+                        this.$store.dispatch('setTargetScope',[this.minTarget,this.maxTarget])
+                        this.$store.dispatch('setOrginTargetScope',[this.minTarget,this.maxTarget])
                     }else{
                         this.$message({
                             type: 'error',
@@ -250,7 +284,7 @@ export default {
     .layout .main{
         background:#f7f7f7;
         padding:30px;
-        width:1580px;
+        /* width:1580px; */
         margin:0 auto;
         overflow-y: auto;
         box-sizing: content-box;

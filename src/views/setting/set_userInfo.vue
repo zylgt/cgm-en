@@ -400,6 +400,8 @@ export default {
             getInfo().then(response => {
                     if(response.code == 1000){
                         this.formData = response.data
+                        this.showBirthday = response.data.birthdate?formatEn(response.data.birthdate):null
+                        this.diabetesShow =  response.data.diagnosis_date?formatEn(response.data.diagnosis_date):null
                         let obj = _.cloneDeep(response.data)
                         let show_comorbidities = _.filter(this.comorbidities_arr,(item)=>{
                             return _.indexOf(obj.comorbidities,item.item_key)!=-1

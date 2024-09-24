@@ -44,6 +44,8 @@ export default {
       day:'Days',
       target:'Target',
       noData:'Not Enough Data',
+      noDatas:'No Data',
+      FiveDays:'At least 5 days of data are required.',
       save:"Save",
     },
     route:{
@@ -120,6 +122,24 @@ export default {
         event:'Event',
         recordDetails:'Record Details',
         glucoseLevel:'Glucose Level'
+      },
+      success:{
+        downTitle:'Download Successfully',
+        downTips:'The report has been added to the download list. If you want to download it again, please click ',
+        downAgain:'Download Again.',
+        printTitle:'Printing...',
+        printTips:'The report is currently printing. You can pick it up from the device (printer name) or check if it has printed successfully.',
+        sharesuccess:'Sharing Success',
+        sharetips:'The report has been successfully sent.',
+        shareFail:'Share Fail',
+        sharefailtips:'Your report sharing failed, please check the status of your internet connection and try to resend it.'
+      },
+      email:{
+        title:'Send Report',
+        to:'To',
+        email:'Email Address',
+        selectLabel:'Quickly select the recently sharer',
+        message:'Please enter message (optional)'
       }
     },
     deviceInfo:{
@@ -271,7 +291,8 @@ export default {
       cancel:"Cancel",
       upData:"Upload Data",
       verify:'Verify',
-
+      send:'Send',
+      share:'Reshare'
     },
     errorCode:{
       2003:'Invalid email address.',
@@ -283,5 +304,17 @@ export default {
       2204:"The account and password do not match. Please re-enter.",
       2205:"invalid password", //新密码与旧密码不能相同
       2208:"fail count limit",
+    },
+    tableEvent:{
+      food0:'Breakfast',
+      food1:'Lunch',
+      food2:'Dinner',
+      food3:'Snack',
+      drugTime0:'Before Meal',
+      drugTime1:'During Meal',
+      drugTime2:'Post Meal',
+      insulinTime0:'Fast-acting',
+      insulinTime1:'Long-acting',
+      minutes:'minutes'
     }
   }

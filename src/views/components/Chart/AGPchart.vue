@@ -2,7 +2,7 @@
     <div>
          <div class='agp-chart-empty' v-if='empty'>
             <img src="~@/assets/image/empty-icon.png" alt="" class='empty-icon' >
-            <div class='agp-chartempty-tips' >至少需要五天数据才可显示AGP图谱</div>
+            <div class='agp-chartempty-tips' >{{$t('message.common.FiveDays')}}</div>
         </div>
         <div v-else>
             <div class='agp-legend' >

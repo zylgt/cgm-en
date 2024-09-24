@@ -512,6 +512,7 @@ export default {
                     this.$store.dispatch('setTimeFormat',timeFormat)
                     this.$store.dispatch('setUnit',this.unit==0?'mmol/L':'mg/dL')
                     this.$store.dispatch('setTargetScope',[this.minTarget,this.maxTarget])
+                    this.$store.dispatch('setOrginTargetScope',[this.minTarget,this.maxTarget])
                 }
             }).catch((res) => {
                    console.log(res)

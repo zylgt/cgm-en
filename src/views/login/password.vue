@@ -149,7 +149,7 @@ export default {
         sendCode(){
             this.$refs.registerForm.validate((valid) => {
                 if(valid){
-                    sendEmailTest({email:this.registerForm.username,type:2,lang:'cn'}).then(response => {
+                    sendEmailCode({email:this.registerForm.username,type:2,lang:'cn'}).then(response => {
                         this.loading=false
                         if(response.code == 1000){
                             this.$message({

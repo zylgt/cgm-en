@@ -1,7 +1,7 @@
 <template>
     <div class='empty' >
         <img src="~@/assets/image/empty-icon.png" alt="" class='empty-icon' >
-        <div class='empty-text' >暂无数据</div>
+        <div class='empty-text' >{{$t('message.common.noDatas')}}</div>
     </div>
 </template>
 <style scoped>

@@ -3,11 +3,12 @@ const socket = {
         deviceList:[], //设备列表
         upProgess:0 ,//已经上传条数
         upLimit:0 ,//上传数据条数
-        upStep:1 , //上传步骤 1启动驱动 2启动中 3连接设备 4同步数据
+        upStep:1 , //上传步骤 1启动驱动 2启动中 3连接设备 4同步数据 5再次同步
         readerConnect:0, //reader连接状态 0未连接 1连接中 2选择连接 
         cgmList:[], //reader绑定的发射器列表
         errorCode:0, //0未发生错误 1驱动未安装 2驱动启动失败 3驱动有更新 5reader连接失败 6数据同步失败
         socketStatus:1, //1连接 2关闭 3错误
+        driver:{}, //驱动信息
     },
     mutations:{
         SET_DEVICE_LIST:(state,deviceList) => {
@@ -21,6 +22,7 @@ const socket = {
             state.upProgess = upProgess
         },
         SET_UP_STEP:(state,upStep) => {
+            console.log(upStep)
             state.upStep = upStep
         },
         SET_READER_CONNECT:(state,readerConnect) => {
@@ -38,6 +40,9 @@ const socket = {
         },
         SET_SOCKET_STATUS:(state,socketStatus) => {
             state.socketStatus = socketStatus
+        },
+        SET_DRIVER:(state,driver) => {
+            state.driver = driver
         },
     },
     actions:{
@@ -65,6 +70,9 @@ const socket = {
         },
         setSocketStatus({commit},data){
             commit('SET_SOCKET_STATUS',data)
+        },
+        setDriver({commit},data){
+            commit('SET_DRIVER',data)
         }
     }
 }

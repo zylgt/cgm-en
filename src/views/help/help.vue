@@ -6,7 +6,7 @@
                     <div class='report-title'> {{$t('message.route.'+$route.meta.title)}}</div>
                 </div>
             </div>
-            <div class='help-list' v-for='item in list' :key='item.path' @click="go(item.path)" >{{$t('message.route.'+item.meta.title)}}</div>
+            <div class='help-list' v-for='(item) in list' :key='item.path' @click="go(item.path)">{{$t('message.route.'+item.meta.title)}}</div>
         </div>
     </div>
 </template>
@@ -38,7 +38,8 @@ export default {
         }
     },
     mounted(){
-        let path = this.$route.path
+        this.$nextTick(()=>{
+            let path = this.$route.path
             let columnsAsideList= this.$router.options.routes[1].children
             const currentPathSplit = path.split("/")
             let currentData = {}
@@ -54,7 +55,10 @@ export default {
                     }
                 }
             })
-            this.list = currentData.children.splice(1)
+            this.list = _.clone(currentData.children)
+            this.list.splice(0,1)
+
+         })
     },
     methods:{
       go(path){
