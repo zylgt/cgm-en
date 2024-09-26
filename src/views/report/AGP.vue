@@ -821,8 +821,9 @@ export default {
                 let warningList ={};
                 for (let i = 0; i < DdatArray.length; i+=20) {
                     let key = formatDate(DdatArray[i].DataTs*1000,'YYYY-mm-dd')
+                    console.log(DdatArray[i])
                     if(warningList[key]){
-                        if(DdatArray[i].Value<54){
+                        if(DdatArray[i].Value<54&&DdatArray[i].Value>=this.$store.getters.bgRange[0]){
                                 warningList[key].push({
                                 event_ts:DdatArray[i].DataTs,
                                 Value:DdatArray[i].Value,
@@ -836,7 +837,7 @@ export default {
                                 message_type:2,
                                 type:2
                             })
-                        }else if(DdatArray[i].Value>250){
+                        }else if(DdatArray[i].Value>250&&DdatArray[i].Value<=this.$store.getters.bgRange[1]){
                                  warningList[key].push({
                                 event_ts:DdatArray[i].DataTs,
                                 Value:DdatArray[i].Value,
@@ -845,7 +846,7 @@ export default {
                             })
                         }
                     }else{
-                        if(DdatArray[i].Value<54){
+                        if(DdatArray[i].Value<54&&DdatArray[i].Value>=this.$store.getters.bgRange[0]){
                                  warningList[key] = [{
                                 event_ts:DdatArray[i].DataTs,
                                 Value:DdatArray[i].Value,
@@ -857,7 +858,7 @@ export default {
                                 Value:DdatArray[i].Value,
                                 message_type:2
                             }]
-                        }else if(DdatArray[i].Value>250){
+                        }else if(DdatArray[i].Value>250&&DdatArray[i].Value<=this.$store.getters.bgRange[1]){
                                  warningList[key] = [{
                                 event_ts:DdatArray[i].DataTs,
                                 Value:DdatArray[i].Value,

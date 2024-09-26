@@ -90,6 +90,7 @@
                             <span v-if='scope.row.event_type==6'>{{scope.row.event_body.remark}}</span>
                             <span v-if='scope.row.message_type==3'>--</span>
                             <span v-if='scope.row.message_type==2'>--</span>
+                            <span v-if='scope.row.message_type==1'>--</span>
                         </div>
                     </template>
                 </el-table-column>
