@@ -150,16 +150,16 @@ router.beforeEach((to, from, next) =>{
     // }
   }else{
     next()
-    // sysend.track('ready', () => {
-    //   sysend.list().then(tabs => {
-    //     console.log(tabs)
-    //     if (tabs.length > 0) {
-    //         window.close()
-    //         // window.location.href = '../index.html'
-    //         window.location.href = 'about:blank'
-    //     }
-    //   })
-    // })
+    sysend.track('ready', () => {
+      sysend.list().then(tabs => {
+        console.log(tabs)
+        if (tabs.length > 0) {
+            window.close()
+            // window.location.href = '../index.html'
+            window.location.href = 'about:blank'
+        }
+      })
+    })
   }
   
 })

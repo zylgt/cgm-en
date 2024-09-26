@@ -1,3 +1,5 @@
+import report from "@/store/modules/report";
+
 export default {
     themeTitle:'CGM',
     login: {
@@ -47,6 +49,7 @@ export default {
       noDatas:'No Data',
       FiveDays:'At least 5 days of data are required.',
       save:"Save",
+      loading:'Loading'
     },
     route:{
       report:'Reports',
@@ -63,6 +66,19 @@ export default {
       about:'About'
     },
     reports:{
+      reportTitle1:'AGP Report',
+      reportTitle2:'Daily Blood Glucose',
+      pdfFooter:{
+        title1:'Parameter Explanation',
+        explain1:'1. Mean Glucose (MG): The average of glucose level during CGM wearing period. It is used to assess the effectiveness of diabetes management strategies.',
+        explain2:'2.Glucose Management Indicator (GMI): GMI has a strong correlation with HbA1c when wearing CGM for long time. It is used to evaluate overall blood sugar standards.',
+        explain3:'3.Coefficient of Variation (CV): It is calculated as the standard deviation divided by the mean glucose level，it is used to reflects blood glucose fluctuations.',
+        explain4:'4.Time In Range (TIR): The time or percentage of time when glucose levels are within the target range.',
+        explain5:'5.Time Above Range (TAR): The time or percentage of time when glucose levels are above the target range.',
+        explain6:'6.Time Below Range (TBR): The time or percentage of time when glucose levels are below the target range.',
+        title2:'References',
+        from:'Continuous glucose monitoring and metrics for clinical trials: an international consensus statement'
+      },
       title:'OverView',
       deviceInfo:'Device Information',
       upLoad:'Upload Data',
@@ -112,6 +128,9 @@ export default {
         eventType4:'Sleep',
         eventType5:'Blood Glucose',
         eventType6:'Others',
+        eventType7:'High',
+        eventType8:'Low',
+        eventType9:'Urgent Low',
         mean:'Mean Glucose (MG)',
         max:'Max Fluctuation',
         tir:'Time In Range',

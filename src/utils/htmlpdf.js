@@ -22,7 +22,10 @@ class PdfLoader {
     }
  
     async getPDF(resolve) {
+        // document.body.classList.add('export-boxs');
+        // document.body.style.transform="scale(1)"
         const ele = this.ele
+        console.log(ele)
         const pdf = jsPDF('p', 'pt', 'a4')
         const pdfFileName = this.pdfFileName
         var pdfHeight = 841.89;

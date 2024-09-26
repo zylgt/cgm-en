@@ -16,5 +16,7 @@ const getters = {
   driver:state=>state.socket.driver,
   PdfLoad:state=>state.report.PdfLoad,
   pdfFile:state=>state.report.pdfFile,
+  bgRange:state=>state.setting.bgRange,
+  upIndex:state=>state.socket.upIndex
 }
 export default getters

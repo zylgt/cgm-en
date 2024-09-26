@@ -13,6 +13,7 @@
 <style scoped>
     .help-top{
         margin-bottom:50px;
+        padding:0;
     }
    .help-main{
      width:100%;

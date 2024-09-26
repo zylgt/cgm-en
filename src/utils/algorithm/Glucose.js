@@ -1,3 +1,4 @@
+import store from '@/store'
 export class GlucoseUtils {
   /**
    * 计算葡萄糖的平均值mean、变异系数CV、预估HbA1c（GMI）
@@ -23,7 +24,7 @@ export class GlucoseUtils {
     }
 
     // 过滤出数组中属于40到400之间的数值
-    let filteredArray = dataArray.filter(val => val >= 36 && val <= 540);
+    let filteredArray = dataArray.filter(val => val >= store.getters.bgRange[0] && val <= store.getters.bgRange[1]);
     if (filteredArray.length === 0) {
       return null;
     }

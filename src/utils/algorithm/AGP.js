@@ -1,5 +1,5 @@
 /* 本文件是用来计算AGP图谱中，五条线中的纵坐标取值的 */
-
+import store from '@/store'
 export class AGPUtils {
   /**
    * 根据血糖数据，返回这个数组对应的第5百分位的血糖值、第25百分位的血糖值、第50百分位的血糖值、第75百分位的血糖值、第95百分位的血糖值、
@@ -27,7 +27,7 @@ export class AGPUtils {
     }
 
     // 过滤出数组中属于40到400之间的数值
-    let filteredArray = dataArray.filter(val => val >= 36 && val <= 540);
+    let filteredArray = dataArray.filter(val => val >= store.getters.bgRange[0] && val <= store.getters.bgRange[1]);
     if (filteredArray.length < 5) {
       return null;
     }

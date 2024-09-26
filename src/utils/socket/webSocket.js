@@ -97,7 +97,7 @@ const webSocketOnMessage = async(e) => {
     let info = JSON.parse(e.data)
     let path = info.path
     let code = info.code
-    console.log(code)
+    socketLog.log("响应错误:code"+info.code+"msg:"+info.msg)
     if(code==505||code==504||code==507){   //reader连接失败
         socketLog.log('响应错误:code'+info.code+"msg:"+info.msg)
         store.dispatch('setErrorCode',5) 
@@ -107,12 +107,17 @@ const webSocketOnMessage = async(e) => {
         store.dispatch('setReaderConnect',1)
         cgmList() // 获取绑定的发射器列表
         getReaderInfo()
+        setTime() 
         return
     }
     if(code==512){  //驱动上报设备断开连接,返回首页
         store.dispatch('setUpStep',5)
         store.dispatch('setReaderConnect',0)
         router.push('/report/overview')
+        return
+    }
+    if(code==235){
+        setTime()
         return
     }
     if(code!=200){
@@ -185,7 +190,6 @@ const getReaderList = () => {
 //连接Reader设备,这里默认连接设备列表的第一个设备  
 const connectReader = (device) =>{
     socketLog.log("连接Reader设备")
-    console.log(device)
     let content = {"path": "connectReaderDevice","data":{"readerMac":device.readerMac}}
     sendWebsocket(content)
 }

@@ -5,6 +5,8 @@ import router from '@/router'
 var limit = 0 //上传数据的总条数
 var eventLastId = -1 //获取云最后一条事件的id
 let readerMac = null
+let cgm_index = 0  //当前传输的传感器序号
+let upProgess = 0 //进度
 // 处理数据
 export async function handelMessage (res) {
     switch(res.path){
@@ -32,7 +34,6 @@ export async function handelMessage (res) {
             }
             break;
         case 'getReaderDevices': //获取redaer列表，如果只有一台直接连接，否则选取连接
-            console.log(res)
             if(res.data.devices.length==1){
                 store.dispatch('setReaderConnect',1)
                 store.dispatch('setUpStep',3)
@@ -56,6 +57,7 @@ export async function handelMessage (res) {
             Socket.getEventCount()
             break;
         case 'setTime':
+            console.log('向reader下发的目标范围===='+store.getters.originTargetScope)
             Socket.setRange(store.getters.originTargetScope)
             break;
         case 'getEventCount':
@@ -76,10 +78,13 @@ export async function handelMessage (res) {
             if(res.data.devices.length>0){
                 store.dispatch('setUpStep',4)
                 let upLength = 0
+                Socket.transferStatus(1) // 下发传输状态
                 for(var i=0 ;i<res.data.devices.length;i++){
                     let item = res.data.devices[i]
-                    if(await getLastIndex(item.mac)==-1){
+                    if(await getLastIndex(item.mac)==-1||await getLastIndex(item.mac)<item.lastIndex){
                         getBgData(item.mac,50,await getLastIndex(item.mac)==-1?item.firstIndex:await getLastIndex(item.mac)+1,item.lastIndex)
+                        cgm_index = i
+                        store.dispatch('upIndex',i) //重新上传
                         break ;
                     }else{
                         upLength++
@@ -92,6 +97,10 @@ export async function handelMessage (res) {
                     }
 
                 }
+            }else{
+                store.dispatch('setUpStep',5) //重新上传
+                store.dispatch('setReaderConnect',0) //重新上传
+                router.push('/report/overview')
             }
             break;
         case 'getGlucoseData': //获取的血糖数据
@@ -128,13 +137,10 @@ export async function handelMessage (res) {
  */
 
 async function getLimit(device,limit){
-    console.log(limit,'limit')
     for(const item of device){
         let last_index = await getLastIndex(item.mac)
-        console.log(last_index==-1,last_index,'lase_index')
         limit +=item.lastIndex -( last_index==-1?item.firstIndex:last_index)
     }
-    console.log(limit,'上传数据总条数')
     store.dispatch('seUpLimit',limit)
 }
 
@@ -143,11 +149,8 @@ async function getLimit(device,limit){
 /**
  * 获取数据
  */
- let cgm_index = 0 
- let upProgess = 0
 
 function getBgData(mac,size,start_index,last_index){
-    console.log(mac,size,start_index,last_index)
     if(start_index<=last_index){
         Socket.queryGlucoseData({"mac":mac,"size":size,"startIndex":start_index})
     }else{
@@ -166,7 +169,6 @@ function getBgData(mac,size,start_index,last_index){
 
 function upLoad(data){
     let datas  = []
-    Socket.transferStatus(1) // 下发传输状态
     data.values.forEach(item=>{
         datas.push({
            "data_index":item.index,
@@ -196,6 +198,7 @@ function upLoad(data){
             let start_index
             if(device.length>1&&last_index==params.end_index&&cgm_index!=device.length-1){
                 cgm_index++
+                store.dispatch('upIndex',cgm_index) //重新上传
                 start_index = getLastIndex(device[cgm_index].mac)+1
             }else{
                 start_index = data.values[data.values.length-1].index + 1
@@ -239,7 +242,7 @@ function upReader(data){
     }
     syncReader(params).then(response => {
         if(response.code == 1000){
-            console.log('上传成功')
+            console.log('上传reader信息成功')
         }else{
             this.$message({
                 type: 'error',
@@ -255,10 +258,8 @@ function upReader(data){
  * 获取reader最后一条事件id
  */
 async function getLastId(mac){
-    console.log(mac)
     let  data = await getEventLastId({'mac':mac}).then(response => {
         if(response.code == 1000){
-            console.log(response)
             return response.data
         }else{
             this.$message({
@@ -284,8 +285,8 @@ function upEvents(data,eventLastId,mac){
                 event_type:item.type,
                 event_ts:item.timestamp,
                 food_time:item.foodTime,
-                sport_time:item.sportTime,
-                drug_time:item.drugTime,
+                sport_minute:item.sportTime,
+                drug_tiime:item.drugTime,
                 insulin_type:item.insulinTime,
                 insulin_value:item.insulinValue,
             })
@@ -316,9 +317,7 @@ function upEvents(data,eventLastId,mac){
 function handelEvent(data,eventLastId){
     let newArr = []
     if(eventLastId!=-1){
-        console.log(eventLastId,data)
         let index = _.findIndex(data,['id',eventLastId])
-        console.log(index,'index')
         newArr = _.slice(data,0,index)
     }else{
         newArr = data

@@ -78,7 +78,7 @@ export default {
             let gridW = Math.floor((this.$refs.day.clientWidth-240)/7)
             this.gridW = gridW
             let xData = Array.from({length:60*24},(item, index) => index)
-            let max = data[0].max
+            let max = data.length>0?data[0].max:0
             max = GlucoseUtils.mgdlToMmol(max)<13.9?13.9: GlucoseUtils.mgdlToMmol(max)
             let unit = this.unit
             let timeFormat = this.timeFormat

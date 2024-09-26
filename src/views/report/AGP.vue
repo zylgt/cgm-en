@@ -32,7 +32,7 @@
                         <!-- 头信息 -->
                         <div class='report-main-title-infos' v-if='printFlag' >
                             <img src="~@/assets/image/report-logo.png" alt="" class='report-logo' >
-                            <div class='report-main-title' >动态葡萄糖监测报告</div>
+                            <div class='report-main-title' > {{$t('message.reports.reportTitle1')}}</div>
                             <div class='report-main-date' >
                                 {{start_time}}<div class='repart-main-dirver-box'><span class='repart-main-dirver' ></span></div>{{end_time}}（{{dayDate}}{{$t('message.common.day')}}）
                             </div>
@@ -175,18 +175,18 @@
                         </div>
                         <!-- 参数解释 -->
                         <div class='report-main-params'  v-if='printFlag'>
-                            <div class='report-main-params-title' >参数解释</div>
+                            <div class='report-main-params-title' >{{$t('message.reports.pdfFooter.title1')}}</div>
                             <div class='report-main-params-item' >
-                                1.平均葡萄糖值（MG）：CGM 监测期间所有葡萄糖值的平均值，用于评价整体血糖水平。<br/>
-                                2.葡萄糖管理指标（GMI）：预估糖化血红蛋白(eHbA1c)，根据 CGM 葡萄糖读数估算 HbA1c，用于评价整体血糖水平<br/>
-                                3.变异系数(CV)：葡萄糖标准差与平均葡萄糖比值所得百分数，用于评价血糖波动。<br/>
-                                4.葡萄糖目标范围内百分比(TIR)：指葡萄糖在目标范围内的时间或其所占的百分比，<br/>
-                                5.葡萄糖高于目标范围百分比(TAR)：指葡萄糖高于目标范围的时间或其所占的百分比<br/>
-                                6.葡萄糖低于目标范围百分比(TBR):指葡萄糖低于目标范围的时间或其所占的百分比。<br/>
+                                {{$t('message.reports.pdfFooter.explain1')}}<br/>
+                                {{$t('message.reports.pdfFooter.explain2')}}<br/>
+                                {{$t('message.reports.pdfFooter.explain3')}}<br/>
+                                {{$t('message.reports.pdfFooter.explain4')}}<br/>
+                                {{$t('message.reports.pdfFooter.explain5')}}<br/>
+                                {{$t('message.reports.pdfFooter.explain6')}}<br/>
                             </div>
-                            <div class='report-main-params-title' >参考文献</div>
+                            <div class='report-main-params-title' >{{$t('message.reports.pdfFooter.title2')}}</div>
                             <div class='report-main-params-item' >
-                                动态葡萄糖图谱报告临床应用专家共识（2023版）
+                                {{$t('message.reports.pdfFooter.from')}}
                             </div>
                         </div>
                         </div>
@@ -197,7 +197,7 @@
                         <!-- 头信息 -->
                         <div class='report-main-title-infos'  v-if='printFlag'>
                             <img src="~@/assets/image/report-logo.png" alt="" class='report-logo' >
-                            <div class='report-main-title' >动态葡萄糖监测报告</div>
+                            <div class='report-main-title' >{{$t('message.reports.reportTitle2')}}</div>
                             <div class='report-main-date' >
                                 {{start_time}}<div class='repart-main-dirver-box'><span class='repart-main-dirver' ></span></div>{{end_time}}（{{dayDate}}{{$t('message.common.day')}}）
                             </div>
@@ -251,7 +251,7 @@
                         <!-- 头信息 -->
                         <div class='report-main-title-infos'  v-if='printFlag'>
                             <img src="~@/assets/image/report-logo.png" alt="" class='report-logo' >
-                            <div class='report-main-title' >动态葡萄糖监测报告</div>
+                            <div class='report-main-title' >{{$t('message.reports.reportTitle2')}}</div>
                             <div class='report-main-date' >
                                 {{start_time}}<div class='repart-main-dirver-box'><span class='repart-main-dirver' ></span></div>{{end_time}}（{{dayDate}}{{$t('message.common.day')}}）
                             </div>
@@ -294,19 +294,19 @@
                                 </div>
                         </div>
                          <!-- 参数解释 -->
-                        <div class='report-main-params' v-if='indexs==pdfDayData.length-1&&printFlag' >
-                            <div class='report-main-params-title' >参数解释</div>
+                        <div class='report-main-params'   v-if='indexs==pdfDayData.length-1&&printFlag' >
+                            <div class='report-main-params-title' >{{$t('message.reports.pdfFooter.title1')}}</div>
                             <div class='report-main-params-item' >
-                                1.平均葡萄糖值（MG）：CGM 监测期间所有葡萄糖值的平均值，用于评价整体血糖水平。<br/>
-                                2.葡萄糖管理指标（GMI）：预估糖化血红蛋白(eHbA1c)，根据 CGM 葡萄糖读数估算 HbA1c，用于评价整体血糖水平<br/>
-                                3.变异系数(CV)：葡萄糖标准差与平均葡萄糖比值所得百分数，用于评价血糖波动。<br/>
-                                4.葡萄糖目标范围内百分比(TIR)：指葡萄糖在目标范围内的时间或其所占的百分比，<br/>
-                                5.葡萄糖高于目标范围百分比(TAR)：指葡萄糖高于目标范围的时间或其所占的百分比<br/>
-                                6.葡萄糖低于目标范围百分比(TBR):指葡萄糖低于目标范围的时间或其所占的百分比。<br/>
+                                {{$t('message.reports.pdfFooter.explain1')}}<br/>
+                                {{$t('message.reports.pdfFooter.explain2')}}<br/>
+                                {{$t('message.reports.pdfFooter.explain3')}}<br/>
+                                {{$t('message.reports.pdfFooter.explain4')}}<br/>
+                                {{$t('message.reports.pdfFooter.explain5')}}<br/>
+                                {{$t('message.reports.pdfFooter.explain6')}}<br/>
                             </div>
-                            <div class='report-main-params-title' >参考文献</div>
+                            <div class='report-main-params-title' >{{$t('message.reports.pdfFooter.title2')}}</div>
                             <div class='report-main-params-item' >
-                                动态葡萄糖图谱报告临床应用专家共识（2023版）
+                                {{$t('message.reports.pdfFooter.from')}}
                             </div>
                         </div>
                         </div>
@@ -480,10 +480,11 @@
                 <img src="~@/assets/image/close-icon.png" alt="" class='dialog-close' @click='emailDialog=false' >
             </div>
         </div>
+         <iframe id="iframe" style="display: none;"></iframe>
     </div>
 </template>
 <script>
-import {formatDate,formatTime,formatEn} from '@/utils/formatTime'
+import {formatDate,formatTime,formatEn,formatWeekEn} from '@/utils/formatTime'
 import { AGPUtils } from "@/utils/algorithm/AGP";
 import { TIRUtils } from "@/utils/algorithm/TIR";
 import { GlucoseUtils } from "@/utils/algorithm/Glucose";
@@ -726,18 +727,14 @@ export default {
             const result = [];
 
             const seenTimes = new Set();
-            let levelLowInvalidMg = 20
-            let levelHighInvalidMg = 800
-            let levelTooLowMg = 36
-            let levelTooHighMg = 540
+            let levelTooLowMg = this.$store.getters.bgRange[0]
+            let levelTooHighMg = this.$store.getters.bgRange[1]
             data.forEach(item => {
                 const timeStr = formatDate(item.DataTs*1000,'YYYY-mm-dd HH:MM')
 
                 if (!seenTimes.has(timeStr)) {
                 seenTimes.add(timeStr);
-                if (item.Value < levelLowInvalidMg || item.Value > levelHighInvalidMg) {
-                    result.push({...item, value: undefined});
-                } else if (item.Value < levelTooLowMg) {
+                if (item.Value < levelTooLowMg) {
                     result.push({
                     ...item,
                     value: levelTooLowMg,
@@ -789,23 +786,22 @@ export default {
         },
         // 全部事件分割为每天事件
         handelEventDay(datas){
-            let data = _.clone(datas)
+            let data = _.sortBy(_.clone(datas),'event_ts')
             let unit = this.unit
             let eventList ={};
-            let sameList = {}
             let repeatNum = 1
+            let repeatTs = 0
             data.forEach(item=>{
                 let key = formatDate(item.event_ts*1000,'YYYY-mm-dd')
                 let zeroTs = new Date(key).setHours(0,0,0)/1000
                 item.xIndex = (item.event_ts-zeroTs)/60
-                if(sameList[item.event_ts]){
+                if(Math.abs(repeatTs-item.event_ts)<900){
                     repeatNum++
-                    sameList[item.event_ts].push(item)
                 }else{
                     repeatNum = 1
-                    sameList[item.event_ts] = [item]
                 }
-                item.yPosition = unit=='mmol/L'?1*repeatNum:18*repeatNum
+                repeatTs = item.event_ts
+                item.yPosition = unit=='mmol/L'?2*repeatNum:36*repeatNum
                 item.type = 1 //普通事件
                 if(eventList[key]){
                     eventList[key].push(item)
@@ -1043,7 +1039,7 @@ export default {
             let tirTarget =  this.unit=='mmol/L'?[_.round(GlucoseUtils.mmolToMgdl(this.targetScope[0]),1),_.round(GlucoseUtils.mmolToMgdl(this.targetScope[1]),1)]:this.targetScope
             let DdatArray = _.cloneDeep(data)
             let singleDay  = _.chunk(DdatArray,60*24) ;
-            let max = _.maxBy(DdatArray,'Value').Value>540?540:_.maxBy(DdatArray,'Value').Value
+            let max = _.maxBy(DdatArray,'Value').Value>400?400:_.maxBy(DdatArray,'Value').Value
             let dayList = new Array()
             let event_length = 0 //事件条数用来计算高度
             singleDay.forEach(item=>{
@@ -1066,7 +1062,7 @@ export default {
                 dayList.push({
                     date:formatDate(item[0].DataTs*1000,'YYYY-mm-dd'),
                     day: formatDate(item[0].DataTs*1000,'mm-dd'),
-                    week: formatDate(item[0].DataTs*1000,'WW'),
+                    week: formatWeekEn(item[0].DataTs*1000),
                     value:value,
                     resultValue:_.compact(originValue),
                     max:max,
@@ -1080,7 +1076,8 @@ export default {
             this.resultDay = _.filter(dayList,function(o){return o.resultValue.length>0}).length
         },
         // pdf分页
-        padPage(dayList){
+        padPage(dayLists){
+            let dayList = _.reverse(_.clone(dayLists))
            let pageTwoHeight = 1605 //剩余高度
            let pdfHeight = 2375
            let pdfDayData = [{value:[],pdfPage:1}]
@@ -1103,7 +1100,6 @@ export default {
                 }
             
             })
-            console.log(pdfDayData)
             this.pdfDayData = pdfDayData
         },
         // 血糖数据
@@ -1145,17 +1141,27 @@ export default {
             if(this.progressShow){
                 return
             }
+            this.percentage = 0
             this.interProgress()
+            this.successDialog = false
             this.dialogVisible = true
             this.printFlag = true
             this.dialogType='print'
             this.eventChecked = true
             let that = this
-            document.body.classList.add('export-boxs');
-            document.body.style.transform="scale(1)"
+            const document = window.document;
+            const iframe = window.frames[0];
+            setTimeout(function(){
+                let html = document.querySelector('.agp').innerHTML
+                iframe.document.head.innerHTML = document.head.innerHTML; // 获取当前文档的头部给iframe
+                iframe.document.body.innerHTML =html; // 把传过来的html给iframe头部
+                iframe.document.body.classList.add('export-boxs');
+                iframe.document.body.style.transform="scale(1)"
+            },200)
+           
             setTimeout(function(){
                 let pdf = new PdfLoader(
-                document.querySelector(".main-box"),
+                iframe.document.querySelector(".main-box"),
                 "pdf",
                 '',
                 'print'
@@ -1169,17 +1175,28 @@ export default {
             if(this.progressShow){
                 return
             }
+             this.percentage = 0
             this.interProgress()
+            this.successDialog = false
             this.printFlag = true
             this.dialogVisible = true
             this.eventChecked = true
             this.dialogType='export'
             let that = this
-            document.body.classList.add('export-boxs');
-            document.body.style.transform="scale(1)"
+            // document.body.classList.add('export-boxs');
+            // document.body.style.transform="scale(1)"
+            const document = window.document;
+            const iframe = window.frames[0];
+            setTimeout(function(){
+                let html = document.querySelector('.agp').innerHTML
+                iframe.document.head.innerHTML = document.head.innerHTML; // 获取当前文档的头部给iframe
+                iframe.document.body.innerHTML =html; // 把传过来的html给iframe头部
+                iframe.document.body.classList.add('export-boxs');
+                iframe.document.body.style.transform="scale(1)"
+            },200)
             setTimeout(function(){
                 let pdf = new PdfLoader(
-                document.querySelector(".main-box"),
+                iframe.document.querySelector(".main-box"),
                 "pdf",
                 '',
                 'export'
@@ -1193,17 +1210,28 @@ export default {
             if(this.progressShow){
                 return
             }
+            this.percentage = 0
             this.interProgress()
             this.printFlag = true
             this.dialogVisible = true
             this.eventChecked = true
             this.dialogType='share'
+            this.successDialog = false
             let that = this
-            document.body.classList.add('export-boxs');
-            document.body.style.transform="scale(1)"
+            // document.body.classList.add('export-boxs');
+            // document.body.style.transform="scale(1)"
+            const document = window.document;
+            const iframe = window.frames[0];
+            setTimeout(function(){
+                let html = document.querySelector('.agp').innerHTML
+                iframe.document.head.innerHTML = document.head.innerHTML; // 获取当前文档的头部给iframe
+                iframe.document.body.innerHTML =html; // 把传过来的html给iframe头部
+                iframe.document.body.classList.add('export-boxs');
+                iframe.document.body.style.transform="scale(1)"
+            },200)
             setTimeout(function(){
                 let pdf = new PdfLoader(
-                document.querySelector(".main-box"),
+                 iframe.document.querySelector(".main-box"),
                 "pdf",
                 '',
                 'share'

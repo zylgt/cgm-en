@@ -1,3 +1,4 @@
+import store from '@/store'
 /* 本文件提供计算TIR的方法
  */
 
@@ -39,7 +40,7 @@ class TIRUtils {
     }
 
     // 过滤出数组中属于40到400之间的数值
-    let filteredArray = dataArray.filter(val => val >= 36 && val <= 540);
+    let filteredArray = dataArray.filter(val => val >= store.getters.bgRange[0] && val <= store.getters.bgRange[1]);
     if (filteredArray.length === 0) {
       return null;
     }

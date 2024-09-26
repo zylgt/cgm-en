@@ -9,7 +9,7 @@
                 </div>
                 <div class='progress-result' >{{percentage}}%</div>
             </div>
-            <div class='tips' >正在加载，请稍等</div>
+            <div class='tips' >{{$t('message.common.loading')}}...</div>
         </div> 
     </div>
 </template>

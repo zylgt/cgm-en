@@ -264,7 +264,7 @@
                 let value = _.cloneDeep(data)
                 this.option.xAxis[0].data = value.xData
                 let unit = this.unit
-                let max =  Math.ceil(GlucoseUtils.mgdlToMmol(_.maxBy(value.agp95)) / 3) * 3<15?15:Math.ceil(GlucoseUtils.mgdlToMmol(_.maxBy(value.agp95)) / 3) * 3
+                let max =  _.maxBy(value.agp95)+10
                 this.option.series[4].markLine.data[0].yAxis = this.targetScope[0]
                 this.option.series[4].markLine.data[1].yAxis = this.targetScope[1]
                 if(this.timeFormat == 12){
@@ -288,7 +288,7 @@
                     }
                 }
                 if(unit != 'mg/dL'){
-                    max = max
+                   max =  Math.ceil(GlucoseUtils.mgdlToMmol(max) / 3) * 3
                     this.option.yAxis[0].max = max
                     this.option.series[0].data = value.agp05.map((val) => {
                         return val?GlucoseUtils.mgdlToMmol(val):val
@@ -308,9 +308,7 @@
                     })
                    
                 }else{
-                    this.option.yAxis[0].max = GlucoseUtils.mmolToMgdl(max)
-                    // this.option.yAxis[0].interval =3*18
-                    // this.option.yAxis[0].interval =50
+                    this.option.yAxis[0].max =  Math.ceil(max / 100) * 100
                     this.option.series[0].data = value.agp05;
                     this.option.series[1].data =  value.agp25.map((item, index) => {
                             return item - value.agp05[index];

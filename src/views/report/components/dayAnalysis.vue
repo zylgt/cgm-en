@@ -4,7 +4,7 @@
             <div class='overview-compliance-border' v-if='dayInfo.tir>=70'></div>
             <div class='overview-nocompliance-border'  v-if='dayInfo.tir<70'></div>
             <div class='analysis-header' >
-                <div class='analysis-date' >{{dayInfo.day}}   {{dayInfo.week}}</div>
+                <div class='analysis-date' >{{dayInfo.day}},{{dayInfo.week}}</div>
                 <div class='analysis-event' v-if='tableData.length>0'> <el-checkbox v-model="eventChecked">{{$t('message.reports.trendDay.eventLog')}}</el-checkbox></div>
             </div>
             <Empty v-show='dayInfo.resultValue.length<=0' />
@@ -62,15 +62,19 @@
                             <img src="~@/assets/image/event-icon4.png" alt="" class='table-event-icon'  v-if='scope.row.event_type==4'>
                             <img src="~@/assets/image/event-icon5.png" alt="" class='table-event-icon'  v-if='scope.row.event_type==5'>
                             <img src="~@/assets/image/event-icon6.png" alt="" class='table-event-icon'  v-if='scope.row.event_type==6'>
+                            <img src="~@/assets/image/event-icon7.png" alt="" class='table-event-icon'  v-if='scope.row.message_type==3'>
+                            <img src="~@/assets/image/event-icon8.png" alt="" class='table-event-icon'  v-if='scope.row.message_type==2'>
+                            <img src="~@/assets/image/event-icon8.png" alt="" class='table-event-icon'  v-if='scope.row.message_type==1'>
                             <span v-if='scope.row.event_type==0'>{{$t('message.tableEvent.food'+scope.row.food_time)}}</span>
                             <span v-if='scope.row.event_type==1'>{{$t('message.reports.trendDay.eventType1')}}</span>
                             <span v-if='scope.row.event_type==3'>{{$t('message.tableEvent.insulinTime'+scope.row.insulin_type)}}</span>
                             <span v-if='scope.row.event_type==2'>{{$t('message.reports.trendDay.eventType3')}}</span>
                             <span v-if='scope.row.event_type==4'>{{scope.row.sleep_name}}</span>
-                            <span v-if='scope.row.event_type==5'>指尖血</span>
+                            <span v-if='scope.row.event_type==5'>{{$t('message.reports.trendDay.eventType5')}}</span>
                             <span v-if='scope.row.event_type==6'>{{scope.row.custom_name}}</span>
-                            <span v-if='scope.row.message_type==3'>高血糖</span>
-                            <span v-if='scope.row.message_type==2'>低血糖</span>
+                            <span v-if='scope.row.message_type==3'>{{$t('message.reports.trendDay.eventType7')}}</span>
+                            <span v-if='scope.row.message_type==2'>{{$t('message.reports.trendDay.eventType8')}}</span>
+                            <span v-if='scope.row.message_type==1'>{{$t('message.reports.trendDay.eventType9')}}</span>
                         </div>
                     </template>
                 </el-table-column>
@@ -79,9 +83,9 @@
                         <div class='table-event-type' >
                             <span v-if='scope.row.event_type==0'>--</span>
                             <span v-if='scope.row.event_type==1'>{{scope.row.sport_minute}}{{$t('message.tableEvent.minutes')}}</span>
-                            <span v-if='scope.row.event_type==2'>{{drug_tiime?$t('message.tableEvent.drugTime'+scope.row.drug_tiime):drug_tiime}}</span>
+                            <span v-if='scope.row.event_type==2'>{{scope.row.drug_tiime?$t('message.tableEvent.drugTime'+scope.row.drug_tiime):scope.row.drug_tiime}}</span>
                             <span v-if='scope.row.event_type==3'>{{scope.row.insulin_value}}U</span>
-                            <span v-if='scope.row.event_type==4'>{{scope.row.event_body.total_minute}}分钟</span>
+                            <span v-if='scope.row.event_type==4'>{{scope.row.event_body.total_minute}}{{$t('message.tableEvent.minutes')}}</span>
                             <span v-if='scope.row.event_type==5'>{{scope.row.event_body.fingertipblood_name}}</span>
                             <span v-if='scope.row.event_type==6'>{{scope.row.event_body.remark}}</span>
                             <span v-if='scope.row.message_type==3'>--</span>
@@ -104,7 +108,7 @@
 <script>
 import TChart from '@/views/components/TChart'
 import Empty from '@/views/components/Empty/empty'
-import {formatDate,formatTime} from '@/utils/formatTime'
+import {formatDate,formatDayEn} from '@/utils/formatTime'
 import {mapGetters} from "vuex"
 import { TIRUtils } from "@/utils/algorithm/TIR";
 import { GlucoseUtils } from "@/utils/algorithm/Glucose";
@@ -333,7 +337,7 @@ export default {
                     lowTir = TIRUtils.getTIRResult(resultValue).lowRate + TIRUtils.getTIRResult(resultValue).veryLowRate
                     hightTir = TIRUtils.getTIRResult(resultValue).highRate + TIRUtils.getTIRResult(resultValue).veryHighRate
                 }
-                dayInfo.day = formatDate(dayInfo.day,'mm月dd日')
+                dayInfo.day =formatDayEn(dayInfo.day)
                 dayInfo.fluctate = unit=='mg/dL'?fluctate:GlucoseUtils.mgdlToMmol(fluctate);
                 dayInfo.avg = unit=='mg/dL'? Math.round(avg):GlucoseUtils.mgdlToMmol(avg);
                 dayInfo.lowTir = (Number(lowTir)*100).toFixed(1);
@@ -342,7 +346,7 @@ export default {
                 
                 // 图表数据
                 let xData = Array.from({length:60*24},(item, index) => index)
-                let max = GlucoseUtils.mgdlToMmol(dayInfo.max)<13.9?13.9: GlucoseUtils.mgdlToMmol(dayInfo.max)
+                let max = dayInfo.max+10
                 if(unit != 'mg/dL'){
                     dayInfo.value = dayInfo.value.map(val => GlucoseUtils.mgdlToMmol(val));
                 }
@@ -396,7 +400,7 @@ export default {
                 this.option.series[0].markPoint.data = []
                 this.option.series[0].markLine.data = this.option.series[0].markLine.data.splice(0,2)
                 this.option.xAxis[0].data = xData
-                this.option.yAxis[0].max = unit == 'mg/dL'?GlucoseUtils.mmolToMgdl(Math.ceil(max / 3) * 3):Math.ceil(max / 3) * 3
+                this.option.yAxis[0].max = unit == 'mg/dL'?Math.ceil(max / 100) * 100:  Math.ceil(GlucoseUtils.mgdlToMmol(max) / 3) * 3
                 this.option.series[0].data = dayInfo.value
                 this.option.series[0].markLine.data[0].yAxis = this.targetScope[0]
                 this.option.series[0].markLine.data[1].yAxis = this.targetScope[1]
@@ -408,17 +412,16 @@ export default {
         // 标记事件
         markEvent(data){
             let unit = this.unit
-            let eventData = _.cloneDeep(data)
+            let eventData = _.sortBy(_.cloneDeep(data),'event_ts')
             let chartValue = _.cloneDeep(this.dataList.value)
             let tableData = []
             if(unit != 'mg/dL'){
                 chartValue = chartValue.map(val => GlucoseUtils.mgdlToMmol(val));
             } 
             if(eventData){
-                console.log(eventData,'eventData')
                 eventData.forEach(item=>{
                     if(item&&item.type==1){
-                        let img =[img0,img1,img2,img3,img4,img5,img6]
+                        let img =[img0,img1,img3,img2,img4,img5,img6]
                         this.option.series[0].markPoint.data.push({
                             coord:[item.xIndex,item.yPosition],
                             symbol:'image://'+img[item.event_type],
@@ -452,7 +455,9 @@ export default {
                         insulin_value:item.insulin_value,
                         value:item?chartValue[item.xIndex]:'',
                         bgValue:item?item.Value:'',
-                        message_type:item?item.message_type:''
+                        message_type:item?item.message_type:'',
+                        xIndex:item.xIndex,
+                        yPosition:item.yPosition
                     })
                     this.tableData = tableData
                 })
@@ -467,8 +472,13 @@ export default {
             if(chart){
                  chart.on('click',(params)=>{
                     that.eventChecked = true
-                    let row = that.tableData[params.dataIndex]
-                    that.$refs.singleTable.setCurrentRow(row);
+                    let x = params.data.coord[0]
+                    let y =  params.data.coord[1]
+                    that.tableData.forEach(item=>{
+                        if(item.xIndex==x&&item.yPosition==y){
+                             that.$refs.singleTable.setCurrentRow(item);
+                        }
+                    })
                     that.option.series[0].markPoint.data.forEach(item=>item.symbolSize = 30)
                     that.option.series[0].markPoint.data[params.dataIndex].symbolSize = 50
                 })
@@ -478,10 +488,12 @@ export default {
         // 表格点击
         handleCurrentChange(val){
             let tableData = this.tableData
-            let index = _.findIndex(tableData,function(o){return o.id==val.id})
-            this.option.series[0].markPoint.data.forEach(item=>item.symbolSize = 30)
-            this.option.series[0].markPoint.data[index].symbolSize = 50
-
+            this.option.series[0].markPoint.data.forEach((item,index)=>{
+                item.symbolSize = 30
+                if(item.coord[0]==val.xIndex&&item.coord[1]==val.yPosition){
+                     this.option.series[0].markPoint.data[index].symbolSize = 50
+                }
+            })
         }
     },
     watch:{

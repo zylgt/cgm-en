@@ -97,7 +97,7 @@
                 </div>
                 <div class='unistall-text step3-unistall-text' >{{$t('message.Driver.upCloude.title')}}</div>
                 <div class='unistall-text-tips step3-unistall-text-tips' > <img src="~@/assets/image/waring-icon.png" alt="" class='waring-icon' > {{$t('message.Driver.upCloude.tip')}}</div>
-                <div class='reader-up-mac'>{{$t('message.Driver.upCloude.mac')}}：12345</div>
+                <div class='reader-up-mac'>{{$t('message.Driver.upCloude.mac')}}:{{upMac}}</div>
                 <div class='reader-data-tip' >{{$t('message.Driver.upCloude.timeTip')}}</div>
                 <div class='reader-data-tip' >{{$t('message.Driver.upCloude.rangeTip')}}</div>
             </div>
@@ -127,7 +127,7 @@
                 <div :class='[upStep>=4?"active":"","progess-item"]' ></div>
             </div>
         </div>
-        <Abnormal v-if='errorCode!=0' :type='errorCode'  @downLoad='downLoad' @firing='firing'  @connectReader='repeatReader'/>
+        <Abnormal v-if='errorCode!=0' :type='errorCode' @upAgain='upAgain'  @downLoad='downLoad' @firing='firing'  @connectReader='repeatReader'/>
     </div>
 </template>
 <script>
@@ -148,6 +148,8 @@ export default {
         ...mapGetters([
             'upStep',
             'deviceList',
+            'cgmList',
+            'upIndex',
             'errorCode',
             'upProgess',
             'upLimit',
@@ -163,6 +165,11 @@ export default {
                     // this.$router.push('/')
                 }
                 return num
+            }
+        },
+        upMac(){
+            if(this.$store.getters.cgmList.length>0){
+                return this.$store.getters.cgmList[this.$store.getters.upIndex].mac
             }
         }
     },
@@ -231,6 +238,7 @@ export default {
         },
         // 再次上传数据
         upAgain(){
+            console.log('再次上传数据')
             this.$store.dispatch('setErrorCode',0) 
             this.$websocket.getReaderList()
         },

@@ -71,7 +71,7 @@
                         {{$t('message.reports.more')}}
                             <img src="~@/assets/image/right-arrow.png" alt="" class='right-arrow' >
                         </div>
-                    <div class='overview-agp-empty' v-if='item.datas.length<1440*5'>无足够数据</div>
+                    <div class='overview-agp-empty' v-if='item.datas.length<1440*5'>{{$t('message.common.noData')}}</div>
                         <div class='overview-agp-agp' v-else> 
                             <AGPview :dataList='item.agp'/>
                         </div>
@@ -250,6 +250,15 @@ export default {
             let year = this.year
             year.forEach(item=>item.checked = false)
             year[index].checked = !year[index].checked
+            this.list = []
+            if( year[index].checked){
+                this.queryParams.start_ts = new Date(year[index].date+'-01-01 12:00:00').getTime()/1000
+                this.queryParams.end_ts = new Date(year[index].date+'-12-31 23:59:59').getTime()/1000
+                       
+                this.getList()
+            }
+           
+
         },
         // 跳转agp图谱
         agpTab(s,e){

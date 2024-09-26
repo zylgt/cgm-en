@@ -6,6 +6,7 @@ const setting = {
         timeFormat:localStorage.getItem('timeFormat')==null||localStorage.getItem('timeFormat')=='undefined'?24:localStorage.getItem('timeFormat'), //时间格式,默认24小时制
         height:1080 ,//网页的高度，尺寸变化跟着变化
         scale:1, //缩放比例
+        bgRange:[40,400]
     },
     mutations:{
         SET_UNIT(state,unit){

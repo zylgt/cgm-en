@@ -5,7 +5,7 @@
 </template>
 <style >
 .help-cont-main{
-    width:1580px;
+    width:1520px;
     margin:0 atuo;
 }
 .help-content{

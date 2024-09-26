@@ -3,6 +3,7 @@ const socket = {
         deviceList:[], //设备列表
         upProgess:0 ,//已经上传条数
         upLimit:0 ,//上传数据条数
+        upIndex:0, //当前上传绑定mac的下标
         upStep:1 , //上传步骤 1启动驱动 2启动中 3连接设备 4同步数据 5再次同步
         readerConnect:0, //reader连接状态 0未连接 1连接中 2选择连接 
         cgmList:[], //reader绑定的发射器列表
@@ -44,6 +45,9 @@ const socket = {
         SET_DRIVER:(state,driver) => {
             state.driver = driver
         },
+        SET_UP_INDEX:(state,upIndex) => {
+            state.upIndex = upIndex
+        },
     },
     actions:{
         setDeviceList({commit},data){
@@ -73,6 +77,9 @@ const socket = {
         },
         setDriver({commit},data){
             commit('SET_DRIVER',data)
+        },
+        setUpIndex({commit},data){
+            commit('SET_UP_INDEX',data)
         }
     }
 }
