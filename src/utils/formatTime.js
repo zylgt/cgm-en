@@ -50,6 +50,7 @@ export function formatDate(date, format) {
 	}
 	for (let k in opt) {
 		let r = new RegExp('(' + k + ')').exec(format)
+		// console.log(r,'日历转换')
 		if (r) {
 			// 若输入的长度不为1，则前面补零
 			format = format.replace(r[1], RegExp.$1.length == 1 ? opt[k] : opt[k].padStart(RegExp.$1.length, '0'))
@@ -108,6 +109,30 @@ export function formatPast(param, format = 'YYYY-mm-dd') {
 		let date = typeof param === 'string' || 'object' ? new Date(param) : param
 		return formatDate(date, format)
 	}
+}
+/**
+ * 
+ * 12小时制
+ * 
+ */
+
+export function format12Date(date) {
+	date  = new Date(date)
+	let hours = date.getHours()
+	let minute = date.getMinutes()
+	let format = null
+	if(hours>12){
+		format = hours-12 +':'+ minute+'PM'
+	}else if(hours<12){
+		if(hours==0){
+			hours=12
+		}
+		format = hours+':'+ minute+'AM'
+	}else if(hours==12){
+		format = hours +':'+ minute+'PM'
+	}
+
+	return format
 }
 
 /**

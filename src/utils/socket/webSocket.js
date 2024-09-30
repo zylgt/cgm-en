@@ -15,6 +15,7 @@ let status = 0; //连接状态 0开始建立连接 1连接成功 2交换秘钥�
 let share_key = null //AES加密共享秘钥
 let exchange_shareKey = "com.ihealth.cgm" //AES加密共享秘钥
 let privateKey = null //私钥
+let upEventRepeat = 0; //事件上传重复次数
 const initwebSocket = async()=>{
     if("WebSocket" in window){
         var wsUrl = 'wss://cgm3.jiuan.com:'+port[port_index]+'/uploader'
@@ -97,7 +98,7 @@ const webSocketOnMessage = async(e) => {
     let info = JSON.parse(e.data)
     let path = info.path
     let code = info.code
-    socketLog.log("响应错误:code"+info.code+"msg:"+info.msg)
+    socketLog.log("响应:code"+info.code+"msg:"+info.msg)
     if(code==505||code==504||code==507){   //reader连接失败
         socketLog.log('响应错误:code'+info.code+"msg:"+info.msg)
         store.dispatch('setErrorCode',5) 
@@ -111,8 +112,8 @@ const webSocketOnMessage = async(e) => {
         return
     }
     if(code==512){  //驱动上报设备断开连接,返回首页
-        store.dispatch('setUpStep',5)
         store.dispatch('setReaderConnect',0)
+        store.dispatch('setErrorCode',5)
         router.push('/report/overview')
         return
     }
@@ -120,9 +121,22 @@ const webSocketOnMessage = async(e) => {
         setTime()
         return
     }
+    if(code==237){
+        upEventRepeat++
+        if(upEventRepeat<3){
+            getEventCount()
+        }
+        return
+    }
+    if(code==242){ //正在要的数据被删除了，需要重新获取绑定的发射器列表，重新获取上传的数据
+        cgmList() // 获取绑定的发射器列表
+        getReaderInfo()
+        return
+    }
     if(code!=200){
         store.dispatch('setErrorCode',6) 
-        socketLog.log('响应错误:code'+info.code+"msg:"+info.msg)
+        transferStatus(3)
+        socketLog.log('响应码:code'+info.code+"msg:"+info.msg)
         return
     }
     if(path == "changekey"){

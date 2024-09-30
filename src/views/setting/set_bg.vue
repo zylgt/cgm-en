@@ -54,7 +54,7 @@
                     </div>
                 </div> -->
             </div>
-            <div class='common-set' >
+            <!-- <div class='common-set' >
                 <div class='common-set-item common-edit-item' >
                     <div class='set-item-label' >{{$t('message.setting.bg.setRange')}}：</div>
                     <div class='set-item-value' >
@@ -79,7 +79,7 @@
                        {{ unit == 0 ? 'mmol/L':'mg/dL'}}
                     </div>
                 </div>
-            </div>
+            </div> -->
             <div class='common-set' >
                 <div class='common-set-item' >
                     <div class='set-item-label' >{{$t('message.setting.bg.veryLow')}}：</div>
@@ -499,24 +499,29 @@ export default {
         },
         // 保存设置
         saveTarget(){
-            this.loading = true
-            let targetmin = this.unit==0? GlucoseUtils.mmolToMgdl(this.minTarget):this.minTarget
-            let targetmax = this.unit==0? GlucoseUtils.mmolToMgdl(this.maxTarget):this.maxTarget
-            setPreferences({glucose_unit:this.unit,glucose_range_lower_limit:targetmin,glucose_range_lupper_limit:targetmax}).then(response =>{
-                if(response.code == 1000){
-                    this.edit = false
-                    this.loading = false
-                    this.$emit('bgShow',false)
-                    this.getTarget()
-                    let timeFormat = _.filter(this.timeShow,'checked')[0].value
-                    this.$store.dispatch('setTimeFormat',timeFormat)
-                    this.$store.dispatch('setUnit',this.unit==0?'mmol/L':'mg/dL')
-                    this.$store.dispatch('setTargetScope',[this.minTarget,this.maxTarget])
-                    this.$store.dispatch('setOrginTargetScope',[this.minTarget,this.maxTarget])
-                }
-            }).catch((res) => {
-                   console.log(res)
-            })
+            let timeFormat = _.filter(this.timeShow,'checked')[0].value
+            this.$store.dispatch('setTimeFormat',timeFormat)
+            this.$store.dispatch('setUnit',this.unit==0?'mmol/L':'mg/dL')
+            this.edit = false
+            this.$emit('bgShow',false)
+            // this.loading = true
+            // let targetmin = this.unit==0? GlucoseUtils.mmolToMgdl(this.minTarget):this.minTarget
+            // let targetmax = this.unit==0? GlucoseUtils.mmolToMgdl(this.maxTarget):this.maxTarget
+            // setPreferences({glucose_unit:this.unit,glucose_range_lower_limit:targetmin,glucose_range_lupper_limit:targetmax}).then(response =>{
+            //     if(response.code == 1000){
+            //         this.edit = false
+            //         this.loading = false
+            //         this.$emit('bgShow',false)
+            //         this.getTarget()
+            //         let timeFormat = _.filter(this.timeShow,'checked')[0].value
+            //         this.$store.dispatch('setTimeFormat',timeFormat)
+            //         this.$store.dispatch('setUnit',this.unit==0?'mmol/L':'mg/dL')
+            //         this.$store.dispatch('setTargetScope',[this.minTarget,this.maxTarget])
+            //         this.$store.dispatch('setOrginTargetScope',[this.minTarget,this.maxTarget])
+            //     }
+            // }).catch((res) => {
+            //        console.log(res)
+            // })
         },
         // 时间格式设置
         timeSelect(index){

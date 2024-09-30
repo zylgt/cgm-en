@@ -336,6 +336,7 @@ export default {
             this.option.yAxis[0].max = unit == 'mg/dL'?max+5:GlucoseUtils.mgdlToMmol(max)+3
             this.option.series[0].data = avgList
             this.option.series[1].data = tir
+            this.option.series[1].symbolSize= avgList.length>60?8:13
             this.option.series[0].label.show = avgList.length>30?false:true
         },
     },

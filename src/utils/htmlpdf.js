@@ -25,7 +25,6 @@ class PdfLoader {
         // document.body.classList.add('export-boxs');
         // document.body.style.transform="scale(1)"
         const ele = this.ele
-        console.log(ele)
         const pdf = jsPDF('p', 'pt', 'a4')
         const pdfFileName = this.pdfFileName
         var pdfHeight = 841.89;
@@ -34,7 +33,43 @@ class PdfLoader {
         let eleslist = document.body.getElementsByClassName('reports-box')
         for(var i=0;i<eleslist.length;i++){
             let item = eleslist[i]
-            
+            //  处理表格分页文字截断
+            if(eleslist[i].getElementsByClassName('event-box').length>0){
+                let eventTop = eleslist[i].getElementsByClassName('event-box')[0].offsetTop
+                let pageHeights = 2375
+                let pdteventHeight = pageHeights - eventTop -190
+                let resultEventHeight =  eleslist[i].getElementsByClassName('event-box')[0].clientHeight
+                let pageEventLength = Math.floor((pdteventHeight-48-20)/55)
+                if(resultEventHeight>pdteventHeight){
+                    let table = item.getElementsByClassName('el-table__row')[pageEventLength].parentNode
+                    let trs = item.getElementsByClassName('el-table__row')[pageEventLength]
+                    const newNode = document.createElement('div')
+                    newNode.className = 'breakDiv'
+                    newNode.style.background = 'white'
+                    newNode.style.height =100+'px' // +30为了在换下一页时有顶部的边距
+                    newNode.style.width = '1520px'
+                    newNode.style.borderBottom = '1px solid #666'
+                    table.insertBefore(newNode,trs)
+                }
+                
+            }
+             //  处理参数说明文字截断
+            if( eleslist[i].getElementsByClassName('report-main-params').length>0){
+                let pageHeights = 2377
+                let foot =  eleslist[i].getElementsByClassName('report-main-params')[0]
+                let footTop = eleslist[i].getElementsByClassName('report-main-params')[0].offsetTop+190
+                let footHeight = eleslist[i].getElementsByClassName('report-main-params')[0].clientHeight
+                let paraentDiv = eleslist[i].getElementsByClassName('report-main-params')[0].parentNode
+                if(pageHeights-footTop>0&&pageHeights-footTop<footHeight){
+                    const newNode = document.createElement('div')
+                    newNode.className = 'breakDiv'
+                    newNode.style.background = 'white'
+                    newNode.style.height =pageHeights-footTop+'px' // +30为了在换下一页时有顶部的边距
+                    newNode.style.width = '1520px'
+                    paraentDiv.insertBefore(newNode,foot)
+                }
+              
+            }
             await html2canvas(item,{
                 backgroundColor: '#fff',
                 allowTaint: false,
@@ -62,7 +97,6 @@ class PdfLoader {
                 } else {
                     // 分页
                     while (leftHeight > 0) {
-                        console.log(position)
                         pdf.addImage(
                             pageData,
                             'JPEG',
@@ -73,12 +107,10 @@ class PdfLoader {
                         )
                         leftHeight -= pageHeight
                         position -= pdfHeight
-                        console.log(leftHeight,'leftHeight')
                         // 避免添加空白页
                         if (leftHeight > 0) {
                             pdf.addPage()
                         }
-                        console.log(pdf.getNumberOfPages())
                     }
                 }
                 if(i!=eleslist.length-1){
@@ -90,6 +122,11 @@ class PdfLoader {
         if(this.type=='export'){
             store.dispatch('setPdfLoad',true)
             pdf.save(pdfFileName + '.pdf');
+             // 去除添加的空div 防止页面混乱
+             const doms = document.querySelectorAll('.breakDiv')
+             for (let i = 0; i < doms.length; i++) {
+                 doms[i].remove()
+             }
         }else if(this.type=='print'){
             const pdfBlob = pdf.output('blob');
             const url = URL.createObjectURL(pdfBlob);
@@ -97,6 +134,11 @@ class PdfLoader {
             const printWindow = window.open(url);
             printWindow.onload = function(){
                 printWindow.print();
+                 // 去除添加的空div 防止页面混乱
+                const doms = document.querySelectorAll('.breakDiv')
+                for (let i = 0; i < doms.length; i++) {
+                    doms[i].remove()
+                }
                 printWindow.onafterprint = function() {
                     printWindow.close();
                     URL.revokeObjectURL(url); // 清理资源
@@ -104,6 +146,11 @@ class PdfLoader {
             }
         }else{
             let file = this.convertBase64ToFile(pdf.output("dataurlstring"), 'pdf');
+             // 去除添加的空div 防止页面混乱
+             const doms = document.querySelectorAll('.breakDiv')
+             for (let i = 0; i < doms.length; i++) {
+                 doms[i].remove()
+             }
             store.dispatch('setPdfLoad',true)
             store.dispatch('setPdf',file)
         }      

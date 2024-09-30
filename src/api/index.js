@@ -59,9 +59,9 @@ request.interceptors.response.use(async res => {
      
       if(!messageFlag){
         messageFlag = true
-        MessageBox.confirm('请重新登录', '系统提示', {
-            confirmButtonText: '重新登录',
-            cancelButtonText: '取消',
+        MessageBox.confirm('Please log in again', 'System prompt', {
+            confirmButtonText: 'Login again',
+            cancelButtonText: 'Cancel',
             type: 'warning'
           }
         ).then(() => {
@@ -76,8 +76,8 @@ request.interceptors.response.use(async res => {
     } else if (code === 2005) {
       if(!messageFlag){
         messageFlag = true
-        MessageBox.confirm('请注意，您的账号已在另一台设备上登录。如继续使用，请重新验证登录。若非本人操作，请及时修改密码。', '账号登出提醒', {
-            confirmButtonText: '确认',
+        MessageBox.confirm('Please note that your account has already been logged in on another device. If you wish to continue using, please re verify your login. If not operated by myself, please change your password in a timely manner.', 'Account logout reminder', {
+            confirmButtonText: 'Confirm',
             showCancelButton:false,
           }
         ).then(() => {

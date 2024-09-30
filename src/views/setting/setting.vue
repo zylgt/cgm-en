@@ -62,6 +62,7 @@ export default {
         justify-content: space-between;
         width:100%;
         margin-bottom:20px;
+        padding:0;
     }
     .report-title{
         font-size:30px;

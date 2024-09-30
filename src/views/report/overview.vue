@@ -53,7 +53,7 @@
                                 <div class='overview-bg-tips'>{{$t('message.mean')}}</div>
                             </div>
                             <div class='overview-bg-item' >
-                                <div class='overview-bg-value' >{{item.bgInfo.GMI?item.bgInfo.GMI:''}} <span v-if='!item.bgInfo.GMI' class='noData' >无足够数据</span> <span class='overview-limit' >%</span></div>
+                                <div class='overview-bg-value' >{{item.bgInfo.GMI&&item.datas.length>=1440*10?item.bgInfo.GMI:''}} <span class='overview-limit' v-if='item.bgInfo.GMI&&item.datas.length>=1440*10'>%</span><span v-if='!item.bgInfo.GMI||item.datas.length<1440*10' class='noData' >{{$t('message.common.noData')}}</span> </div>
                                 <div class='overview-bg-tips'>{{$t('message.cmi')}}</div>
                             </div>
                             <div class='overview-bg-item' >
@@ -61,13 +61,13 @@
                                 <div class='overview-bg-tips'>{{$t('message.cv')}}</div>
                             </div>
                             <div class='overview-bg-item' >
-                                <div class='overview-bg-value' >{{item.bgInfo.SDBG?item.bgInfo.SDBG:'--'}}<span class='overview-limit' >%</span></div>
+                                <div class='overview-bg-value' >{{item.bgInfo.SDBG?item.bgInfo.SDBG:'--'}}<span class='overview-limit' >mg/dL</span></div>
                                 <div class='overview-bg-tips'>{{$t('message.sd')}}</div>
                             </div>
                         </div>
                     </div>
                     <div class='overview-agp' >
-                        <div class='overview-agp-more' @click='agpTab(item.start_ts,item.end_ts)'>
+                        <div class='overview-agp-more' @click='agpTab(item.start_ts,item.end_ts,item.mac)'>
                         {{$t('message.reports.more')}}
                             <img src="~@/assets/image/right-arrow.png" alt="" class='right-arrow' >
                         </div>
@@ -261,9 +261,10 @@ export default {
 
         },
         // 跳转agp图谱
-        agpTab(s,e){
+        agpTab(s,e,mac){
             Cookies.set('choose_e', s)
             Cookies.set('choose_s', e)
+            Cookies.set('mac', mac)
             this.$router.push('/report/AGP')
         },
         // 跳转上传数据页面
@@ -733,6 +734,6 @@ export default {
         font-size:var(--fontSize-big);
     }
     .noData{
-        font-size:var(--fontSize-max);
+        font-size:var(--fontSize-smax);
     }
 </style>

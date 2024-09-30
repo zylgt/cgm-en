@@ -4,7 +4,6 @@
             <div class='agp-top' >
                 <div class='agp-top-fl' >
                     <div class='report-title'> {{$t('message.route.'+$route.meta.title)}}</div>
-                    
                 </div>
                 <div class='agp-fr' >
                     <img src="~@/assets/image/printer.png" alt="" class='edit-agp-icon'   @click='handelPrint'>
@@ -23,7 +22,7 @@
                 <img src="~@/assets/image/select-icon.png" alt="" class='select-icon' >
             </div>
             <div class='main-box' ref='printMe' id='printContent'>
-                <Progress v-if='progressShow' />
+                <Progress v-show='progressShow' />
                 <!-- 基本信息 -->
                 <div class="agp-main-box" :style='{"opacity":progressShow?0:1}' >
                     <!-- 第一页 -->
@@ -502,8 +501,8 @@ import PdfLoader from "@/utils/htmlpdf";
 
 export default {
     data(){
-        let that = this
         return{
+            progressShow:false,
             agpDate:['',''], //日期选中值
             loading:false,
             tirVisible:false,
@@ -533,7 +532,6 @@ export default {
             dayDate:14,
             empty:true,
             downProgress:0,
-            progressShow:false,
             eventList:[],
             dialogVisible:false, //下载打印弹窗开关
             percentage:2,
@@ -555,7 +553,8 @@ export default {
                  email: [{ required: true, message: 'Invalid email adress.', trigger: 'blur' },
                             { pattern: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/, message: 'Invalid email adress.', trigger: 'blur'}],
             },
-            emailList:[]
+            emailList:[],
+            mac:''
         }
     },
     components: {
@@ -580,7 +579,17 @@ export default {
         },
         comDiabled(){
               let upattern =  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
-              if(upattern.test(this.emailForm.email)&&this.emailForm.email&&this.$store.getters.pdfFile){
+              let emailList = this.emailList
+              let email = []
+              emailList.forEach(item=>{
+                    if(item.checked){
+                        email.push(item.value)
+                    }
+              })
+              if(upattern.test(this.emailForm.email)&&this.emailForm.email){
+                email.push(this.emailForm.emai)
+              }
+              if(email.length>0&&this.$store.getters.pdfFile){
                  return false
               }else{
                  return true
@@ -596,6 +605,7 @@ export default {
             this.start_time = formatEn( Cookies.get('choose_s')*1000)
             this.end_time =formatEn( Cookies.get('choose_e')*1000)
             this.agpDate = [Cookies.get('choose_s')*1000,Cookies.get('choose_e')*1000]
+            this.mac = Cookies.get('mac')
             this.chooseDay(new Date(Cookies.get('choose_s')*1000),new Date(Cookies.get('choose_e')*1000))
         }else{
             this.start_time = formatEn(start_ts)
@@ -631,6 +641,7 @@ export default {
         chooseGetData(){
             let indexOfDate = [formatDate(this.agpDate[0],'YYYY-mm-dd'),formatDate(this.agpDate[1],'YYYY-mm-dd')]
             if( _.indexOf(this.$store.state.report.chooseDateList,indexOfDate.join('/'))==-1){
+                this.progressShow = true
                 this.getData()
             }else{
                 let result  = this.$store.state.report.data[indexOfDate.join('/')]
@@ -651,7 +662,8 @@ export default {
             let e = new Date(this.agpDate[1])
             let start_ts =parseInt(s.setHours(0,0,0)/1000) 
             let end_ts = parseInt(e.setHours(23,59,59)/1000)
-            getAgpInfo({start_ts:start_ts,end_ts:end_ts}).then(response => {
+            console.log(this.progressShow)
+            getAgpInfo({start_ts:start_ts,end_ts:end_ts,mac:this.mac}).then(response => {
                     let checkDate = [formatDate(this.agpDate[0],'YYYY-mm-dd'),formatDate(this.agpDate[1],'YYYY-mm-dd')]
                     if(response.code == 1000){
                         if(response.data.devices.length>0){
@@ -821,7 +833,6 @@ export default {
                 let warningList ={};
                 for (let i = 0; i < DdatArray.length; i+=20) {
                     let key = formatDate(DdatArray[i].DataTs*1000,'YYYY-mm-dd')
-                    console.log(DdatArray[i])
                     if(warningList[key]){
                         if(DdatArray[i].Value<54&&DdatArray[i].Value>=this.$store.getters.bgRange[0]){
                                 warningList[key].push({
@@ -1268,35 +1279,37 @@ export default {
         // 根据日期获取数据
         confirmDate(){
             this.pageTwoList = []
-            this.chooseGetData()
+            this.mac = ''
             this.start_time = formatEn(this.agpDate[0])
             this.end_time = formatEn(this.agpDate[1])
+            this.chooseGetData()
             this.chooseDay(new Date(this.agpDate[0]),new Date(this.agpDate[1]))
             this.dateVisible = false
         },
         // 选择邮箱发送
         chooseEmail(index){
-            let emailList = this.emailList
-            emailList.forEach((item,indexs)=>{
-                if(index==indexs){
-                    item.checked = !item.checked
-                }else{
-                    item.checked = false
-                }
-               
-            })
-            if(emailList[index].checked){
-                this.emailForm.email = emailList[index].value
-            }
+            this.emailList[index].checked = !this.emailList[index].checked
         },
         // 发送邮件
         sentEmail(){
             this.loading = true
             let upattern =  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
-            if(upattern.test(this.emailForm.email)&&this.emailForm.email&&this.$store.getters.pdfFile){
+            let emailList = this.emailList
+            let email = []
+            emailList.forEach(item=>{
+                if(item.checked){
+                    email.push(item.value)
+                }
+            })
+            if(upattern.test(this.emailForm.email)&&this.emailForm.email){
+                email.push(this.emailForm.email)
+            }
+            if(email.length>0&&this.$store.getters.pdfFile){
                 const formData = new FormData()
+                email.forEach((item,index)=>{
+                    formData.append('to',item)
+                })
                 formData.append('report',this.$store.getters.pdfFile)
-                formData.append('to',this.emailForm.email)
                 formData.append('message',this.emailForm.message)
                 shareWeb(formData).then(response=>{
                     this.loading = false
@@ -1341,6 +1354,7 @@ export default {
      .reports-box{
         /* height:2375px; */
         overflow: hidden;
+        position: relative;
     }
     .report-main-title-infos{
         display: flex;

@@ -23,11 +23,9 @@ const socket = {
             state.upProgess = upProgess
         },
         SET_UP_STEP:(state,upStep) => {
-            console.log(upStep)
             state.upStep = upStep
         },
         SET_READER_CONNECT:(state,readerConnect) => {
-            console.log(readerConnect)
             state.readerConnect = readerConnect
         },
         SET_ERROR_CODE:(state,errorCode) => {

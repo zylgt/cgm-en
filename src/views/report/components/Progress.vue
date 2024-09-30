@@ -22,6 +22,7 @@ export default {
         }
     },
     mounted(){
+        this.percentage = 0
         this.interProgress()
     },
     methods:{
@@ -48,9 +49,9 @@ export default {
 <style  scoped>
     .progress{
         position: absolute;
-        left:0;
+        left:80px;
         top:0;
-        width: 100%;
+        width:1520px;
     }
     .opacity-mask{
         width:100%;

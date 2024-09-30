@@ -50,7 +50,7 @@
          </div>
         <div class='event-box' v-show="eventChecked" >
             <el-table :data="tableData" style="width: 100%;border:none;" @current-change="handleCurrentChange"
-            header-row-class-name='table-header' highlight-current-row ref="singleTable">
+            header-row-class-name='table-header' highlight-current-row ref="singleTable"  >
                 <el-table-column  prop="ts"  :label="$t('message.reports.trendDay.time')"></el-table-column>
                 <el-table-column  prop="event"  :label="$t('message.reports.trendDay.event')">
                     <template slot-scope="scope"> 
@@ -109,7 +109,7 @@
 <script>
 import TChart from '@/views/components/TChart'
 import Empty from '@/views/components/Empty/empty'
-import {formatDate,formatDayEn} from '@/utils/formatTime'
+import {formatDate,formatDayEn,format12Date} from '@/utils/formatTime'
 import {mapGetters} from "vuex"
 import { TIRUtils } from "@/utils/algorithm/TIR";
 import { GlucoseUtils } from "@/utils/algorithm/Glucose";
@@ -327,9 +327,11 @@ export default {
         // 处理数据
         handelOption(data){
             let dayInfo = _.cloneDeep(data)
+            dayInfo.day =formatDayEn(dayInfo.day)
+            let timeFormat = this.timeFormat
             if(dayInfo.resultValue.length>0){
                 let unit = this.unit
-                let timeFormat = this.timeFormat
+               
                 let resultValue = _.compact(dayInfo.value)
                 let fluctate = _.max(dayInfo.value) -  _.min(dayInfo.value) //最大波动
                 let avg = GlucoseUtils.calculateMeanCvGmi(resultValue).mean //平均值
@@ -338,7 +340,6 @@ export default {
                     lowTir = TIRUtils.getTIRResult(resultValue).lowRate + TIRUtils.getTIRResult(resultValue).veryLowRate
                     hightTir = TIRUtils.getTIRResult(resultValue).highRate + TIRUtils.getTIRResult(resultValue).veryHighRate
                 }
-                dayInfo.day =formatDayEn(dayInfo.day)
                 dayInfo.fluctate = unit=='mg/dL'?fluctate:GlucoseUtils.mgdlToMmol(fluctate);
                 dayInfo.avg = unit=='mg/dL'? Math.round(avg):GlucoseUtils.mgdlToMmol(avg);
                 dayInfo.lowTir = (Number(lowTir)*100).toFixed(1);
@@ -445,9 +446,14 @@ export default {
                         //     item.event_body.bg = GlucoseUtils.mgdlToMmol(item.event_body.bg)
                         // }
                     }
+                    let ts = null
+                    if(this.timeFormat == 12){
+                        ts = format12Date(item.event_ts*1000)
+                    }else{
+                        ts = formatDate(item.event_ts*1000,'HH:MM')
+                    }
                     tableData.push({
-                        // id:item.event_id,
-                        ts:formatDate(item.event_ts*1000,'HH:MM'),
+                        ts:ts,
                         event_type:item.event_type,
                         food_time:item.food_time,
                         sport_minute:item.sport_minute,

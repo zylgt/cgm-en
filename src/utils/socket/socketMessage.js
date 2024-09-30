@@ -1,6 +1,7 @@
 import Socket from '@/utils/socket/webSocket'
 import store from '@/store'
 import {lastIndex,upData,syncReader,getEventLastId,upEvent,shareWeb,getShareList} from '@/api/dataApi'
+import {setPreferences} from '@/api/setting'
 import router from '@/router'
 var limit = 0 //上传数据的总条数
 var eventLastId = -1 //获取云最后一条事件的id
@@ -28,6 +29,8 @@ export async function handelMessage (res) {
              */
             if(store.getters.deviceList.length<=0){
                 store.dispatch('setReaderConnect',1)
+                store.dispatch('setUpStep',3)
+                store.dispatch('setErrorCode',0)
                 Socket.connectReader(res.data.device)
             }else if(store.getters.deviceList.length>1&&store.getters.upStep==3){
                 store.dispatch('setDeviceList',[res.data.device])
@@ -48,17 +51,22 @@ export async function handelMessage (res) {
             }
             break;
         case 'connectReaderDevice': //连接reader
+            store.dispatch('seUpLimit',0) //连接reader ，传输进度和条数需要初始化
+            store.dispatch('setUpProgess',0) //连接reader ，传输进度和条数需要初始化
             Socket.setTime() 
             break;
         case 'getReaderDeviceInfo': //获取reader信息
             upReader(res.data)
+            upRange(res.data)
             readerMac = res.data.readerMac
             eventLastId = await getLastId(res.data.readerMac)
             Socket.getEventCount()
             break;
         case 'setTime':
-            console.log('向reader下发的目标范围===='+store.getters.originTargetScope)
-            Socket.setRange(store.getters.originTargetScope)
+            // console.log('向reader下发的目标范围===='+store.getters.originTargetScope)
+            // Socket.setRange(store.getters.originTargetScope)
+            Socket.cgmList() // 获取绑定的发射器列表
+            Socket.getReaderInfo()
             break;
         case 'getEventCount':
             if(res.data.total>0){
@@ -69,8 +77,6 @@ export async function handelMessage (res) {
             upEvents(res.data.values,eventLastId,readerMac)
             break;
         case 'setGlucoseRange':
-            Socket.cgmList() // 获取绑定的发射器列表
-            Socket.getReaderInfo()
             break;
         case 'getBindDevices': //获取reader绑定的发射器列表
             store.dispatch('setCgmList',res.data.devices)
@@ -252,6 +258,27 @@ function upReader(data){
     }).catch((res) => {
         console.log(res)
     })
+}
+
+/**
+ * 上传reader目标范围
+ */
+function upRange(data){
+    let params={
+        "glucose_unit": 1,
+        "glucose_range_lower_limit": data.low,
+        "glucose_range_lupper_limit": data.high,
+    }
+    setPreferences(params).then(response =>{
+        if(response.code == 1000){
+            store.dispatch('setUnit','mg/dL')
+            store.dispatch('setTargetScope',[data.low,data.high])
+            store.dispatch('setOrginTargetScope',[data.low,data.high])
+        }
+    }).catch((res) => {
+           console.log(res)
+    })
+
 }
 
 /**
